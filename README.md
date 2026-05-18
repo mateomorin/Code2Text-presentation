@@ -1,2 +1,2 @@
 # Code2Text-presentation
-Slides quarto pour présente Code2Text
+Slides quarto pour présenter Code2Text
