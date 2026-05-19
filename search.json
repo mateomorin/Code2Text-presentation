@@ -11,14 +11,14 @@
     "href": "index.html#la-codification-automatique-nest-pas-évidente",
     "title": "Code2Text",
     "section": "La codification automatique n’est pas évidente",
-    "text": "La codification automatique n’est pas évidente\nPlusieurs difficultés majeures à l’apprentissage :\n\nDéfaut de couverture des données d’entraînement ;\nActualisation possible de la nomenclature ;\nBruit sémantique : fautes d’orthographes, infos personnelles, typos, …\nBruit d’annotation : mauvais code pour le libellé ;\nPossible manque de données : passage à l’anglais, nouvelle nomenclature, …\n\n\n→ Sans génération de données synthétiques, la codification automatique peut être imprécise voire impossible."
+    "text": "La codification automatique n’est pas évidente\nPlusieurs difficultés majeures à l’apprentissage :\n\nDéfaut de couverture des données d’entraînement ;\nActualisation possible de la nomenclature ;\nBruit sémantique : fautes d’orthographe, infos personnelles, typos, …\nBruit d’annotation : mauvais code pour le libellé ;\nPossible manque de données : passage à l’anglais, nouvelle nomenclature, …\n\n\n→ Sans génération de données synthétiques, la codification automatique peut être imprécise, voire impossible."
   },
   {
     "objectID": "index.html#le-cas-particulier-de-notre-contexte",
     "href": "index.html#le-cas-particulier-de-notre-contexte",
     "title": "Code2Text",
     "section": "Le cas particulier de notre contexte",
-    "text": "Le cas particulier de notre contexte\nLa génération de données habituelle repose sur la donnée entrante uniquement :\n\nSans LLM : reproduire une distribution avec des garde-fous ;\nAvec LLM : donner le plus de contexte et des exemples few-shot ;\nLa donnée générée n’apporte pas d’innovation à la donnée d’entraînement.\n\n\nDans notre cas, on détient une notice pour la nomenclature :\n\nInformation supplémentaire exhaustive ;\nAdaptée pour les LLM : on fourni des éléments de la notice en contexte."
+    "text": "Le cas particulier de notre contexte\nLa génération de données habituelle repose sur la donnée entrante uniquement :\n\nSans LLM : reproduire une distribution avec des garde-fous ;\nAvec LLM : donner le plus de contexte et des exemples few-shot ;\nLa donnée générée n’apporte pas d’innovation à la donnée d’entraînement.\n\n\nDans notre cas, on détient une notice pour la nomenclature :\n\nInformation supplémentaire exhaustive ;\nAdaptée pour les LLM : on fournit des éléments de la notice en contexte."
   },
   {
     "objectID": "index.html#objectifs-recherchés",
@@ -32,7 +32,7 @@
     "href": "index.html#evaluation-de-la-génération",
     "title": "Code2Text",
     "section": "Evaluation de la génération",
-    "text": "Evaluation de la génération\nAxes majeurs à explorer :\n\nPerformances du classifieur selon la construction du jeu d’entraînement (données synthétiques plus ou moins présentes) ;\nDiversité de la génération : utilisations de scores d’embeddings (DCScore, IMMD, …), ou des rapprochements sémantiques (Jaccard Similarity, Self-BLEU, …) ;\nViser la distribution sémantique originale : soit avec les mêmes méthodes que pour la diversité, soit avec l’utilisation d’un discriminateur IA/humain.\n\n\nOn recherche de bonnes performances dans ces trois domaines indépendamment du code derrière les libellés générés."
+    "text": "Evaluation de la génération\nAxes majeurs à explorer :\n\nPerformances du classifieur selon la construction du jeu d’entraînement (données synthétiques plus ou moins présentes) ;\nDiversité de la génération : utilisation de scores d’embeddings (DCScore, IMMD, …), ou des rapprochements sémantiques (Jaccard Similarity, Self-BLEU, …) ;\nViser la distribution sémantique originale : soit avec les mêmes méthodes que pour la diversité, soit avec l’utilisation d’un discriminateur IA/humain.\n\n\nOn recherche de bonnes performances dans ces trois domaines indépendamment du code derrière les libellés générés."
   },
   {
     "objectID": "index.html#principe-général-de-naive-code2text",
@@ -49,18 +49,18 @@
     "text": "Passage à l’échelle : parallélisation\nOn prend le schéma précédent, et on l’adapte pour lancer des requêtes API en parallèle :"
   },
   {
-    "objectID": "index.html#premier-résultats",
-    "href": "index.html#premier-résultats",
+    "objectID": "index.html#premiers-résultats",
+    "href": "index.html#premiers-résultats",
     "title": "Code2Text",
-    "section": "Premier résultats",
-    "text": "Premier résultats\nPoints positifs :\n\nLa génération est très fidèle à la notice ;\nGrande diversité dans les thématiques (grâce à la diversité dans la notice) ;\nGénération plutôt rapide (environ 100 000 libellés/heure).\n\n\nPoint négatif majeur : la donnée est “trop parfaite”\n\nTon professionel ;\nSyntaxe et grammaire irréprochables ;\nVocabulaire proche de la notice.\n\n\n\n→ Données peu exploitables"
+    "section": "Premiers résultats",
+    "text": "Premiers résultats\nPoints positifs :\n\nLa génération est très fidèle à la notice ;\nGrande diversité dans les thématiques (grâce à la diversité dans la notice) ;\nGénération plutôt rapide (environ 100 000 libellés/heure).\n\n\nPoint négatif majeur : la donnée est “trop parfaite”\n\nTon professionnel ;\nSyntaxe et grammaire irréprochables ;\nVocabulaire proche de la notice.\n\n\n\n→ Données peu exploitables"
   },
   {
     "objectID": "index.html#labelguard-discrimination-des-libellés",
     "href": "index.html#labelguard-discrimination-des-libellés",
     "title": "Code2Text",
     "section": "LabelGuard : Discrimination des libellés",
-    "text": "LabelGuard : Discrimination des libellés\nEntraînement d’un discriminateur IA/humain sur les embeddings des libellés (dim = 4096) :\n\nBenchmarking de plusieurs modèles via MLFlow ;\nGrid Search rapide sur les hyperparamètres ;\nChoix du modèle avec le meilleur FPR (val).\n\n\nRésultat : MLP (4096 → 1024 → 256 → 1) avec dropout initial (0.3)\n\nFPR : 0.69%\nAccuracy : 99.4%\n\n\n\n→ Déploiement sur une API : https://labelguard.lab.sspcloud.fr/"
+    "text": "LabelGuard : Discrimination des libellés\nEntraînement d’un discriminateur IA/humain sur les embeddings des libellés (dim = 4096) :\n\nBenchmarking de plusieurs modèles via MLFlow ;\nGrid Search rapide sur les hyperparamètres ;\nChoix du modèle avec le meilleur FPR (val).\n\n\nRésultat : MLP (4096 → 1024 → 256 → 1) avec dropout initial (0.3)\n\nFPR : 0.69 %\nAccuracy : 99.4 %\n\n\n\n→ Déploiement sur une API : https://labelguard.lab.sspcloud.fr/"
   },
   {
     "objectID": "index.html#rappel-naive-code2text",
@@ -88,7 +88,7 @@
     "href": "index.html#travail-futur",
     "title": "Code2Text",
     "section": "Travail futur",
-    "text": "Travail futur\nAméliorer Code2ReText\n\nPrendre en compte systématiquement LabelGuard ;\nEviter les hallucinations ou autres dérives (recopier le même libellé, tromper le discriminateur, …).\n\n\nPasser au Supervised Fine Tuning (SFT)\n\nIdée de mimer la distribution sémantique originale ;\nGrand enjeu de stabilité au cours des itérations ;\nPasser à un paradigme tourné RLHF si innefficace."
+    "text": "Travail futur\nAméliorer Code2ReText\n\nPrendre en compte systématiquement LabelGuard ;\nEviter les hallucinations ou autres dérives (recopier le même libellé, tromper le discriminateur, …).\n\n\nPasser au Supervised Fine Tuning (SFT)\n\nIdée : mimer la distribution sémantique originale ;\nGrand enjeu de stabilité au cours des itérations ;\nPasser à un paradigme tourné RLHF si inefficace."
   },
   {
     "objectID": "index.html#parvenir-à-un-outil-exploitable-et-performant",

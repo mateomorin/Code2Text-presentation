@@ -185,12 +185,12 @@ Matéo Morin
 <ul>
 <li class="fragment"><strong>Défaut de couverture</strong> des données d’entraînement ;</li>
 <li class="fragment"><strong>Actualisation</strong> possible de la nomenclature ;</li>
-<li class="fragment"><strong>Bruit sémantique</strong> : fautes d’orthographes, infos personnelles, typos, …</li>
+<li class="fragment"><strong>Bruit sémantique</strong> : fautes d’orthographe, infos personnelles, typos, …</li>
 <li class="fragment"><strong>Bruit d’annotation</strong> : mauvais code pour le libellé ;</li>
 <li class="fragment"><strong>Possible manque de données</strong> : passage à l’anglais, nouvelle nomenclature, …</li>
 </ul>
 <div class="fragment">
-<p>→ <strong>Sans génération de données synthétiques,</strong> <span class="orange"><strong>la codification automatique peut être imprécise voire impossible</strong></span>.</p>
+<p>→ <strong>Sans génération de données synthétiques,</strong> <span class="orange"><strong>la codification automatique peut être imprécise, voire impossible</strong></span>.</p>
 </div>
 </section></section>
 <section>
@@ -210,7 +210,7 @@ Matéo Morin
 <p>Dans notre cas, on détient une <strong>notice</strong> pour la nomenclature :</p>
 <ul>
 <li class="fragment"><span class="orange"><strong>Information supplémentaire exhaustive</strong></span> ;</li>
-<li class="fragment"><strong>Adaptée pour les LLM</strong> : on fourni des éléments de la notice en contexte.</li>
+<li class="fragment"><strong>Adaptée pour les LLM</strong> : on fournit des éléments de la notice en contexte.</li>
 </ul>
 </div>
 </section>
@@ -239,7 +239,7 @@ Matéo Morin
 <p><span class="orange"><strong>Axes majeurs</strong></span> <strong>à explorer :</strong></p>
 <ul>
 <li class="fragment"><strong>Performances du classifieur</strong> selon la construction du jeu d’entraînement (données synthétiques plus ou moins présentes) ;</li>
-<li class="fragment"><strong>Diversité de la génération</strong> : utilisations de scores d’embeddings (DCScore, IMMD, …), ou des rapprochements sémantiques (Jaccard Similarity, Self-BLEU, …) ;</li>
+<li class="fragment"><strong>Diversité de la génération</strong> : utilisation de scores d’embeddings (DCScore, IMMD, …), ou des rapprochements sémantiques (Jaccard Similarity, Self-BLEU, …) ;</li>
 <li class="fragment"><strong>Viser la distribution sémantique originale</strong> : soit avec les mêmes méthodes que pour la diversité, soit avec l’utilisation d’un discriminateur IA/humain.</li>
 </ul>
 <div class="fragment">
@@ -262,8 +262,8 @@ Matéo Morin
 </p>
 
 <img data-src="images/NaiveCode2Text_parallel.svg" class="quarto-figure quarto-figure-center r-stretch" alt="Naive Code2Text with parallel configuration"></section>
-<section id="premier-résultats" class="slide level2" data-background-image="background.svg" data-background-size="contain">
-<h2>Premier résultats</h2>
+<section id="premiers-résultats" class="slide level2" data-background-image="background.svg" data-background-size="contain">
+<h2>Premiers résultats</h2>
 <p><strong>Points positifs</strong> :</p>
 <ul>
 <li class="fragment">La génération est <strong>très fidèle</strong> à la notice ;</li>
@@ -273,7 +273,7 @@ Matéo Morin
 <div class="fragment">
 <p><strong>Point négatif majeur</strong> : <span class="orange"><strong>la donnée est “trop parfaite”</strong></span></p>
 <ul>
-<li class="fragment">Ton professionel ;</li>
+<li class="fragment">Ton professionnel ;</li>
 <li class="fragment">Syntaxe et grammaire irréprochables ;</li>
 <li class="fragment">Vocabulaire proche de la notice.</li>
 </ul>
@@ -298,8 +298,8 @@ Matéo Morin
 <div class="fragment">
 <p><strong>Résultat</strong> : <span class="orange"><strong>MLP (4096 → 1024 → 256 → 1) avec dropout initial</strong></span> (0.3)</p>
 <ul>
-<li class="fragment">FPR : 0.69%</li>
-<li class="fragment">Accuracy : 99.4%</li>
+<li class="fragment">FPR : 0.69 %</li>
+<li class="fragment">Accuracy : 99.4 %</li>
 </ul>
 </div>
 <div class="fragment">
@@ -333,9 +333,9 @@ Matéo Morin
 <div class="fragment">
 <p><strong>Passer au Supervised Fine Tuning</strong> (SFT)</p>
 <ul>
-<li class="fragment">Idée de mimer la distribution sémantique originale ;</li>
+<li class="fragment">Idée : mimer la distribution sémantique originale ;</li>
 <li class="fragment">Grand enjeu de stabilité au cours des itérations ;</li>
-<li class="fragment">Passer à un paradigme tourné <strong>RLHF si innefficace</strong>.</li>
+<li class="fragment">Passer à un paradigme tourné <strong>RLHF si inefficace</strong>.</li>
 </ul>
 </div>
 </section>
