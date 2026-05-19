@@ -55,14 +55,14 @@ Plusieurs [**difficultés majeures**]{.orange} à l'apprentissage :
 :::{.incremental}
 * **Défaut de couverture** des données d'entraînement ;
 * **Actualisation** possible de la nomenclature ;
-* **Bruit sémantique** : fautes d'orthographes, infos personnelles, typos, ... 
+* **Bruit sémantique** : fautes d'orthographe, infos personnelles, typos, ... 
 * **Bruit d'annotation** : mauvais code pour le libellé ;
 * **Possible manque de données** : passage à l'anglais, nouvelle nomenclature, ...
 :::
 
 . . .
 
-→ **Sans génération de données synthétiques,** [**la codification automatique peut être imprécise voire impossible**]{.orange}.  
+→ **Sans génération de données synthétiques,** [**la codification automatique peut être imprécise, voire impossible**]{.orange}.  
 
 # 2️⃣ La génération de données synthétiques
 
@@ -82,7 +82,7 @@ Dans notre cas, on détient une **notice** pour la nomenclature :
 
 :::{.incremental}
 * [**Information supplémentaire exhaustive**]{.orange} ;
-* **Adaptée pour les LLM** : on fourni des éléments de la notice en contexte.
+* **Adaptée pour les LLM** : on fournit des éléments de la notice en contexte.
 :::
 
 ## Objectifs recherchés
@@ -112,7 +112,7 @@ Dans notre cas, on détient une **notice** pour la nomenclature :
 
 :::{.incremental}
 * **Performances du classifieur** selon la construction du jeu d'entraînement (données synthétiques plus ou moins présentes) ; 
-* **Diversité de la génération** : utilisations de scores d'embeddings (DCScore, IMMD, ...), ou des rapprochements sémantiques (Jaccard Similarity, Self-BLEU, ...) ;
+* **Diversité de la génération** : utilisation de scores d'embeddings (DCScore, IMMD, ...), ou des rapprochements sémantiques (Jaccard Similarity, Self-BLEU, ...) ;
 * **Viser la distribution sémantique originale** : soit avec les mêmes méthodes que pour la diversité, soit avec l'utilisation d'un discriminateur IA/humain. 
 :::
 
@@ -137,7 +137,7 @@ On prend le schéma précédent, et on l'adapte pour lancer des requêtes API en
 ![](images/NaiveCode2Text_parallel.svg){fig-alt="Naive Code2Text with parallel configuration" fig-align="center"}
 
 
-## Premier résultats
+## Premiers résultats
 
 **Points positifs** :
 
@@ -152,7 +152,7 @@ On prend le schéma précédent, et on l'adapte pour lancer des requêtes API en
 **Point négatif majeur** : [**la donnée est "trop parfaite"**]{.orange}
 
 :::{.incremental}
-* Ton professionel ;
+* Ton professionnel ;
 * Syntaxe et grammaire irréprochables ;
 * Vocabulaire proche de la notice.
 :::
@@ -179,8 +179,8 @@ Ajouter un niveau de profondeur
 **Résultat** : [**MLP (4096 → 1024 → 256 → 1) avec dropout initial**]{.orange} (0.3)
 
 :::{.incremental}
-* FPR : 0.69%
-* Accuracy : 99.4%
+* FPR : 0.69 %
+* Accuracy : 99.4 %
 :::
 
 . . .
@@ -218,9 +218,9 @@ Ajouter un niveau de profondeur
 **Passer au Supervised Fine Tuning** (SFT)
 
 :::{.incremental}
-* Idée de mimer la distribution sémantique originale ;
+* Idée : mimer la distribution sémantique originale ;
 * Grand enjeu de stabilité au cours des itérations ;
-* Passer à un paradigme tourné **RLHF si innefficace**.
+* Passer à un paradigme tourné **RLHF si inefficace**.
 :::
 
 ## Parvenir à un outil exploitable et performant
