@@ -6,7 +6,7 @@ author:
     email: mateo.morin@insee.fr
     affiliations:
       - name: Insee, SSP Lab
-date: "19/05/2026"
+date: "2026-05-19"
 date-format: "D MMMM YYYY"
 slide-number: true
 # uncomment for French presentations:
