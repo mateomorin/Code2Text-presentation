@@ -1,7 +1,35 @@
 project:
   type: website
-
+  output-dir: _site
+  # On indique à Quarto de rendre le rapport principal et le dossier slides
   render:
-    - presentation.qmd
-  
-  output-dir: _preview
+    - rapport.qmd
+    - slides/
+
+website:
+  title: "Code2Text — Rapport de stage"
+  description: "Générer des libellés pour la codification automatique des nomenclatures statistiques"
+  navbar: false
+  sidebar:
+    id: "sidebar-rapport"
+    search: true
+    collapse-level: 2
+    contents:
+      - text: "📖 Rapport de stage"
+        file: rapport.qmd
+      - text: "📊 Version Présentation (Slides)"
+        file: slides/presentation.qmd
+
+format:
+  html:
+    theme: [rapport.scss]
+    toc: true
+    toc-title: "Sommaire"
+    toc-depth: 3
+    toc-location: left
+    toc-expand: true
+    number-sections: true
+    number-depth: 2
+    smooth-scroll: true
+    fig-cap-location: bottom
+    embed-resources: false

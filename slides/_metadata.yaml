@@ -1,0 +1,12 @@
+project:
+  type: website
+
+website:
+  sidebar: false
+
+format:
+  onyxia-revealjs:
+    css: custom.css
+    slide-number: true
+    embed-resources: true
+    footer: "<a href='../rapport.html' style='color: rgb(255, 86, 44); font-family: \"Work Sans\", sans-serif; font-weight: bold; text-decoration: none;'><i class='fa-solid fa-arrow-left'></i> 📖 Retour au Rapport</a>"

@@ -1,0 +1,384 @@
+/*-- rapport.scss : thème personnalisé pour rapport de stage Code2Text --*/
+
+/*-- scss:defaults --*/
+
+// Typographie
+$font-family-sans-serif: 'DM Sans', system-ui, sans-serif;
+$font-family-serif: 'Source Serif 4', Georgia, serif;
+$font-family-monospace: 'JetBrains Mono', 'Fira Mono', monospace;
+
+$font-size-root: 17px;
+$line-height-base: 1.8;
+
+// Palette
+$paper:        #faf9f6;
+$paper-warm:   #f3f0e8;
+$ink:          #1a1814;
+$ink-soft:     #4a4640;
+$ink-muted:    #7a7570;
+$rule:         #d8d4c8;
+$rule-strong:  #c0bab0;
+$accent:       #c0392b;
+$accent-soft:  #e8d5d2;
+$accent-subtle:#f7eeec;
+$blue-accent:  #2558a8;
+$blue-soft:    #f0f4fa;
+$green-soft:   #f0f7f3;
+$green-accent: #2a7a4b;
+
+// Variables Quarto
+$body-bg:    $paper;
+$body-color: $ink-soft;
+$link-color: $blue-accent;
+
+$headings-font-family: $font-family-serif;
+$headings-color:       $ink;
+$headings-font-weight: 600;
+$headings-line-height: 1.2;
+
+$h1-font-size: 2.6rem;
+$h2-font-size: 1.55rem;
+$h3-font-size: 1.15rem;
+$h4-font-size: 1rem;
+
+$code-bg:    $paper-warm;
+$code-color: $ink;
+
+$toc-font-size: 0.8rem;
+
+// Sidebar TOC
+$sidebar-bg: $paper-warm;
+
+/*-- scss:rules --*/
+
+/* ── Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Body & Layout ── */
+body {
+  font-family: $font-family-serif;
+  background: $paper;
+  color: $ink-soft;
+}
+
+/* ── Navigation / TOC sidebar ── */
+#quarto-sidebar,
+.sidebar.toc-left {
+  background: $paper-warm !important;
+  border-right: 1px solid $rule !important;
+}
+
+.sidebar nav[role="doc-toc"] {
+  padding: 1.5rem 0.5rem;
+}
+
+.sidebar nav[role="doc-toc"] ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sidebar nav[role="doc-toc"] > ul > li > a {
+  font-family: $font-family-sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: $ink-soft;
+  text-decoration: none;
+  display: block;
+  padding: 0.35rem 1rem 0.35rem 1.2rem;
+  border-left: 2px solid transparent;
+  line-height: 1.4;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+
+  &:hover {
+    color: $ink;
+    background: rgba(0,0,0,0.04);
+  }
+
+  &.active {
+    color: $accent;
+    border-left-color: $accent;
+    background: $accent-subtle;
+    font-weight: 500;
+  }
+}
+
+.sidebar nav[role="doc-toc"] ul ul a {
+  font-family: $font-family-sans-serif;
+  font-size: 0.73rem;
+  color: $ink-muted;
+  text-decoration: none;
+  display: block;
+  padding: 0.25rem 1rem 0.25rem 2rem;
+  border-left: 2px solid transparent;
+  line-height: 1.4;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+
+  &:hover { color: $ink; background: rgba(0,0,0,0.03); }
+
+  &.active {
+    color: $accent;
+    border-left-color: $accent;
+    background: $accent-subtle;
+  }
+}
+
+/* TOC title */
+#toc-title,
+.toc-title {
+  font-family: $font-family-sans-serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: $ink-muted;
+  padding: 0 1rem 0.6rem 1.2rem;
+  margin-bottom: 0.25rem;
+}
+
+/* ── Main content area ── */
+#quarto-content main,
+.quarto-container main {
+  max-width: 740px;
+}
+
+/* ── Title block ── */
+#title-block-header {
+  padding-bottom: 2.5rem;
+  margin-bottom: 3rem;
+  border-bottom: 1.5px solid $rule-strong;
+}
+
+#title-block-header .quarto-title-block .quarto-title {
+  font-size: 3rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  color: $ink;
+  margin-bottom: 0.4rem;
+}
+
+#title-block-header .quarto-title-block .subtitle {
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: $ink-soft;
+  font-style: italic;
+  margin-bottom: 1.8rem;
+  line-height: 1.4;
+}
+
+.quarto-title-meta {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  font-family: $font-family-sans-serif;
+}
+
+.quarto-title-meta-heading {
+  font-size: 0.62rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  color: $ink-muted !important;
+  margin-bottom: 0.15rem !important;
+}
+
+.quarto-title-meta-contents p {
+  font-size: 0.82rem !important;
+  color: $ink-soft !important;
+  margin: 0 !important;
+}
+
+/* Kicker above title */
+.report-kicker {
+  font-family: $font-family-sans-serif;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $accent;
+  margin-bottom: 0.8rem;
+  display: block;
+}
+
+/* ── Headings ── */
+h1, h2, h3, h4 {
+  font-family: $font-family-serif;
+  color: $ink;
+}
+
+h2 {
+  font-size: 1.55rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid $rule;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.015em;
+}
+
+/* Section number accent */
+h2 .section-number {
+  font-family: $font-family-sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: $accent;
+  letter-spacing: 0.05em;
+  margin-right: 0.6rem;
+  vertical-align: middle;
+}
+
+h3 {
+  font-size: 1.12rem;
+  letter-spacing: -0.01em;
+  margin-top: 2.2rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Prose ── */
+p {
+  margin-bottom: 1.1rem;
+  color: $ink-soft;
+  max-width: 68ch;
+}
+
+strong { color: $ink; font-weight: 600; }
+
+a {
+  color: $blue-accent;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Callout customisation ── */
+.callout {
+  border-radius: 2px !important;
+  border-width: 0 0 0 3px !important;
+  padding: 1rem 1.3rem !important;
+  margin: 1.5rem 0 !important;
+  max-width: 68ch;
+}
+
+.callout-note {
+  background: $blue-soft !important;
+  border-color: $blue-accent !important;
+}
+
+.callout-important {
+  background: $accent-subtle !important;
+  border-color: $accent !important;
+}
+
+.callout-tip {
+  background: $green-soft !important;
+  border-color: $green-accent !important;
+}
+
+.callout-warning {
+  background: #faf5e4 !important;
+  border-color: #b07d1a !important;
+}
+
+/* Hide callout icons & title for a cleaner look */
+.callout .callout-header {
+  display: none !important;
+}
+
+.callout .callout-body p {
+  margin: 0;
+  font-size: 0.93rem;
+  color: $ink-soft;
+}
+
+/* ── Stat cards ── */
+.stat-row {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  margin: 1.5rem 0;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid $rule;
+  border-radius: 4px;
+  padding: 0.85rem 1.25rem;
+  min-width: 130px;
+  font-family: $font-family-sans-serif;
+}
+
+.stat-card .val {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: $ink;
+  letter-spacing: -0.02em;
+  display: block;
+}
+
+.stat-card .lbl {
+  font-size: 0.68rem;
+  color: $ink-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.1rem;
+  display: block;
+}
+
+/* ── Figure placeholders ── */
+.fig-placeholder {
+  background: $paper-warm;
+  border: 1px dashed $rule-strong;
+  border-radius: 4px;
+  padding: 2.2rem 2rem;
+  text-align: center;
+  color: $ink-muted;
+  font-family: $font-family-sans-serif;
+  font-size: 0.8rem;
+  margin: 1.5rem 0;
+}
+
+/* ── Figure captions ── */
+.quarto-figure figcaption,
+figure figcaption,
+.figure-caption {
+  font-family: $font-family-sans-serif !important;
+  font-size: 0.77rem !important;
+  color: $ink-muted !important;
+  font-style: italic;
+  margin-top: 0.5rem;
+  padding-left: 0.1rem;
+}
+
+/* ── Code blocks ── */
+pre, code {
+  font-family: $font-family-monospace;
+  font-size: 0.83rem;
+}
+
+pre.sourceCode {
+  background: $paper-warm;
+  border: 1px solid $rule;
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+}
+
+/* ── Tags (inline) ── */
+.tag {
+  display: inline-block;
+  font-family: $font-family-sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 1px 7px;
+  border-radius: 3px;
+  background: $paper-warm;
+  border: 1px solid $rule;
+  color: $ink-soft;
+  margin: 0 1px;
+  vertical-align: middle;
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  #title-block-header .quarto-title-block .quarto-title {
+    font-size: 2.1rem;
+  }
+  .stat-row { flex-direction: column; }
+}
