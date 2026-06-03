@@ -150,6 +150,16 @@
     ]
   },
   {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Code2Text",
+    "section": "",
+    "text": "SSP Lab · INSEE · Stage 2026\nBienvenue sur le site du projet Code2Text, développé au sein du SSP Lab de l’INSEE. Ce projet porte sur la génération de libellés synthétiques pour la codification automatique des nomenclatures statistiques (NAF, COICOP, NACE…).\nDeux versions du document sont disponibles :\n\n\n📖 Rapport de stage\nVersion complète du rapport, rédigée en prose. Comprend le contexte, la méthodologie, les résultats obtenus et les perspectives envisagées.\nLire le rapport →\n\n\n📊 Présentation slides\nVersion diaporama conçue pour la soutenance orale. Format Reveal.js avec navigation interactive.\nVoir les slides →",
+    "crumbs": [
+      "🏠 Accueil"
+    ]
+  },
+  {
     "objectID": "rapport.html",
     "href": "rapport.html",
     "title": "Code2Text",
