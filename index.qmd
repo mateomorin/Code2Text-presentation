@@ -1,0 +1,44 @@
+---
+title: "Code2Text"
+subtitle: "Générer des libellés pour la codification automatique des nomenclatures statistiques"
+author:
+  - name: Matéo Morin
+    email: mateo_morin@ensae.fr
+    affiliations:
+      - name: ENSAE Paris
+date: "2026-05-19"
+date-format: "D MMMM YYYY"
+lang: fr-FR
+format:
+  html:
+    toc: false
+    number-sections: false
+---
+
+```{=html}
+<span class="report-kicker">SSP Lab · INSEE · Stage 2026</span>
+```
+
+Bienvenue sur le site du projet **Code2Text**, développé au sein du SSP Lab de l'INSEE. Ce projet porte sur la génération de libellés synthétiques pour la codification automatique des nomenclatures statistiques (NAF, COICOP, NACE…).
+
+Deux versions du document sont disponibles :
+
+::: {.landing-cards}
+
+:::: {.landing-card}
+### 📖 Rapport de stage
+
+Version complète du rapport, rédigée en prose. Comprend le contexte, la méthodologie, les résultats obtenus et les perspectives envisagées.
+
+[Lire le rapport →](rapport.html){.landing-link}
+::::
+
+:::: {.landing-card}
+### 📊 Présentation slides
+
+Version diaporama conçue pour la soutenance orale. Format Reveal.js avec navigation interactive.
+
+[Voir les slides →](slides/presentation.html){.landing-link}
+::::
+
+:::

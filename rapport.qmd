@@ -3,9 +3,9 @@ title: "Code2Text"
 subtitle: "Générer des libellés pour la codification automatique des nomenclatures statistiques"
 author:
   - name: Matéo Morin
-    email: mateo.morin@insee.fr
+    email: mateo_morin@ensae.fr
     affiliations:
-      - name: INSEE, SSP Lab
+      - name: ENSAE Paris
 date: "2026-05-19"
 date-format: "D MMMM YYYY"
 lang: fr-FR
@@ -21,15 +21,10 @@ format:
     number-sections: true
     number-depth: 2
     smooth-scroll: true
-    self-contained: true
     html-math-method: katex
     code-fold: false
     fig-cap-location: bottom
     embed-resources: true
-
-execute:
-  echo: false
-  warning: false
 ---
 
 ```{=html}
