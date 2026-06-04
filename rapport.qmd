@@ -6,7 +6,7 @@ author:
     email: mateo_morin@ensae.fr
     affiliations:
       - name: ENSAE Paris
-date: "2026-05-19"
+date: "2026-07-03"
 date-format: "D MMMM YYYY"
 lang: fr-FR
 
@@ -25,21 +25,42 @@ format:
     code-fold: false
     fig-cap-location: bottom
     embed-resources: true
+bibliography: references.bib
 ---
 
 ```{=html}
-<span class="report-kicker">Rapport de stage · INSEE · SSP Lab</span>
+<span class="report-kicker">Rapport de stage</span>
 ```
 
-# Contexte — La codification automatique de libellés {#sec-contexte}
+**Tuteur de stage :** Meilame Tayebjee, SSP Lab (Insee)
 
-## Text2Code : codifier des libellés dans une nomenclature {#sec-text2code}
 
-L'objectif initial de ce stage s'inscrit dans la problématique du **Text2Code** : associer automatiquement un libellé textuel à un code dans une nomenclature donnée. Ces nomenclatures, comme la NAF/NACE ou la COICOP, peuvent être très vastes et comporter plusieurs centaines de codes distincts, ce qui rend la tâche de classification particulièrement exigeante.
+# Préambule {#sec-preambule .unnumbered}
+
+Mon stage s'est déroulé à l'Institut National de la Statistique et des Etudes Economiques (Insee), et plus précisément au sein de son laboratoire d'innovation : le SSP Lab. Très centré autour du Natural Language Processing (NLP), j'ai été amené à travailler sur la génération de données synthétiques textuelles. Ce rapport présente ma démarche, les difficultés rencontrées ainsi que les résultats que j'ai obtenus. Il se termine par un regard critique sur les contributions apportées et sur les perspectives envisagées.
+
+# Executive summary {#sec-summary .unnumbered}
+
+
+
+# Contexte {#sec-contexte}
+
+## Les enjeux de la codification {#sec-intro-codif}
+
+Être capable de catégoriser les éléments dans une nomenclature est très important pour les services statistiques publiques. D'un côté, le débat public a besoin d'être alimenté de chiffres fiables et précis, ce qui se traduit par le maillage fin d'une nomenclature. Prenez l'indice des prix à la consommation (IPC), métrique phare pour évaluer l'inflation : si une nomenclature pour les produits de consommation comme la COICOP [@inseecoicop] n'existait pas, il serait difficile d'évaluer les paniers des ménages lors de leurs achats, et donc difficile d'accorder les poids aux bons éléments dans l'indice. De l'autre, les législations imposent parfois des nomenclatures à respecter. Par exemple, chaque pays de l'Union Européenne doit rendre compte des activités économiques de leurs entreprises en respectant la Nomenclature statistique des Activités économiques dans la Communauté Européenne (NACE) [@statbelnace].
+
+Cependant, mettre en place un système de codification demande beaucoup de ressources. Déjà, il faut parvenir à converger vers un standard général et concevoir une notice exhaustive. Puis, il faut subvenir aux besoins pratiques lors de l'application de la nomenclature. De ce fait, la donnée qui doit être classée arrive avec un grand débit et demande de choisir parmi un grand nombre de catégories. Pour le cas de la NACE, on compte ainsi chaque année plus d'un millions de nouvelles entreprises à associer à un code parmi les plus de 600 existants (plus de 700 pour la nomenclature française). Il faut donc une très grande efficacité ainsi qu'une expertise de la notice de codification.
+
+Historiquement, la codification a été assurée par des annotateurs humains, qui sont souvent des supports techniques dans la création de dossiers administratifs à qui on rajoute la tâche de codification. Cela permet d'éviter de donner la charge à la personne qui fait la demande et qui n'est pas forcément au point sur la nomenclature --- qui pourrait donc faire des erreurs ---, en lui imposant à la place de remplir un libellé textuel qui décrit l'élément à codifier. Pour illustrer, prenons l'exemple de la Nomenclature d'Activité Française (NAF), la version française de la NACE. Le futur chef d'entreprise français qui fait sa demande de SIRET indique dans un champ textuel l'activité économique principale de son entreprise expliquée avec ses propres mots. Puis, son dossier est envoyé auprès de l'administration qui reçoit des éléments comme la raison sociale de l'entreprise, son siège social, ... ainsi que le libellé décrivant l'activité. Alors, durant l'étude du dossier, un des membres de l'administration va associer un code NAF, qui sera également retransmis services statistiques publics comme l'Insee.
+
+Cette manière de procéder à ses limites. Notamment, cela coûte cher d'employer des personnes à faire la même tâche répétitive pour l'ensemble des éléments à classer, car ceux-ci peuvent se tromper en faisant des fautes de frappes ou en oubliant une partie de la notice --- surtout pour les cas rares. L'Insee a donc mis en place un système de codification automatique basé sur la donnée textuelle --- et potentiellement d'autres données auxilières numériques ou catégorielles --- pour aider les annotateurs. On nommera cette tâche automatisée Text2Code (*text to code*).
+
+
+## Text2Code : codifier automatiquement des libellés dans une nomenclature {#sec-text2code}
+
+L'objectif initial de ce stage s'inscrit dans la problématique de la codification automatique (Text2Code) : associer automatiquement un libellé textuel à un code dans une nomenclature donnée. Ces nomenclatures, comme la NAF/NACE ou la COICOP, peuvent être très vastes et comporter plusieurs centaines de codes distincts, ce qui rend la tâche de classification particulièrement exigeante.
 
 Pour chaque nomenclature, on dispose d'une **notice associée**, qui constitue une ressource documentaire exhaustive. Celle-ci contient typiquement quatre champs structurés : le code, le titre, les inclusions (*includes*) et les exclusions (*excludes*). Dans certains cas, on dispose également de paires libellé/code issues de données réelles, qui servent de données d'entraînement pour les classifieurs.
-
-## La codification automatique n'est pas évidente {#sec-difficultes}
 
 Malgré la disponibilité de ces ressources, la construction d'un classifieur robuste se heurte à plusieurs **difficultés majeures**. En premier lieu, les données d'entraînement souffrent fréquemment d'un défaut de couverture : certains codes sont peu ou pas représentés, ce qui crée des zones d'ombre pour le modèle. À cela s'ajoute le risque lié à l'actualisation possible de la nomenclature, qui peut invalider des données d'entraînement pourtant laborieusement constituées.
 

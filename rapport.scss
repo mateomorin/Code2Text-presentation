@@ -36,7 +36,7 @@ $headings-color:       $ink;
 $headings-font-weight: 600;
 $headings-line-height: 1.2;
 
-$h1-font-size: 2.6rem;
+$h1-font-size: 2.0rem;
 $h2-font-size: 1.55rem;
 $h3-font-size: 1.15rem;
 $h4-font-size: 1rem;
@@ -48,6 +48,7 @@ $toc-font-size: 0.8rem;
 
 // Sidebar TOC
 $sidebar-bg: $paper-warm;
+$sidebar-width: 150px;
 
 /*-- scss:rules --*/
 
@@ -151,6 +152,23 @@ body {
     border-left-color: $accent;
     background: $accent-subtle;
   }
+}
+
+#quarto-content {
+  display: flex;
+  justify-content: center;
+}
+
+#quarto-document-content {
+  max-width: 740px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+#quarto-sidebar {
+  width: 15% !important;
+  min-width: 200px !important;
+  max-width: 500px !important;
 }
 
 /* TOC title */
