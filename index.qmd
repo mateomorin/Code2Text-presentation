@@ -1,6 +1,6 @@
 ---
 title: "Code2Text"
-subtitle: "Générer des libellés pour la codification automatique des nomenclatures statistiques"
+subtitle: "Générer de la donnée synthétique textuelle pour la codification automatique"
 author:
   - name: Matéo Morin
     email: mateo_morin@ensae.fr
@@ -19,26 +19,58 @@ format:
 <span class="report-kicker">SSP Lab · INSEE · Stage 2026</span>
 ```
 
-Bienvenue sur le site du projet **Code2Text**, développé au sein du SSP Lab de l'INSEE. Ce projet porte sur la génération de libellés synthétiques pour la codification automatique des nomenclatures statistiques (NAF, COICOP, NACE…).
+Bienvenue sur le site du projet **Code2Text**, développé lors d'un stage au sein du SSP Lab de l'Insee et supervisé par Meilame Tayebjee. Ce projet porte sur la génération de libellés synthétiques pour la codification automatique dans le cas de nomenclatures statistiques comportant une notice : NAF/NACE, COICOP, ...
 
-Deux versions du document sont disponibles :
+
+### Informations concernant le projet
 
 ::: {.landing-cards}
 
 :::: {.landing-card}
-### 📖 Rapport de stage
+### Rapport de stage
 
-Version complète du rapport, rédigée en prose. Comprend le contexte, la méthodologie, les résultats obtenus et les perspectives envisagées.
+Version complète du rapport en format interactif. Comprend le contexte, la méthodologie, les résultats obtenus et les perspectives envisagées.
 
 [Lire le rapport →](rapport.html){.landing-link}
 ::::
 
 :::: {.landing-card}
-### 📊 Présentation slides
+### Présentation slides
 
-Version diaporama conçue pour la soutenance orale. Format Reveal.js avec navigation interactive.
+Version diaporama du rapport, plus sythétique. Support pour la soutenance orale.
 
 [Voir les slides →](slides/presentation.html){.landing-link}
+::::
+
+:::
+
+
+### Liens vers les différents projets Github liés à Code2Text
+
+::: {.landing-cards}
+
+:::: {.landing-card}
+### GRAAL
+
+Projet du SSP Lab visant à utiliser les LLM pour la codification automatique.
+
+[Voir le code →](https://github.com/InseeFrLab/GRAAL){.landing-link}
+::::
+
+:::: {.landing-card}
+### LabelGuard
+
+Projet d'entraînement d'un discriminateur IA/humain pour les libellés à codifier. 
+
+[Voir le code →](https://github.com/mateomorin/LabelGuard){.landing-link}
+::::
+
+:::: {.landing-card}
+### Code2Text-presentation
+
+Le projet github derrière ce site.
+
+[Voir le code →](https://github.com/mateomorin/Code2Text-presentation){.landing-link}
 ::::
 
 :::
