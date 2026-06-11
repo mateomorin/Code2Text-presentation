@@ -19,7 +19,7 @@ format:
 <span class="report-kicker">SSP Lab · INSEE · Stage 2026</span>
 ```
 
-Bienvenue sur le site du projet **Code2Text**, développé lors d'un stage au sein du SSP Lab de l'Insee et supervisé par Meilame Tayebjee. Ce projet porte sur la génération de libellés synthétiques pour la codification automatique dans le cas de nomenclatures statistiques comportant une notice : NAF/NACE, COICOP, ...
+Bienvenue sur le site du projet **Code2Text**, développé lors d'un stage au sein du SSP Lab de l'Insee supervisé par Meilame Tayebjee. Ce projet porte sur la génération de libellés synthétiques pour la codification automatique dans le cas de nomenclatures statistiques comportant une notice : NAF/NACE, COICOP, ...
 
 
 ### Informations concernant le projet
