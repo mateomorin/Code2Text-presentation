@@ -101,37 +101,71 @@ Néanmoins, qu'elles soient basées sur des statistiques traditionnelles, des ar
 
 ## Un contexte particulier : la présence d'une notice {#sec-contexte-gen}
 
-Notre contexte est particulier, car nous disposons d'une **notice** associée à chaque nomenclature, qui constitue une ressource documentaire exhaustive. Celle-ci contient typiquement quatre champs structurés : le code, le titre, les inclusions (*includes*) et les exclusions (*excludes*). Cette notice est indépendante des données d'entraînement, et particulièrement bien adaptée à l'alimentation des LLMs en contexte. Elle permet d'envisager une génération de libellés qui s'affranchit partiellement des limites de la donnée réelle.
+Notre contexte est particulier, car nous disposons d'une **notice** associée à chaque nomenclature, qui constitue une ressource documentaire exhaustive. Celle-ci contient typiquement quatre champs structurés : le code, le titre, les types d'éléments inclus dans la catégorie et ceux similaires mais exclus de cette catégorie (car appartenant à une autre). Cette notice est indépendante des données d'entraînement, et particulièrement bien adaptée à l'alimentation des LLMs en contexte. Elle permet d'envisager une génération de libellés qui s'affranchit partiellement des limites de la donnée réelle.
 
 Dans la littérature, on peut retrouver les thèmes de génération de données textuelles à partir de connaissances (*knowledge-based data generation*), mais les thématiques sont tellement diverses qu'elle ne se rapprochent pas de notre cas. Soit les sources sont trop anciennes pour correspondre à l'usage de LLMs [@dettmar1998knowledge], soit ce sont des approches mimant les LLMs actuels mais qui demandent beaucoup de ressources [@chen2020kgpt], soit les finalités sont proches mais pour des le domaine d'étude change et implémente des méthodes très différentes des notres [@jin2025knowledge].
 
 L'usage d'une source exhaustive extérieure n'est donc pas référencée dans la littérature pour la génération de données synthéthiques. Le travail principal de l'étude reposera donc sur certains choix, et certaines possibilités ne seront pas couvertes.
 
 
-# Méthodologie
+## Evaluation de la génération
 
-## Entrevue générale
+La première approche retenue repose sur une méthode d'évaluation par tâche aval (*downstream task evaluation*), adossée au paradigme de l'entraînement sur données synthétiques et test sur données réelles (*TSTR*). L'hypothèse fondamentale de cette méthodologie stipule que la qualité et la fidélité d'un jeu de données synthétiques se mesurent à sa capacité à se substituer, partiellement ou totalement, aux données réelles pour l'entraînement d'un classifieur, sans dégrader ses performances de généralisation sur un environnement de test authentique.
 
-## Génération de la donnée
 
-### Naive Code2Text — Génération augmentée par la notice {#sec-naive}
+# La donnée disponible
 
-#### Principe général {#sec-principe}
+Pour rappel, l'étude se concentre sur le cas de la NAF 2025, mais la structure des données utilisées est très similaire à d'autres nomenclatures et donc appliquable dans d'autres cas, tant qu'il y a bien une notice exhaustive.
 
-L'approche Naive Code2Text constitue la première brique opérationnelle du projet. Son principe est simple : pour chaque code de la nomenclature, on extrait les informations pertinentes de la notice (titre, inclusions, exclusions) et on les fournit en contexte à un LLM, auquel on demande de générer un certain nombre de libellés plausibles pour ce code. La notice joue ainsi le rôle d'ancre sémantique : le modèle ne génère pas librement, mais contraint par une description exhaustive de ce que le code est censé représenter.
+## La notice de la nomenclature
+
+La notice NAF 2025 a une structure hiérarchique sur cinq niveaux emboîtés. Elle est composée de 21 sections, 87 divisions, 287 groupes, 651 classes et 747 sous-classes, de sorte à partager des points communs avec les nomenclatures européennes et internationales d'activités d'entreprise [@insee2025naf]. On peut retrouver tous les détail sous forme de tableau dans un fichier `.xlsx` avec les attributs suivants pour chaque catégorie :
+
+- **Code** : chaîne de caractère courte unique à chaque catégorie, dont l'écriture conserve l'aspect hiérarchique.
+-	**Titre**	: nom décrivant la catégorie.
+- **Code du parent** : code de la catégorie de niveau supérieur (si elle existe).
+- **Niveau** : niveau de hiérarchie de la catégorie (de 1 à 5 ici).
+- **Includes** : tous les éléments inclus dans la catégorie.
+- **IncludesAlso** : d'autres éléments inclus dans la catégorie.
+- **Excludes** : tous les éléments exclus de la catégorie, mais qui ressemblent à ceux inclus.
+
+D'autres éléments peuvent être présents mais sont redondants des informations indiquées ci-dessus. Un exemple de notice détaillée se trouve également en annexe.
+ 
+## Les données orginales
+
+Choisir la NAF 2025 permet d'accéder à de la donnée récente
+
+
+# Méthode de génération des données
+
+La génération de données textuelles a été réalisée grâce à des LLMs. L'Insee détient sa propre infrastructure de calcul, sur laquelle on peut utiliser plusieurs modèles *open-weight*. Ces modèles pré-entrainés ont pour particularité d'être téléchargeables en ligne gratuitement et réutilisables par n'importe qui à condition d'avoir les ressources nécessaires. J'ai ainsi utilisé les LLMs `google/gemma-3-27b-it` [@gemma3] puis `google/gemma-4-26b-a4b-it` [@gemma4] à sa sortie. 
+
+Il est à savoir que d'autres modèles --- par exemple `openai/gpt-oss-120b` [@openai2025gptoss] --- ont été testés initialement pour de la génération de libellés simple. Les différences entre les LLMs n'étant pas notables qualitativement, le choix a été de garder le modèle le plus utilisé par les équipes à l'Insee pour deux raisons. Déjà, celles-ci sont les plus susceptibles de reprendre les travaux réalisés, donc autant faciliter la reproductibilité du travail. Aussi, les modèles génératifs Gemma sont devenus agentiques à partir de Gemma 3, permettant des réflexions plus complexes, et surtout l'appel d'outils --- fonction utile par la suite.
+
+## Naive Code2Text — Génération augmentée par la notice {#sec-naive}
+
+### Principe général {#sec-principe}
+
+L'approche Naive Code2Text constitue la base du projet. Son principe est simple : pour chaque code de la nomenclature, on extrait les informations pertinentes de la notice (code, titre, quelques éléments *includes*, tous les éléments *excludes*) et on les fournit en contexte à un LLM, auquel on demande de générer un certain nombre de libellés plausibles pour ce code. On a également la possibilité de rajouter des exemples de libellés issus du jeu de données original d'entraînement $\mathcal{X}_{train\_real}$. Le détail du processus est expliqué [@fig-naive-single].
+
+Pour cette structure de génération, les facteurs modifiables sont donc:
+
+- le nombre de libellés à générer à chaque appel,
+- le nombre d'éléments *includes*,
+
 
 ![Architecture du pipeline Naive Code2Text (requête unique)](images/NaiveCode2Text_single.svg){#fig-naive-single fig-alt="Schéma du pipeline Naive Code2Text avec une seule requête"}
 
-#### Passage à l'échelle : parallélisation {#sec-parallelisation}
+### Passage à l'échelle : parallélisation {#sec-parallelisation}
 
 Pour traiter une nomenclature entière en temps raisonnable, le schéma de base a été adapté pour lancer des requêtes API en parallèle. Plutôt que d'interroger le modèle successivement pour chaque code, on envoie simultanément un lot de requêtes indépendantes, ce qui permet d'atteindre des débits de génération significativement plus élevés.
 
 ![Architecture parallélisée de Naive Code2Text](images/NaiveCode2Text_parallel.svg){#fig-naive-parallel fig-alt="Schéma du pipeline Naive Code2Text avec requêtes parallèles"}
 
 
-### Code2ReText — Ajouter un niveau de profondeur {#sec-retext}
+## Code2ReText — Ajouter un niveau de profondeur {#sec-retext}
 
-#### LabelGuard : discrimination des libellés IA/humain {#sec-labelguard}
+### LabelGuard : discrimination des libellés IA/humain {#sec-labelguard}
 
 Pour résoudre le problème de perfection des données générées, il fallait d'abord le quantifier. C'est l'objet de **LabelGuard** : un discriminateur entraîné à distinguer les libellés générés par une IA des libellés saisis par des humains. Le modèle s'appuie sur les **embeddings des libellés** en dimension 4096, ce qui lui permet de capturer des nuances sémantiques et stylistiques fines que les métriques de surface ne permettraient pas de détecter.
 
@@ -156,7 +190,7 @@ L'entraînement a été conduit selon une démarche rigoureuse. Plusieurs archit
 
 Ces performances sont remarquables et témoignent de la capacité du modèle à séparer nettement les deux distributions. LabelGuard est déployé en tant qu'API publique accessible à l'adresse [labelguard.lab.sspcloud.fr](https://labelguard.lab.sspcloud.fr/).
 
-### Architecture : Une interface à deux agents {#sec-architecture}
+## Architecture : Une interface à deux agents {#sec-architecture}
 
 Fort de ce discriminateur, l'idée de Code2ReText est d'introduire une **boucle de filtrage ou de réécriture** dans le pipeline de génération. Dans le schéma de base, les libellés produits par le LLM sont soumis à LabelGuard : ceux qui sont identifiés comme trop artificiels sont soit rejetés, soit renvoyés au modèle pour réécriture.
 
@@ -167,77 +201,77 @@ Une architecture alternative, plus ambitieuse, adopte un paradigme **agentique**
 ![Code2ReText en version agentique](images/retext_agent_2.svg){#fig-retext-agentic fig-alt="Schéma Code2ReText en version agentique"}
 
 
-## Evaluation de la génération
+# Méthode d'évaluation de la génération
 
 L'évaluation d'un générateur de libellés synthétiques repose sur un axe principal et un secondaire, reprenant les objectifs décris en introduction. Le premier impose de mesurer l'influence de la présence de données synthétiques sur les performances du classifieur, et le second demande d'analyser la construction des libellés générés --- autrement dit, leur sémantique.
 
-### Evaluation des performances
 
-L'approche que nous adoptons est une approche d'**évaluation par tâche aval (downstream task evaluation)**, adossée au paradigme *Synthetic Data Train, Real Data Test* (TSTR). L'hypothèse fondamentale de cette méthodologie stipule que la qualité et la fidélité d'un jeu de données synthétiques se mesurent à sa capacité à se substituer, partiellement ou totalement, aux données réelles pour l'entraînement d'un classifieur, sans dégrader ses performances de généralisation sur un environnement de test authentique.
-
-Le protocole expérimental se déroule en deux phases successives distinctes : une phase d'**optimisation de l'architecture** sur données réelles, suivie d'une phase d'**évaluation de la dégradation sémantique** par injection progressive de données synthétiques.
+## Évaluation des performances
 
 
-#### 1. Phase 1 : Sélection de l'Architecture et Recherche sur Grille (*Grid Search*)
 
-Avant d'introduire la moindre donnée synthétique dans le processus d'apprentissage, il est nécessaire de stabiliser et d'optimiser les capacités de généralisation du classifieur. Cette première phase consiste à entraîner une famille de modèles uniquement sur les données réelles afin d'identifier la configuration d'hyperparamètres la plus performante.
+Le protocole expérimental se déroule en deux phases successives. Une première phase est dédiée à l'optimisation de l'architecture du classifieur sur les données réelles. Une deuxième phase applique cette configuration optimale pour mesurer l'impact de l'injection progressive de données synthétiques via des structures d'ensembles imbriqués.
 
-##### Espace de Recherche des Hyperparamètres (*Sweep Matrix*)
 
-L'entraînement s'appuie sur un réseau de neurones profonds dédié à la classification de textes (avec $|\mathcal{Y}| = 747$ classes uniques). Nous orchestrons une recherche sur grille (Grid Search) sur un jeu de données de taille fixe $N = 50\,000$ lignes, issu exclusivement du jeu de données d'entraînement original ($\mathcal{D}_{real\_train}$). L'espace de recherche explore les dimensions suivantes :
+### Donnée utilisée
 
-* **Dimension d'Embedding ($d_{emb}$)** : $\{32, 64, 128, 256\}$
-* **Taux d'Apprentissage Initial ($\eta$)** : $\{10^{-3}, 5 \cdot 10^{-4}, 10^{-4}\}$
-* **Preprocessing ($p$)** : $\{true, false\}$
+Avant de détailler l'évaluation, voici les données à disposition :
 
-Le nombre maximal d'époques est fixé à $15$, supervisé par un mécanisme d'**arrêt précoce (Early Stopping)** configuré avec une patience de $2$ époques sur la perte de validation afin d'éviter tout surapprentissage. Le preprocessing potentiel est simple : mettre en minuscule, retirer les accents, la ponctuation, les mots vides (*stop words*) et les espaces superflus.
+* $\mathcal{D}_{real\_train}$ : un dataset de $N_{train} = 50\,000$ lignes issues exclusivement du jeu d'entraînement original $\mathcal{X}_{real\_train}$. Il a été construit en échantillonant au hasard d'abord une ligne de données par code (soit $|\mathcal{Y}| = 747$ lignes), puis $N_{train} - |\mathcal{Y}|$ lignes dans la base restante.
+* $\mathcal{D}_{synth}$ : un dataset de $N_{train}$ lignes issues exclusivement d'un jeu de données synthétiques $\mathcal{X}_{synth}$ construit à partir du jeu d'entraînement original $\mathcal{X}_{real\_train}$. $\mathcal{D}_{synth}$ a été construit en échantillonant au hasard d'abord une ligne de données par code (soit $|\mathcal{Y}| = 747$ lignes), puis $N_{train} - |\mathcal{Y}|$ lignes dans la base restante.
+* $\mathcal{D}_{val}$ : un dataset de $N_{val} = 30\,000$ lignes, issu exclusivement du jeu de validation original $\mathcal{X}_{val}$. Il a été construit en échantillonant $N_{val}$ lignes, sans garantire la représentation de tous les codes. 
+* $\mathcal{D}_{test}$ : un dataset de $N_{test} = 30\,000$ lignes, issu exclusivement du jeu de test original $\mathcal{X}_{test}$. Il a été construit en échantillonant $N_{test}$ lignes, sans garantire la représentation de tous les codes.
 
-##### Critère de Sélection du Modèle Optimal
+Pour rappel, les jeux de données $\mathcal{X}_{real\_train}$, $\mathcal{X}_{val}$ et $\mathcal{X}_{test}$ sont indépendants. $\mathcal{X}_{synth}$ a été construit à partir de $\mathcal{X}_{real\_train}$. Cela veut donc dire que $\mathcal{D}_{synth}$ comme $\mathcal{D}_{real\_train}$ sont indépendants de $\mathcal{D}_{val}$, et ces trois ensembles sont eux-mêmes indépendants de $\mathcal{D}_{test}$.
 
-À l'issue de cette grille de $24$ combinaisons, les modèles sont évalués sur l'ensemble de validation réel $\mathcal{D}_{val}$. La configuration retenue, notée $\theta^* = (d_{emb}^*, \eta^*)$, est celle qui présente le meilleur compromis empirique entre les métriques de performance globales (Exactitude, F1-macro et F1-pondéré). Cette configuration $\theta^*$ est ensuite figée et servira de référence absolue pour la seconde phase.
+### Phase 1 : Sélection de l'architecture et recherche sur grille
 
-#### 2. Phase 2 : Évaluation par Injection Linéaire et Ensembles Imbriqués (*Nested Sets*)
+Avant d'introduire la moindre donnée synthétique dans le processus d'apprentissage, il est nécessaire de définir un modèle de classification de référence pour pouvoir obetnir des résultats commensurables. Pour ce faire, la première étape consiste à configurer les hyperparamètres menant au modèle le plus performant par entraînement sur la donnée originale.
+
+La structure initiale est tirée des modèles qui seront prochainement mis en production à l'Insee pour la NAF 2025, à l'exception près que la seule donnée en entrée est le libellé textuel, alors qu'en conditions réelles il y aura également des variables catégorielles. Le détail de l'architecture est retrouvable dans [la documentation de la bibliothèque](https://inseefrlab.github.io/torchTextClassifiers/architecture/overview.html#the-pipeline), et repose sur la mise en série d'un tokenizer, d'un embedder (d'abord au niveau du token puis au niveau du texte entier), ainsi que d'un classifieur. L'embedder et le classifieur sont des réseaux de neurones profonds. Le modèle retourne un score entre 0 et 1 pour chaque code (utilisation de la fonction *softmax* sur les logits retournés par le réseau de neurones), la prédiction étant le code pour lequel le score est le plus proche de 1. 
+
+Une recherche sur grille (*grid search*) est orchestrée sur $\mathcal{D}_{real\_train}$, avec comme donnée de validation $\mathcal{D}_{val}$. L'espace de la *grid search* explore 36 combinaisons à partir des dimensions suivantes :
+
+* **Dimension de la couche de représentation vectorielle (*embedding*, $d_{emb}$)** : $\{32, 64, 128, 256, 512, 1024\}$. Cette couche d'*embedding* permet de projeter les mots du dictionnaire dans un espace vectoriel continu où la proximité géométrique traduit la proximité sémantique.
+* **Taux d'apprentissage initial ($\eta$)** : $\{10^{-3}, 5 \cdot 10^{-4}, 10^{-4}\}$. L'optimiseur utilisé est toujours Adam.
+* **Pré-traitement du texte ($t$)** : $\{true, false\}$. Cette variable détermine si le texte est conservé sous sa forme brute ou s'il subit une standardisation simple : mise en minuscule, retrait des accents, de la ponctuation, des espaces superflus et des mots vides (*stop words*).
+
+Le nombre maximal de cycles d'apprentissage (*epochs*) est fixé à 15. Ce processus est supervisé par un mécanisme d'arrêt précoce (*early stopping*) configuré avec une patience de 2 *epochs* sur la perte de validation afin d'éviter tout surapprentissage.
+
+À l'issue de ces 24 combinaisons, les modèles sont évalués sur $\mathcal{D}_{test}$. La configuration retenue, notée $\theta^* = (d_{emb}^*, \eta^*, t^*)$, est celle qui présente le meilleur compromis entre les éléments suivant :
+
+- l'exactitude (***accuracy***) pour sa prédiction,
+- la fréquence à laquelle le bon code apparait dans les **top 3 et 5** de ses propositions,
+- le **taux de prédictions confiantes** (score supérieur à $0.70$ pour un code),
+- l'***accuracy* des prédictions confiantes**.
+
+Cette configuration $\theta^*$ est ensuite figée pour servir de référence absolue lors de la phase suivante.
+
+### Phase 2 : Évaluation quantitative par ensembles imbriqués
 
 Une fois les hyperparamètres optimaux $\theta^*$ fixés, nous mesurons l'impact de la substitution des données réelles par les données synthétiques. Pour ce faire, nous initialisons des modèles strictement identiques à l'architecture optimale sélectionnée en Phase 1, mais nous faisons varier la nature de leur environnement d'entraînement.
 
-##### Cadre Mathématique des Ensembles Imbriqués
-
-Nous construisons une suite ordonnée de jeux de données d'entraînement mixtes $\mathcal{M}_{\alpha}$ de taille fixe $N = 50\,000$ lignes, où $\alpha \in \{0.0, 0.1, 0.2, \dots, 1.0\}$ représente le taux d'injection de données synthétiques ($\mathcal{D}_{synth}$) :
+Nous construisons une suite ordonnée de jeux de données d'entraînement mixtes $\mathcal{M}_{\alpha}$ de taille fixe $N = 50\,000$ lignes, avec $\alpha$ entre 0 (exclus) et 1 (inclus) qui représente le taux d'injection de données synthétiques ($\mathcal{D}_{synth}$) :
 
 $$\mathcal{M}_{\alpha} = \mathcal{C}_{real}(\alpha) \cup \mathcal{C}_{synth}(\alpha)$$
 
-Où :
+Où $\mathcal{C}_{synth}(\alpha)$ est un sous-ensemble de $\mathcal{D}_{synth}$ de taille $\lfloor \alpha \cdot N \rfloor$, et $\mathcal{C}_{real}(\alpha)$ est un sous-ensemble de $\mathcal{D}_{real\_train}$ de taille $N - \lfloor \alpha \cdot N \rfloor$.
 
-* $\mathcal{C}_{synth}(\alpha)$ est un sous-ensemble de $\mathcal{D}_{synth}$ de taille $\lfloor \alpha \cdot N \rfloor$.
-* $\mathcal{C}_{real}(\alpha)$ est un sous-ensemble de $\mathcal{D}_{real\_train}$ de taille $N - \lfloor \alpha \cdot N \rfloor$.
+Une contrainte critique de notre approche consiste à immuniser l'apprentissage contre le problème des classes rares ou absentes, tout en garantissant un déterminisme parfait entre les différents taux $\alpha$. Avant tout échantillonnage, $\mathcal{D}_{real\_train}$ et $\mathcal{D}_{synth}$ sont partitionnés en deux sous-structures : la base immuable ($\mathcal{B}$), un bloc fixe de 747 lignes contenant précisément un exemple pour chaque classe de la nomenclature, et le réservoir complémentaire ($\mathcal{R}$), représentant le reste des lignes disponibles, qui sont ensuite mélangées selon une graine aléatoire fixe.
 
-##### Préservation de la Couverture de la Nomenclature et de l'Inclusion Strictes
+Pour tout taux $\alpha$ différent de 1, le bloc correspondant est assemblé en sélectionnant systématiquement l'intégralité de la base immuable $\mathcal{B}$, complétée par les premières lignes du réservoir complémentaire $\mathcal{R}$. Cette formulation garantit deux propriétés :
 
-Une contrainte critique de notre approche consiste à immuniser l'apprentissage contre le problème des classes rares ou absentes, tout en garantissant un déterminisme parfait entre les différents taux $\alpha$. Avant tout échantillonnage, $\mathcal{D}_{real\_train}$ et $\mathcal{D}_{synth}$ sont partitionnés en deux sous-structures :
+* **Couverture à 100%** : Quel que soit le taux d'injection $\alpha$, le classifieur est exposé à au moins un exemple de chacune des 747 classes lors de l'apprentissage.
+* **Inclusion stricte** : Pour deux taux $\alpha_1 < \alpha_2$, l'ensemble des données synthétiques utilisées à la première étape est strictement inclus dans celui de la seconde. Réciproquement, pour les données réelles, l'ensemble à $\alpha_2$ est strictement inclus dans celui à $\alpha_1$. Cette monotonie élimine les biais de variance liés à l'échantillonnage aléatoire pur entre les configurations expérimentales.
 
-1. **La Base Immuable ($\mathcal{B}$)** : Un bloc fixe de $747$ lignes contenant précisément un exemple pour chaque classe de la nomenclature $\mathcal{Y}$.
-2. **Le Réservoir Complémentaire ($\mathcal{R}$)** : Le reste des lignes disponibles.
+Pour un taux $\alpha$ égal à 1, on n'entraîne que sur la donnée synthétique. On garde la notion d'imbrication des ensembles synthétiques injectés $\left(\forall \alpha \in (0,1), \mathcal{C}_{synth}(\alpha) \subset \mathcal{C}_{synth}(1)\right)$, mais on perd la base immuable $\mathcal{B}_{real}$ de la donnée originale.
 
-Pour tout taux $\alpha$, le bloc correspondant $\mathcal{C}(\alpha)$ est assemblé en sélectionnant systématiquement l'intégralité de la Base Immuable $\mathcal{B}$, complétée par les $n$ premières lignes (déterminées par l'application d'une graine aléatoire fixe) du Réservoir Complémentaire $\mathcal{R}$.
+On ne réalise pas d'expérience où $\alpha$ est trop proche de 0 ou de 1, et où donc on ne peut avoir une base immuable dans la donnée originale et dans la donnée synthétique. Sachant que $N_{train} = 50\,000$, cela correspond aux valeurs admises $\alpha \in [0,015, 0,985] \cup \{1\}$.
 
-Cette formulation mathématique garantit une double propriété essentielle :
-
-* **Couverture à 100% :** Quel que soit le taux d'injection $\alpha$, même à $0\%$ (100% réel) ou $100\%$ (100% synthétique), le classifieur est exposé à au moins un exemple de chacune des 747 classes lors de l'apprentissage.
-* **Inclusion Stricte (*Nested Property*) :** Pour deux taux $\alpha_1 < \alpha_2$, l'ensemble des données synthétiques utilisées à la première étape est strictement inclus dans celui de la seconde : $\mathcal{C}_{synth}(\alpha_1) \subset \mathcal{C}_{synth}(\alpha_2)$. Réciproquement, pour les données réelles, $\mathcal{C}_{real}(\alpha_2) \subset \mathcal{C}_{real}(\alpha_1)$. Cette monotonie structurelle élimine les biais de variance liés à l'échantillonnage aléatoire pur entre les configurations expérimentales.
-
-#### 3. Protocole de Validation et Évaluation Finale
-
-L'infrastructure de validation et de test repose sur une séparation stricte des données (*Hold-Out*). Il est crucial de noter que l'évaluation de la robustesse des modèles s'effectue dans un environnement empirique neutre :
-
-* L'ensemble de validation ($\mathcal{D}_{val}$, $M = 30\,000$ lignes) et l'ensemble de test ($\mathcal{D}_{test}$, $M = 30\,000$ lignes) sont issus de **deux datasets originaux totalement distincts** du dataset d'entraînement ($\mathcal{D}_{real\_train}$).
-* Ces deux ensembles sont exclusivement constitués de données qui ne sont jamais utilisées pour la génération et demeurent rigoureusement inchangés durant l'intégralité du cycle expérimental.
-
-Chaque modèle entraîné sur un mix $\mathcal{M}_{\alpha}$ est monitoré à chaque époque sur $\mathcal{D}_{val}$ pour appliquer l'arrêt précoce, puis le point de convergence optimal est évalué sur $\mathcal{D}_{test}$.
-
-L'évolution des courbes de performance (Accuracy, F1-scores) en fonction de la progression de $\alpha$ (de 0 à 1) sert de proxy direct pour quantifier la perte d'information ou le bruit introduits par le LLM générateur. Une courbe plate valide l'équivalence fonctionnelle de la donnée synthétique, tandis qu'une inflexion négative précoce cartographie les limites sémantiques du modèle de génération.
+L'évaluation des performances de la donnée synthétique consistera alors à étudier les mêmes métriques qu'à la phase 1, mais avec différentes proportions $\alpha$ de données synthétiques. On s'intéressera par ailleurs à quelques métriques sur les données d'entraînement $\mathcal{M}_{\alpha}$ qui apportent un regard différent sur les données injectées.
 
 
-### Evaluation sémantique
+## Evaluation sémantique
 
 ::: {.callout-note}
 L'évaluation sémantique doit impérativement être conduite indépendamment du code derrière les libellés générés : ce qui importe, c'est la qualité de la génération en elle-même, pas sa capacité à reproduire une association code/libellé particulière. Pour éviter de donner trop d'importance à certains codes, le choix a été de faire des statistiques par code.
@@ -246,7 +280,7 @@ L'évaluation sémantique doit impérativement être conduite indépendamment du
 
 # Résultats
 
-## Analyse qualitative
+## Evaluation des performances
 
 ### NaiveCode2Text {#sec-resultats-naive}
 
@@ -287,6 +321,13 @@ La donnée générée par Naive Code2Text est peu exploitable en l'état pour en
 
 # Perspectives {#sec-perspectives}
 
+## Limites actuelles
+
+- génération faite sur un ensemble plus large que lors de l'évaluation
+- pas d'entrainement de nouveaux modèles (on en fixe un)
+- modèle simple
+- 
+
 ## Travail futur {#sec-futur}
 
 La prochaine étape pour Code2ReText est son amélioration systématique. Il s'agit notamment d'**intégrer LabelGuard de façon plus robuste** dans le pipeline, afin qu'il soit consulté de manière systématique et non optionnelle. Un défi important concerne également la prévention des **hallucinations et autres comportements indésirables** du modèle générateur : recopier le même libellé en boucle, produire du texte vide de sens, ou pire, apprendre à tromper le discriminateur plutôt qu'à générer des données de qualité.
@@ -302,3 +343,12 @@ L'objectif final est de déployer une **API de génération pour la nomenclature
 ## Planning {#sec-planning}
 
 ![Planning prévisionnel du stage](images/Planning.svg){#fig-planning fig-alt="Diagramme de planning du stage"}
+
+
+# Annexe
+
+Détail configuration du classifieur
+
+Prompts de référence
+
+Tableau ML pour le choix du modèle
