@@ -4168,41 +4168,57 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#létat-de-lart-habituel" id="toc-létat-de-lart-habituel" class="nav-link" data-scroll-target="#létat-de-lart-habituel"><span class="header-section-number">2.1</span> L’état de l’art habituel</a></li>
   <li><a href="#sec-contexte-gen" id="toc-sec-contexte-gen" class="nav-link" data-scroll-target="#sec-contexte-gen"><span class="header-section-number">2.2</span> Un contexte particulier : la présence d’une notice</a></li>
+  <li><a href="#evaluation-de-la-génération" id="toc-evaluation-de-la-génération" class="nav-link" data-scroll-target="#evaluation-de-la-génération"><span class="header-section-number">2.3</span> Evaluation de la génération</a></li>
   </ul></li>
-  <li><a href="#méthodologie" id="toc-méthodologie" class="nav-link" data-scroll-target="#méthodologie"><span class="header-section-number">3</span> Méthodologie</a>
+  <li><a href="#la-donnée-disponible" id="toc-la-donnée-disponible" class="nav-link" data-scroll-target="#la-donnée-disponible"><span class="header-section-number">3</span> La donnée disponible</a>
   <ul class="collapse">
-  <li><a href="#entrevue-générale" id="toc-entrevue-générale" class="nav-link" data-scroll-target="#entrevue-générale"><span class="header-section-number">3.1</span> Entrevue générale</a></li>
-  <li><a href="#génération-de-la-donnée" id="toc-génération-de-la-donnée" class="nav-link" data-scroll-target="#génération-de-la-donnée"><span class="header-section-number">3.2</span> Génération de la donnée</a>
-  <ul class="collapse">
-  <li><a href="#sec-naive" id="toc-sec-naive" class="nav-link" data-scroll-target="#sec-naive">Naive Code2Text — Génération augmentée par la notice</a></li>
-  <li><a href="#sec-retext" id="toc-sec-retext" class="nav-link" data-scroll-target="#sec-retext">Code2ReText — Ajouter un niveau de profondeur</a></li>
-  <li><a href="#sec-architecture" id="toc-sec-architecture" class="nav-link" data-scroll-target="#sec-architecture">Architecture : Une interface à deux agents</a></li>
+  <li><a href="#la-notice-de-la-nomenclature" id="toc-la-notice-de-la-nomenclature" class="nav-link" data-scroll-target="#la-notice-de-la-nomenclature"><span class="header-section-number">3.1</span> La notice de la nomenclature</a></li>
+  <li><a href="#les-données-orginales" id="toc-les-données-orginales" class="nav-link" data-scroll-target="#les-données-orginales"><span class="header-section-number">3.2</span> Les données orginales</a></li>
   </ul></li>
-  <li><a href="#evaluation-de-la-génération" id="toc-evaluation-de-la-génération" class="nav-link" data-scroll-target="#evaluation-de-la-génération"><span class="header-section-number">3.3</span> Evaluation de la génération</a>
+  <li><a href="#méthode-de-génération-des-données" id="toc-méthode-de-génération-des-données" class="nav-link" data-scroll-target="#méthode-de-génération-des-données"><span class="header-section-number">4</span> Méthode de génération des données</a>
   <ul class="collapse">
-  <li><a href="#evaluation-des-performances" id="toc-evaluation-des-performances" class="nav-link" data-scroll-target="#evaluation-des-performances">Evaluation des performances</a></li>
-  <li><a href="#evaluation-sémantique" id="toc-evaluation-sémantique" class="nav-link" data-scroll-target="#evaluation-sémantique">Evaluation sémantique</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#résultats" id="toc-résultats" class="nav-link" data-scroll-target="#résultats"><span class="header-section-number">4</span> Résultats</a>
+  <li><a href="#sec-naive" id="toc-sec-naive" class="nav-link" data-scroll-target="#sec-naive"><span class="header-section-number">4.1</span> Naive Code2Text — Génération augmentée par la notice</a>
   <ul class="collapse">
-  <li><a href="#analyse-qualitative" id="toc-analyse-qualitative" class="nav-link" data-scroll-target="#analyse-qualitative"><span class="header-section-number">4.1</span> Analyse qualitative</a>
+  <li><a href="#sec-principe" id="toc-sec-principe" class="nav-link" data-scroll-target="#sec-principe">Principe général</a></li>
+  <li><a href="#sec-parallelisation" id="toc-sec-parallelisation" class="nav-link" data-scroll-target="#sec-parallelisation">Passage à l’échelle : parallélisation</a></li>
+  </ul></li>
+  <li><a href="#sec-retext" id="toc-sec-retext" class="nav-link" data-scroll-target="#sec-retext"><span class="header-section-number">4.2</span> Code2ReText — Ajouter un niveau de profondeur</a>
+  <ul class="collapse">
+  <li><a href="#sec-labelguard" id="toc-sec-labelguard" class="nav-link" data-scroll-target="#sec-labelguard">LabelGuard : discrimination des libellés IA/humain</a></li>
+  </ul></li>
+  <li><a href="#sec-architecture" id="toc-sec-architecture" class="nav-link" data-scroll-target="#sec-architecture"><span class="header-section-number">4.3</span> Architecture : Une interface à deux agents</a></li>
+  </ul></li>
+  <li><a href="#méthode-dévaluation-de-la-génération" id="toc-méthode-dévaluation-de-la-génération" class="nav-link" data-scroll-target="#méthode-dévaluation-de-la-génération"><span class="header-section-number">5</span> Méthode d’évaluation de la génération</a>
+  <ul class="collapse">
+  <li><a href="#évaluation-des-performances" id="toc-évaluation-des-performances" class="nav-link" data-scroll-target="#évaluation-des-performances"><span class="header-section-number">5.1</span> Évaluation des performances</a>
+  <ul class="collapse">
+  <li><a href="#donnée-utilisée" id="toc-donnée-utilisée" class="nav-link" data-scroll-target="#donnée-utilisée">Donnée utilisée</a></li>
+  <li><a href="#phase-1-sélection-de-larchitecture-et-recherche-sur-grille" id="toc-phase-1-sélection-de-larchitecture-et-recherche-sur-grille" class="nav-link" data-scroll-target="#phase-1-sélection-de-larchitecture-et-recherche-sur-grille">Phase 1 : Sélection de l’architecture et recherche sur grille</a></li>
+  <li><a href="#phase-2-évaluation-quantitative-par-ensembles-imbriqués" id="toc-phase-2-évaluation-quantitative-par-ensembles-imbriqués" class="nav-link" data-scroll-target="#phase-2-évaluation-quantitative-par-ensembles-imbriqués">Phase 2 : Évaluation quantitative par ensembles imbriqués</a></li>
+  </ul></li>
+  <li><a href="#evaluation-sémantique" id="toc-evaluation-sémantique" class="nav-link" data-scroll-target="#evaluation-sémantique"><span class="header-section-number">5.2</span> Evaluation sémantique</a></li>
+  </ul></li>
+  <li><a href="#résultats" id="toc-résultats" class="nav-link" data-scroll-target="#résultats"><span class="header-section-number">6</span> Résultats</a>
+  <ul class="collapse">
+  <li><a href="#evaluation-des-performances" id="toc-evaluation-des-performances" class="nav-link" data-scroll-target="#evaluation-des-performances"><span class="header-section-number">6.1</span> Evaluation des performances</a>
   <ul class="collapse">
   <li><a href="#sec-resultats-naive" id="toc-sec-resultats-naive" class="nav-link" data-scroll-target="#sec-resultats-naive">NaiveCode2Text</a></li>
   <li><a href="#code2retext" id="toc-code2retext" class="nav-link" data-scroll-target="#code2retext">Code2ReText</a></li>
   </ul></li>
-  <li><a href="#analyse-quantitative" id="toc-analyse-quantitative" class="nav-link" data-scroll-target="#analyse-quantitative"><span class="header-section-number">4.2</span> Analyse quantitative</a>
+  <li><a href="#analyse-quantitative" id="toc-analyse-quantitative" class="nav-link" data-scroll-target="#analyse-quantitative"><span class="header-section-number">6.2</span> Analyse quantitative</a>
   <ul class="collapse">
   <li><a href="#naivecode2text" id="toc-naivecode2text" class="nav-link" data-scroll-target="#naivecode2text">NaiveCode2Text</a></li>
   <li><a href="#code2retext-1" id="toc-code2retext-1" class="nav-link" data-scroll-target="#code2retext-1">Code2ReText</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#sec-perspectives" id="toc-sec-perspectives" class="nav-link" data-scroll-target="#sec-perspectives"><span class="header-section-number">5</span> Perspectives</a>
+  <li><a href="#sec-perspectives" id="toc-sec-perspectives" class="nav-link" data-scroll-target="#sec-perspectives"><span class="header-section-number">7</span> Perspectives</a>
   <ul class="collapse">
-  <li><a href="#sec-futur" id="toc-sec-futur" class="nav-link" data-scroll-target="#sec-futur"><span class="header-section-number">5.1</span> Travail futur</a></li>
-  <li><a href="#sec-production" id="toc-sec-production" class="nav-link" data-scroll-target="#sec-production"><span class="header-section-number">5.2</span> Parvenir à un outil exploitable et performant</a></li>
-  <li><a href="#sec-planning" id="toc-sec-planning" class="nav-link" data-scroll-target="#sec-planning"><span class="header-section-number">5.3</span> Planning</a></li>
+  <li><a href="#limites-actuelles" id="toc-limites-actuelles" class="nav-link" data-scroll-target="#limites-actuelles"><span class="header-section-number">7.1</span> Limites actuelles</a></li>
+  <li><a href="#sec-futur" id="toc-sec-futur" class="nav-link" data-scroll-target="#sec-futur"><span class="header-section-number">7.2</span> Travail futur</a></li>
+  <li><a href="#sec-production" id="toc-sec-production" class="nav-link" data-scroll-target="#sec-production"><span class="header-section-number">7.3</span> Parvenir à un outil exploitable et performant</a></li>
+  <li><a href="#sec-planning" id="toc-sec-planning" class="nav-link" data-scroll-target="#sec-planning"><span class="header-section-number">7.4</span> Planning</a></li>
   </ul></li>
+  <li><a href="#annexe" id="toc-annexe" class="nav-link" data-scroll-target="#annexe"><span class="header-section-number">8</span> Annexe</a></li>
   </ul>
 </nav>
 </nav>
@@ -4311,23 +4327,51 @@ Important
 </section>
 <section id="sec-contexte-gen" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="sec-contexte-gen"><span class="header-section-number">2.2</span> Un contexte particulier : la présence d’une notice</h2>
-<p>Notre contexte est particulier, car nous disposons d’une <strong>notice</strong> associée à chaque nomenclature, qui constitue une ressource documentaire exhaustive. Celle-ci contient typiquement quatre champs structurés : le code, le titre, les inclusions (<em>includes</em>) et les exclusions (<em>excludes</em>). Cette notice est indépendante des données d’entraînement, et particulièrement bien adaptée à l’alimentation des LLMs en contexte. Elle permet d’envisager une génération de libellés qui s’affranchit partiellement des limites de la donnée réelle.</p>
+<p>Notre contexte est particulier, car nous disposons d’une <strong>notice</strong> associée à chaque nomenclature, qui constitue une ressource documentaire exhaustive. Celle-ci contient typiquement quatre champs structurés : le code, le titre, les types d’éléments inclus dans la catégorie et ceux similaires mais exclus de cette catégorie (car appartenant à une autre). Cette notice est indépendante des données d’entraînement, et particulièrement bien adaptée à l’alimentation des LLMs en contexte. Elle permet d’envisager une génération de libellés qui s’affranchit partiellement des limites de la donnée réelle.</p>
 <p>Dans la littérature, on peut retrouver les thèmes de génération de données textuelles à partir de connaissances (<em>knowledge-based data generation</em>), mais les thématiques sont tellement diverses qu’elle ne se rapprochent pas de notre cas. Soit les sources sont trop anciennes pour correspondre à l’usage de LLMs <span class="citation" data-cites="dettmar1998knowledge">(<a href="#ref-dettmar1998knowledge" role="doc-biblioref">Dettmar et al. 1998</a>)</span>, soit ce sont des approches mimant les LLMs actuels mais qui demandent beaucoup de ressources <span class="citation" data-cites="chen2020kgpt">(<a href="#ref-chen2020kgpt" role="doc-biblioref">Chen et al. 2020</a>)</span>, soit les finalités sont proches mais pour des le domaine d’étude change et implémente des méthodes très différentes des notres <span class="citation" data-cites="jin2025knowledge">(<a href="#ref-jin2025knowledge" role="doc-biblioref">Jin 2025</a>)</span>.</p>
 <p>L’usage d’une source exhaustive extérieure n’est donc pas référencée dans la littérature pour la génération de données synthéthiques. Le travail principal de l’étude reposera donc sur certains choix, et certaines possibilités ne seront pas couvertes.</p>
 </section>
+<section id="evaluation-de-la-génération" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="evaluation-de-la-génération"><span class="header-section-number">2.3</span> Evaluation de la génération</h2>
+<p>La première approche retenue repose sur une méthode d’évaluation par tâche aval (<em>downstream task evaluation</em>), adossée au paradigme de l’entraînement sur données synthétiques et test sur données réelles (<em>TSTR</em>). L’hypothèse fondamentale de cette méthodologie stipule que la qualité et la fidélité d’un jeu de données synthétiques se mesurent à sa capacité à se substituer, partiellement ou totalement, aux données réelles pour l’entraînement d’un classifieur, sans dégrader ses performances de généralisation sur un environnement de test authentique.</p>
 </section>
-<section id="méthodologie" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Méthodologie</h1>
-<section id="entrevue-générale" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="entrevue-générale"><span class="header-section-number">3.1</span> Entrevue générale</h2>
 </section>
-<section id="génération-de-la-donnée" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="génération-de-la-donnée"><span class="header-section-number">3.2</span> Génération de la donnée</h2>
-<section id="sec-naive" class="level3">
-<h3 class="anchored" data-anchor-id="sec-naive">Naive Code2Text — Génération augmentée par la notice</h3>
-<section id="sec-principe" class="level4">
-<h4 class="anchored" data-anchor-id="sec-principe">Principe général</h4>
-<p>L’approche Naive Code2Text constitue la première brique opérationnelle du projet. Son principe est simple : pour chaque code de la nomenclature, on extrait les informations pertinentes de la notice (titre, inclusions, exclusions) et on les fournit en contexte à un LLM, auquel on demande de générer un certain nombre de libellés plausibles pour ce code. La notice joue ainsi le rôle d’ancre sémantique : le modèle ne génère pas librement, mais contraint par une description exhaustive de ce que le code est censé représenter.</p>
+<section id="la-donnée-disponible" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> La donnée disponible</h1>
+<p>Pour rappel, l’étude se concentre sur le cas de la NAF 2025, mais la structure des données utilisées est très similaire à d’autres nomenclatures et donc appliquable dans d’autres cas, tant qu’il y a bien une notice exhaustive.</p>
+<section id="la-notice-de-la-nomenclature" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="la-notice-de-la-nomenclature"><span class="header-section-number">3.1</span> La notice de la nomenclature</h2>
+<p>La notice NAF 2025 a une structure hiérarchique sur cinq niveaux emboîtés. Elle est composée de 21 sections, 87 divisions, 287 groupes, 651 classes et 747 sous-classes, de sorte à partager des points communs avec les nomenclatures européennes et internationales d’activités d’entreprise <span class="citation" data-cites="insee2025naf">(<a href="#ref-insee2025naf" role="doc-biblioref">Insee 2025</a>)</span>. On peut retrouver tous les détail sous forme de tableau dans un fichier <code>.xlsx</code> avec les attributs suivants pour chaque catégorie :</p>
+<ul>
+<li><strong>Code</strong> : chaîne de caractère courte unique à chaque catégorie, dont l’écriture conserve l’aspect hiérarchique.</li>
+<li><strong>Titre</strong> : nom décrivant la catégorie.</li>
+<li><strong>Code du parent</strong> : code de la catégorie de niveau supérieur (si elle existe).</li>
+<li><strong>Niveau</strong> : niveau de hiérarchie de la catégorie (de 1 à 5 ici).</li>
+<li><strong>Includes</strong> : tous les éléments inclus dans la catégorie.</li>
+<li><strong>IncludesAlso</strong> : d’autres éléments inclus dans la catégorie.</li>
+<li><strong>Excludes</strong> : tous les éléments exclus de la catégorie, mais qui ressemblent à ceux inclus.</li>
+</ul>
+<p>D’autres éléments peuvent être présents mais sont redondants des informations indiquées ci-dessus. Un exemple de notice détaillée se trouve également en annexe.</p>
+</section>
+<section id="les-données-orginales" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="les-données-orginales"><span class="header-section-number">3.2</span> Les données orginales</h2>
+<p>Choisir la NAF 2025 permet d’accéder à de la donnée récente</p>
+</section>
+</section>
+<section id="méthode-de-génération-des-données" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Méthode de génération des données</h1>
+<p>La génération de données textuelles a été réalisée grâce à des LLMs. L’Insee détient sa propre infrastructure de calcul, sur laquelle on peut utiliser plusieurs modèles <em>open-weight</em>. Ces modèles pré-entrainés ont pour particularité d’être téléchargeables en ligne gratuitement et réutilisables par n’importe qui à condition d’avoir les ressources nécessaires. J’ai ainsi utilisé les LLMs <code>google/gemma-3-27b-it</code> <span class="citation" data-cites="gemma3">(<a href="#ref-gemma3" role="doc-biblioref"><span class="nocase">Gemma Team et al.</span> 2025</a>)</span> puis <code>google/gemma-4-26b-a4b-it</code> <span class="citation" data-cites="gemma4">(<a href="#ref-gemma4" role="doc-biblioref">Google DeepMind 2026</a>)</span> à sa sortie.</p>
+<p>Il est à savoir que d’autres modèles — par exemple <code>openai/gpt-oss-120b</code> <span class="citation" data-cites="openai2025gptoss">(<a href="#ref-openai2025gptoss" role="doc-biblioref">OpenAI 2025</a>)</span> — ont été testés initialement pour de la génération de libellés simple. Les différences entre les LLMs n’étant pas notables qualitativement, le choix a été de garder le modèle le plus utilisé par les équipes à l’Insee pour deux raisons. Déjà, celles-ci sont les plus susceptibles de reprendre les travaux réalisés, donc autant faciliter la reproductibilité du travail. Aussi, les modèles génératifs Gemma sont devenus agentiques à partir de Gemma 3, permettant des réflexions plus complexes, et surtout l’appel d’outils — fonction utile par la suite.</p>
+<section id="sec-naive" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="sec-naive"><span class="header-section-number">4.1</span> Naive Code2Text — Génération augmentée par la notice</h2>
+<section id="sec-principe" class="level3">
+<h3 class="anchored" data-anchor-id="sec-principe">Principe général</h3>
+<p>L’approche Naive Code2Text constitue la base du projet. Son principe est simple : pour chaque code de la nomenclature, on extrait les informations pertinentes de la notice (code, titre, quelques éléments <em>includes</em>, tous les éléments <em>excludes</em>) et on les fournit en contexte à un LLM, auquel on demande de générer un certain nombre de libellés plausibles pour ce code. On a également la possibilité de rajouter des exemples de libellés issus du jeu de données original d’entraînement <span class="math inline">\mathcal{X}_{train\_real}</span>. Le détail du processus est expliqué <a href="#fig-naive-single" class="quarto-xref">Figure 1</a>.</p>
+<p>Pour cette structure de génération, les facteurs modifiables sont donc:</p>
+<ul>
+<li>le nombre de libellés à générer à chaque appel,</li>
+<li>le nombre d’éléments <em>includes</em>,</li>
+</ul>
 <div id="fig-naive-single" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Schéma du pipeline Naive Code2Text avec une seule requête">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-naive-single-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -4339,8 +4383,8 @@ Figure 1: Architecture du pipeline Naive Code2Text (requête unique)
 </figure>
 </div>
 </section>
-<section id="sec-parallelisation" class="level4">
-<h4 class="anchored" data-anchor-id="sec-parallelisation">Passage à l’échelle : parallélisation</h4>
+<section id="sec-parallelisation" class="level3">
+<h3 class="anchored" data-anchor-id="sec-parallelisation">Passage à l’échelle : parallélisation</h3>
 <p>Pour traiter une nomenclature entière en temps raisonnable, le schéma de base a été adapté pour lancer des requêtes API en parallèle. Plutôt que d’interroger le modèle successivement pour chaque code, on envoie simultanément un lot de requêtes indépendantes, ce qui permet d’atteindre des débits de génération significativement plus élevés.</p>
 <div id="fig-naive-parallel" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Schéma du pipeline Naive Code2Text avec requêtes parallèles">
 <figure class="quarto-float quarto-float-fig figure">
@@ -4354,10 +4398,10 @@ Figure 2: Architecture parallélisée de Naive Code2Text
 </div>
 </section>
 </section>
-<section id="sec-retext" class="level3">
-<h3 class="anchored" data-anchor-id="sec-retext">Code2ReText — Ajouter un niveau de profondeur</h3>
-<section id="sec-labelguard" class="level4">
-<h4 class="anchored" data-anchor-id="sec-labelguard">LabelGuard : discrimination des libellés IA/humain</h4>
+<section id="sec-retext" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="sec-retext"><span class="header-section-number">4.2</span> Code2ReText — Ajouter un niveau de profondeur</h2>
+<section id="sec-labelguard" class="level3">
+<h3 class="anchored" data-anchor-id="sec-labelguard">LabelGuard : discrimination des libellés IA/humain</h3>
 <p>Pour résoudre le problème de perfection des données générées, il fallait d’abord le quantifier. C’est l’objet de <strong>LabelGuard</strong> : un discriminateur entraîné à distinguer les libellés générés par une IA des libellés saisis par des humains. Le modèle s’appuie sur les <strong>embeddings des libellés</strong> en dimension 4096, ce qui lui permet de capturer des nuances sémantiques et stylistiques fines que les métriques de surface ne permettraient pas de détecter.</p>
 <p>L’entraînement a été conduit selon une démarche rigoureuse. Plusieurs architectures ont été comparées via <span class="tag">MLFlow</span>, avec une recherche rapide sur les hyperparamètres par grid search. Le modèle final retenu est un <strong>MLP à quatre couches</strong> (4096 → 1024 → 256 → 1) avec un dropout initial de 0,3 sur la première couche d’entrée. Le critère de sélection privilégié est le <strong>taux de faux positifs (FPR)</strong> sur l’ensemble de validation, afin de minimiser le risque de laisser passer des libellés trop « artificiels ».</p>
 <div class="stat-row">
@@ -4377,8 +4421,8 @@ Figure 2: Architecture parallélisée de Naive Code2Text
 <p>Ces performances sont remarquables et témoignent de la capacité du modèle à séparer nettement les deux distributions. LabelGuard est déployé en tant qu’API publique accessible à l’adresse <a href="https://labelguard.lab.sspcloud.fr/">labelguard.lab.sspcloud.fr</a>.</p>
 </section>
 </section>
-<section id="sec-architecture" class="level3">
-<h3 class="anchored" data-anchor-id="sec-architecture">Architecture : Une interface à deux agents</h3>
+<section id="sec-architecture" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="sec-architecture"><span class="header-section-number">4.3</span> Architecture : Une interface à deux agents</h2>
 <p>Fort de ce discriminateur, l’idée de Code2ReText est d’introduire une <strong>boucle de filtrage ou de réécriture</strong> dans le pipeline de génération. Dans le schéma de base, les libellés produits par le LLM sont soumis à LabelGuard : ceux qui sont identifiés comme trop artificiels sont soit rejetés, soit renvoyés au modèle pour réécriture.</p>
 <div id="fig-retext-loop" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Schéma Code2ReText avec LabelGuard en boucle">
 <figure class="quarto-float quarto-float-fig figure">
@@ -4403,72 +4447,62 @@ Figure 4: Code2ReText en version agentique
 </div>
 </section>
 </section>
-<section id="evaluation-de-la-génération" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="evaluation-de-la-génération"><span class="header-section-number">3.3</span> Evaluation de la génération</h2>
+<section id="méthode-dévaluation-de-la-génération" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Méthode d’évaluation de la génération</h1>
 <p>L’évaluation d’un générateur de libellés synthétiques repose sur un axe principal et un secondaire, reprenant les objectifs décris en introduction. Le premier impose de mesurer l’influence de la présence de données synthétiques sur les performances du classifieur, et le second demande d’analyser la construction des libellés générés — autrement dit, leur sémantique.</p>
-<section id="evaluation-des-performances" class="level3">
-<h3 class="anchored" data-anchor-id="evaluation-des-performances">Evaluation des performances</h3>
-<p>L’approche que nous adoptons est une approche d’<strong>évaluation par tâche aval (downstream task evaluation)</strong>, adossée au paradigme <em>Synthetic Data Train, Real Data Test</em> (TSTR). L’hypothèse fondamentale de cette méthodologie stipule que la qualité et la fidélité d’un jeu de données synthétiques se mesurent à sa capacité à se substituer, partiellement ou totalement, aux données réelles pour l’entraînement d’un classifieur, sans dégrader ses performances de généralisation sur un environnement de test authentique.</p>
-<p>Le protocole expérimental se déroule en deux phases successives distinctes : une phase d’<strong>optimisation de l’architecture</strong> sur données réelles, suivie d’une phase d’<strong>évaluation de la dégradation sémantique</strong> par injection progressive de données synthétiques.</p>
-<section id="phase-1-sélection-de-larchitecture-et-recherche-sur-grille-grid-search" class="level4">
-<h4 class="anchored" data-anchor-id="phase-1-sélection-de-larchitecture-et-recherche-sur-grille-grid-search">1. Phase 1 : Sélection de l’Architecture et Recherche sur Grille (<em>Grid Search</em>)</h4>
-<p>Avant d’introduire la moindre donnée synthétique dans le processus d’apprentissage, il est nécessaire de stabiliser et d’optimiser les capacités de généralisation du classifieur. Cette première phase consiste à entraîner une famille de modèles uniquement sur les données réelles afin d’identifier la configuration d’hyperparamètres la plus performante.</p>
-<section id="espace-de-recherche-des-hyperparamètres-sweep-matrix" class="level5">
-<h5 class="anchored" data-anchor-id="espace-de-recherche-des-hyperparamètres-sweep-matrix">Espace de Recherche des Hyperparamètres (<em>Sweep Matrix</em>)</h5>
-<p>L’entraînement s’appuie sur un réseau de neurones profonds dédié à la classification de textes (avec <span class="math inline">|\mathcal{Y}| = 747</span> classes uniques). Nous orchestrons une recherche sur grille (Grid Search) sur un jeu de données de taille fixe <span class="math inline">N = 50\,000</span> lignes, issu exclusivement du jeu de données d’entraînement original (<span class="math inline">\mathcal{D}_{real\_train}</span>). L’espace de recherche explore les dimensions suivantes :</p>
+<section id="évaluation-des-performances" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="évaluation-des-performances"><span class="header-section-number">5.1</span> Évaluation des performances</h2>
+<p>Le protocole expérimental se déroule en deux phases successives. Une première phase est dédiée à l’optimisation de l’architecture du classifieur sur les données réelles. Une deuxième phase applique cette configuration optimale pour mesurer l’impact de l’injection progressive de données synthétiques via des structures d’ensembles imbriqués.</p>
+<section id="donnée-utilisée" class="level3">
+<h3 class="anchored" data-anchor-id="donnée-utilisée">Donnée utilisée</h3>
+<p>Avant de détailler l’évaluation, voici les données à disposition :</p>
 <ul>
-<li><strong>Dimension d’Embedding (<span class="math inline">d_{emb}</span>)</strong> : <span class="math inline">\{32, 64, 128, 256\}</span></li>
-<li><strong>Taux d’Apprentissage Initial (<span class="math inline">\eta</span>)</strong> : <span class="math inline">\{10^{-3}, 5 \cdot 10^{-4}, 10^{-4}\}</span></li>
-<li><strong>Preprocessing (<span class="math inline">p</span>)</strong> : <span class="math inline">\{true, false\}</span></li>
+<li><span class="math inline">\mathcal{D}_{real\_train}</span> : un dataset de <span class="math inline">N_{train} = 50\,000</span> lignes issues exclusivement du jeu d’entraînement original <span class="math inline">\mathcal{X}_{real\_train}</span>. Il a été construit en échantillonant au hasard d’abord une ligne de données par code (soit <span class="math inline">|\mathcal{Y}| = 747</span> lignes), puis <span class="math inline">N_{train} - |\mathcal{Y}|</span> lignes dans la base restante.</li>
+<li><span class="math inline">\mathcal{D}_{synth}</span> : un dataset de <span class="math inline">N_{train}</span> lignes issues exclusivement d’un jeu de données synthétiques <span class="math inline">\mathcal{X}_{synth}</span> construit à partir du jeu d’entraînement original <span class="math inline">\mathcal{X}_{real\_train}</span>. <span class="math inline">\mathcal{D}_{synth}</span> a été construit en échantillonant au hasard d’abord une ligne de données par code (soit <span class="math inline">|\mathcal{Y}| = 747</span> lignes), puis <span class="math inline">N_{train} - |\mathcal{Y}|</span> lignes dans la base restante.</li>
+<li><span class="math inline">\mathcal{D}_{val}</span> : un dataset de <span class="math inline">N_{val} = 30\,000</span> lignes, issu exclusivement du jeu de validation original <span class="math inline">\mathcal{X}_{val}</span>. Il a été construit en échantillonant <span class="math inline">N_{val}</span> lignes, sans garantire la représentation de tous les codes.</li>
+<li><span class="math inline">\mathcal{D}_{test}</span> : un dataset de <span class="math inline">N_{test} = 30\,000</span> lignes, issu exclusivement du jeu de test original <span class="math inline">\mathcal{X}_{test}</span>. Il a été construit en échantillonant <span class="math inline">N_{test}</span> lignes, sans garantire la représentation de tous les codes.</li>
 </ul>
-<p>Le nombre maximal d’époques est fixé à <span class="math inline">15</span>, supervisé par un mécanisme d’<strong>arrêt précoce (Early Stopping)</strong> configuré avec une patience de <span class="math inline">2</span> époques sur la perte de validation afin d’éviter tout surapprentissage. Le preprocessing potentiel est simple : mettre en minuscule, retirer les accents, la ponctuation, les mots vides (<em>stop words</em>) et les espaces superflus.</p>
+<p>Pour rappel, les jeux de données <span class="math inline">\mathcal{X}_{real\_train}</span>, <span class="math inline">\mathcal{X}_{val}</span> et <span class="math inline">\mathcal{X}_{test}</span> sont indépendants. <span class="math inline">\mathcal{X}_{synth}</span> a été construit à partir de <span class="math inline">\mathcal{X}_{real\_train}</span>. Cela veut donc dire que <span class="math inline">\mathcal{D}_{synth}</span> comme <span class="math inline">\mathcal{D}_{real\_train}</span> sont indépendants de <span class="math inline">\mathcal{D}_{val}</span>, et ces trois ensembles sont eux-mêmes indépendants de <span class="math inline">\mathcal{D}_{test}</span>.</p>
 </section>
-<section id="critère-de-sélection-du-modèle-optimal" class="level5">
-<h5 class="anchored" data-anchor-id="critère-de-sélection-du-modèle-optimal">Critère de Sélection du Modèle Optimal</h5>
-<p>À l’issue de cette grille de <span class="math inline">24</span> combinaisons, les modèles sont évalués sur l’ensemble de validation réel <span class="math inline">\mathcal{D}_{val}</span>. La configuration retenue, notée <span class="math inline">\theta^* = (d_{emb}^*, \eta^*)</span>, est celle qui présente le meilleur compromis empirique entre les métriques de performance globales (Exactitude, F1-macro et F1-pondéré). Cette configuration <span class="math inline">\theta^*</span> est ensuite figée et servira de référence absolue pour la seconde phase.</p>
+<section id="phase-1-sélection-de-larchitecture-et-recherche-sur-grille" class="level3">
+<h3 class="anchored" data-anchor-id="phase-1-sélection-de-larchitecture-et-recherche-sur-grille">Phase 1 : Sélection de l’architecture et recherche sur grille</h3>
+<p>Avant d’introduire la moindre donnée synthétique dans le processus d’apprentissage, il est nécessaire de définir un modèle de classification de référence pour pouvoir obetnir des résultats commensurables. Pour ce faire, la première étape consiste à configurer les hyperparamètres menant au modèle le plus performant par entraînement sur la donnée originale.</p>
+<p>La structure initiale est tirée des modèles qui seront prochainement mis en production à l’Insee pour la NAF 2025, à l’exception près que la seule donnée en entrée est le libellé textuel, alors qu’en conditions réelles il y aura également des variables catégorielles. Le détail de l’architecture est retrouvable dans <a href="https://inseefrlab.github.io/torchTextClassifiers/architecture/overview.html#the-pipeline">la documentation de la bibliothèque</a>, et repose sur la mise en série d’un tokenizer, d’un embedder (d’abord au niveau du token puis au niveau du texte entier), ainsi que d’un classifieur. L’embedder et le classifieur sont des réseaux de neurones profonds. Le modèle retourne un score entre 0 et 1 pour chaque code (utilisation de la fonction <em>softmax</em> sur les logits retournés par le réseau de neurones), la prédiction étant le code pour lequel le score est le plus proche de 1.</p>
+<p>Une recherche sur grille (<em>grid search</em>) est orchestrée sur <span class="math inline">\mathcal{D}_{real\_train}</span>, avec comme donnée de validation <span class="math inline">\mathcal{D}_{val}</span>. L’espace de la <em>grid search</em> explore 36 combinaisons à partir des dimensions suivantes :</p>
+<ul>
+<li><strong>Dimension de la couche de représentation vectorielle (<em>embedding</em>, <span class="math inline">d_{emb}</span>)</strong> : <span class="math inline">\{32, 64, 128, 256, 512, 1024\}</span>. Cette couche d’<em>embedding</em> permet de projeter les mots du dictionnaire dans un espace vectoriel continu où la proximité géométrique traduit la proximité sémantique.</li>
+<li><strong>Taux d’apprentissage initial (<span class="math inline">\eta</span>)</strong> : <span class="math inline">\{10^{-3}, 5 \cdot 10^{-4}, 10^{-4}\}</span>. L’optimiseur utilisé est toujours Adam.</li>
+<li><strong>Pré-traitement du texte (<span class="math inline">t</span>)</strong> : <span class="math inline">\{true, false\}</span>. Cette variable détermine si le texte est conservé sous sa forme brute ou s’il subit une standardisation simple : mise en minuscule, retrait des accents, de la ponctuation, des espaces superflus et des mots vides (<em>stop words</em>).</li>
+</ul>
+<p>Le nombre maximal de cycles d’apprentissage (<em>epochs</em>) est fixé à 15. Ce processus est supervisé par un mécanisme d’arrêt précoce (<em>early stopping</em>) configuré avec une patience de 2 <em>epochs</em> sur la perte de validation afin d’éviter tout surapprentissage.</p>
+<p>À l’issue de ces 24 combinaisons, les modèles sont évalués sur <span class="math inline">\mathcal{D}_{test}</span>. La configuration retenue, notée <span class="math inline">\theta^* = (d_{emb}^*, \eta^*, t^*)</span>, est celle qui présente le meilleur compromis entre les éléments suivant :</p>
+<ul>
+<li>l’exactitude (<strong><em>accuracy</em></strong>) pour sa prédiction,</li>
+<li>la fréquence à laquelle le bon code apparait dans les <strong>top 3 et 5</strong> de ses propositions,</li>
+<li>le <strong>taux de prédictions confiantes</strong> (score supérieur à <span class="math inline">0.70</span> pour un code),</li>
+<li>l’<strong><em>accuracy</em> des prédictions confiantes</strong>.</li>
+</ul>
+<p>Cette configuration <span class="math inline">\theta^*</span> est ensuite figée pour servir de référence absolue lors de la phase suivante.</p>
 </section>
-</section>
-<section id="phase-2-évaluation-par-injection-linéaire-et-ensembles-imbriqués-nested-sets" class="level4">
-<h4 class="anchored" data-anchor-id="phase-2-évaluation-par-injection-linéaire-et-ensembles-imbriqués-nested-sets">2. Phase 2 : Évaluation par Injection Linéaire et Ensembles Imbriqués (<em>Nested Sets</em>)</h4>
+<section id="phase-2-évaluation-quantitative-par-ensembles-imbriqués" class="level3">
+<h3 class="anchored" data-anchor-id="phase-2-évaluation-quantitative-par-ensembles-imbriqués">Phase 2 : Évaluation quantitative par ensembles imbriqués</h3>
 <p>Une fois les hyperparamètres optimaux <span class="math inline">\theta^*</span> fixés, nous mesurons l’impact de la substitution des données réelles par les données synthétiques. Pour ce faire, nous initialisons des modèles strictement identiques à l’architecture optimale sélectionnée en Phase 1, mais nous faisons varier la nature de leur environnement d’entraînement.</p>
-<section id="cadre-mathématique-des-ensembles-imbriqués" class="level5">
-<h5 class="anchored" data-anchor-id="cadre-mathématique-des-ensembles-imbriqués">Cadre Mathématique des Ensembles Imbriqués</h5>
-<p>Nous construisons une suite ordonnée de jeux de données d’entraînement mixtes <span class="math inline">\mathcal{M}_{\alpha}</span> de taille fixe <span class="math inline">N = 50\,000</span> lignes, où <span class="math inline">\alpha \in \{0.0, 0.1, 0.2, \dots, 1.0\}</span> représente le taux d’injection de données synthétiques (<span class="math inline">\mathcal{D}_{synth}</span>) :</p>
+<p>Nous construisons une suite ordonnée de jeux de données d’entraînement mixtes <span class="math inline">\mathcal{M}_{\alpha}</span> de taille fixe <span class="math inline">N = 50\,000</span> lignes, avec <span class="math inline">\alpha</span> entre 0 (exclus) et 1 (inclus) qui représente le taux d’injection de données synthétiques (<span class="math inline">\mathcal{D}_{synth}</span>) :</p>
 <p><span class="math display">\mathcal{M}_{\alpha} = \mathcal{C}_{real}(\alpha) \cup \mathcal{C}_{synth}(\alpha)</span></p>
-<p>Où :</p>
+<p>Où <span class="math inline">\mathcal{C}_{synth}(\alpha)</span> est un sous-ensemble de <span class="math inline">\mathcal{D}_{synth}</span> de taille <span class="math inline">\lfloor \alpha \cdot N \rfloor</span>, et <span class="math inline">\mathcal{C}_{real}(\alpha)</span> est un sous-ensemble de <span class="math inline">\mathcal{D}_{real\_train}</span> de taille <span class="math inline">N - \lfloor \alpha \cdot N \rfloor</span>.</p>
+<p>Une contrainte critique de notre approche consiste à immuniser l’apprentissage contre le problème des classes rares ou absentes, tout en garantissant un déterminisme parfait entre les différents taux <span class="math inline">\alpha</span>. Avant tout échantillonnage, <span class="math inline">\mathcal{D}_{real\_train}</span> et <span class="math inline">\mathcal{D}_{synth}</span> sont partitionnés en deux sous-structures : la base immuable (<span class="math inline">\mathcal{B}</span>), un bloc fixe de 747 lignes contenant précisément un exemple pour chaque classe de la nomenclature, et le réservoir complémentaire (<span class="math inline">\mathcal{R}</span>), représentant le reste des lignes disponibles, qui sont ensuite mélangées selon une graine aléatoire fixe.</p>
+<p>Pour tout taux <span class="math inline">\alpha</span> différent de 1, le bloc correspondant est assemblé en sélectionnant systématiquement l’intégralité de la base immuable <span class="math inline">\mathcal{B}</span>, complétée par les premières lignes du réservoir complémentaire <span class="math inline">\mathcal{R}</span>. Cette formulation garantit deux propriétés :</p>
 <ul>
-<li><span class="math inline">\mathcal{C}_{synth}(\alpha)</span> est un sous-ensemble de <span class="math inline">\mathcal{D}_{synth}</span> de taille <span class="math inline">\lfloor \alpha \cdot N \rfloor</span>.</li>
-<li><span class="math inline">\mathcal{C}_{real}(\alpha)</span> est un sous-ensemble de <span class="math inline">\mathcal{D}_{real\_train}</span> de taille <span class="math inline">N - \lfloor \alpha \cdot N \rfloor</span>.</li>
+<li><strong>Couverture à 100%</strong> : Quel que soit le taux d’injection <span class="math inline">\alpha</span>, le classifieur est exposé à au moins un exemple de chacune des 747 classes lors de l’apprentissage.</li>
+<li><strong>Inclusion stricte</strong> : Pour deux taux <span class="math inline">\alpha_1 &lt; \alpha_2</span>, l’ensemble des données synthétiques utilisées à la première étape est strictement inclus dans celui de la seconde. Réciproquement, pour les données réelles, l’ensemble à <span class="math inline">\alpha_2</span> est strictement inclus dans celui à <span class="math inline">\alpha_1</span>. Cette monotonie élimine les biais de variance liés à l’échantillonnage aléatoire pur entre les configurations expérimentales.</li>
 </ul>
-</section>
-<section id="préservation-de-la-couverture-de-la-nomenclature-et-de-linclusion-strictes" class="level5">
-<h5 class="anchored" data-anchor-id="préservation-de-la-couverture-de-la-nomenclature-et-de-linclusion-strictes">Préservation de la Couverture de la Nomenclature et de l’Inclusion Strictes</h5>
-<p>Une contrainte critique de notre approche consiste à immuniser l’apprentissage contre le problème des classes rares ou absentes, tout en garantissant un déterminisme parfait entre les différents taux <span class="math inline">\alpha</span>. Avant tout échantillonnage, <span class="math inline">\mathcal{D}_{real\_train}</span> et <span class="math inline">\mathcal{D}_{synth}</span> sont partitionnés en deux sous-structures :</p>
-<ol type="1">
-<li><strong>La Base Immuable (<span class="math inline">\mathcal{B}</span>)</strong> : Un bloc fixe de <span class="math inline">747</span> lignes contenant précisément un exemple pour chaque classe de la nomenclature <span class="math inline">\mathcal{Y}</span>.</li>
-<li><strong>Le Réservoir Complémentaire (<span class="math inline">\mathcal{R}</span>)</strong> : Le reste des lignes disponibles.</li>
-</ol>
-<p>Pour tout taux <span class="math inline">\alpha</span>, le bloc correspondant <span class="math inline">\mathcal{C}(\alpha)</span> est assemblé en sélectionnant systématiquement l’intégralité de la Base Immuable <span class="math inline">\mathcal{B}</span>, complétée par les <span class="math inline">n</span> premières lignes (déterminées par l’application d’une graine aléatoire fixe) du Réservoir Complémentaire <span class="math inline">\mathcal{R}</span>.</p>
-<p>Cette formulation mathématique garantit une double propriété essentielle :</p>
-<ul>
-<li><strong>Couverture à 100% :</strong> Quel que soit le taux d’injection <span class="math inline">\alpha</span>, même à <span class="math inline">0\%</span> (100% réel) ou <span class="math inline">100\%</span> (100% synthétique), le classifieur est exposé à au moins un exemple de chacune des 747 classes lors de l’apprentissage.</li>
-<li><strong>Inclusion Stricte (<em>Nested Property</em>) :</strong> Pour deux taux <span class="math inline">\alpha_1 &lt; \alpha_2</span>, l’ensemble des données synthétiques utilisées à la première étape est strictement inclus dans celui de la seconde : <span class="math inline">\mathcal{C}_{synth}(\alpha_1) \subset \mathcal{C}_{synth}(\alpha_2)</span>. Réciproquement, pour les données réelles, <span class="math inline">\mathcal{C}_{real}(\alpha_2) \subset \mathcal{C}_{real}(\alpha_1)</span>. Cette monotonie structurelle élimine les biais de variance liés à l’échantillonnage aléatoire pur entre les configurations expérimentales.</li>
-</ul>
+<p>Pour un taux <span class="math inline">\alpha</span> égal à 1, on n’entraîne que sur la donnée synthétique. On garde la notion d’imbrication des ensembles synthétiques injectés <span class="math inline">\left(\forall \alpha \in (0,1), \mathcal{C}_{synth}(\alpha) \subset \mathcal{C}_{synth}(1)\right)</span>, mais on perd la base immuable <span class="math inline">\mathcal{B}_{real}</span> de la donnée originale.</p>
+<p>On ne réalise pas d’expérience où <span class="math inline">\alpha</span> est trop proche de 0 ou de 1, et où donc on ne peut avoir une base immuable dans la donnée originale et dans la donnée synthétique. Sachant que <span class="math inline">N_{train} = 50\,000</span>, cela correspond aux valeurs admises <span class="math inline">\alpha \in [0,015, 0,985] \cup \{1\}</span>.</p>
+<p>L’évaluation des performances de la donnée synthétique consistera alors à étudier les mêmes métriques qu’à la phase 1, mais avec différentes proportions <span class="math inline">\alpha</span> de données synthétiques. On s’intéressera par ailleurs à quelques métriques sur les données d’entraînement <span class="math inline">\mathcal{M}_{\alpha}</span> qui apportent un regard différent sur les données injectées.</p>
 </section>
 </section>
-<section id="protocole-de-validation-et-évaluation-finale" class="level4">
-<h4 class="anchored" data-anchor-id="protocole-de-validation-et-évaluation-finale">3. Protocole de Validation et Évaluation Finale</h4>
-<p>L’infrastructure de validation et de test repose sur une séparation stricte des données (<em>Hold-Out</em>). Il est crucial de noter que l’évaluation de la robustesse des modèles s’effectue dans un environnement empirique neutre :</p>
-<ul>
-<li>L’ensemble de validation (<span class="math inline">\mathcal{D}_{val}</span>, <span class="math inline">M = 30\,000</span> lignes) et l’ensemble de test (<span class="math inline">\mathcal{D}_{test}</span>, <span class="math inline">M = 30\,000</span> lignes) sont issus de <strong>deux datasets originaux totalement distincts</strong> du dataset d’entraînement (<span class="math inline">\mathcal{D}_{real\_train}</span>).</li>
-<li>Ces deux ensembles sont exclusivement constitués de données qui ne sont jamais utilisées pour la génération et demeurent rigoureusement inchangés durant l’intégralité du cycle expérimental.</li>
-</ul>
-<p>Chaque modèle entraîné sur un mix <span class="math inline">\mathcal{M}_{\alpha}</span> est monitoré à chaque époque sur <span class="math inline">\mathcal{D}_{val}</span> pour appliquer l’arrêt précoce, puis le point de convergence optimal est évalué sur <span class="math inline">\mathcal{D}_{test}</span>.</p>
-<p>L’évolution des courbes de performance (Accuracy, F1-scores) en fonction de la progression de <span class="math inline">\alpha</span> (de 0 à 1) sert de proxy direct pour quantifier la perte d’information ou le bruit introduits par le LLM générateur. Une courbe plate valide l’équivalence fonctionnelle de la donnée synthétique, tandis qu’une inflexion négative précoce cartographie les limites sémantiques du modèle de génération.</p>
-</section>
-</section>
-<section id="evaluation-sémantique" class="level3">
-<h3 class="anchored" data-anchor-id="evaluation-sémantique">Evaluation sémantique</h3>
+<section id="evaluation-sémantique" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="evaluation-sémantique"><span class="header-section-number">5.2</span> Evaluation sémantique</h2>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -4484,11 +4518,10 @@ Note
 </div>
 </section>
 </section>
-</section>
-<section id="résultats" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Résultats</h1>
-<section id="analyse-qualitative" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="analyse-qualitative"><span class="header-section-number">4.1</span> Analyse qualitative</h2>
+<section id="résultats" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Résultats</h1>
+<section id="evaluation-des-performances" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="evaluation-des-performances"><span class="header-section-number">6.1</span> Evaluation des performances</h2>
 <section id="sec-resultats-naive" class="level3">
 <h3 class="anchored" data-anchor-id="sec-resultats-naive">NaiveCode2Text</h3>
 <p>Les résultats obtenus avec cette approche sont à la fois encourageants et révélateurs d’une limite fondamentale. Du côté positif, la génération s’avère <strong>très fidèle</strong> à la notice, ce qui garantit une bonne cohérence sémantique entre les libellés générés et les codes correspondants. La <strong>diversité thématique</strong> est également au rendez-vous, héritée directement de la richesse de la notice.</p>
@@ -4525,8 +4558,8 @@ Important
 <h3 class="anchored" data-anchor-id="code2retext">Code2ReText</h3>
 </section>
 </section>
-<section id="analyse-quantitative" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="analyse-quantitative"><span class="header-section-number">4.2</span> Analyse quantitative</h2>
+<section id="analyse-quantitative" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="analyse-quantitative"><span class="header-section-number">6.2</span> Analyse quantitative</h2>
 <section id="naivecode2text" class="level3">
 <h3 class="anchored" data-anchor-id="naivecode2text">NaiveCode2Text</h3>
 </section>
@@ -4535,20 +4568,29 @@ Important
 </section>
 </section>
 </section>
-<section id="sec-perspectives" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Perspectives</h1>
-<section id="sec-futur" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="sec-futur"><span class="header-section-number">5.1</span> Travail futur</h2>
+<section id="sec-perspectives" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Perspectives</h1>
+<section id="limites-actuelles" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="limites-actuelles"><span class="header-section-number">7.1</span> Limites actuelles</h2>
+<ul>
+<li>génération faite sur un ensemble plus large que lors de l’évaluation</li>
+<li>pas d’entrainement de nouveaux modèles (on en fixe un)</li>
+<li>modèle simple</li>
+<li></li>
+</ul>
+</section>
+<section id="sec-futur" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="sec-futur"><span class="header-section-number">7.2</span> Travail futur</h2>
 <p>La prochaine étape pour Code2ReText est son amélioration systématique. Il s’agit notamment d’<strong>intégrer LabelGuard de façon plus robuste</strong> dans le pipeline, afin qu’il soit consulté de manière systématique et non optionnelle. Un défi important concerne également la prévention des <strong>hallucinations et autres comportements indésirables</strong> du modèle générateur : recopier le même libellé en boucle, produire du texte vide de sens, ou pire, apprendre à tromper le discriminateur plutôt qu’à générer des données de qualité.</p>
 <p>Sur un horizon plus long, le projet envisage de passer au <strong>Supervised Fine-Tuning (SFT)</strong> d’un modèle de langage sur la tâche de génération. L’idée centrale est de mimer directement la distribution sémantique des libellés réels, en entraînant le modèle à reproduire les caractéristiques stylistiques et linguistiques observées dans les données humaines. Cette approche soulève cependant un enjeu important de <strong>stabilité</strong> au cours des itérations d’entraînement. Si le SFT s’avère insuffisant, le projet pourrait évoluer vers un paradigme d’apprentissage par renforcement à partir du retour humain (<strong>RLHF</strong>), où le signal de récompense serait fourni par LabelGuard.</p>
 </section>
-<section id="sec-production" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="sec-production"><span class="header-section-number">5.2</span> Parvenir à un outil exploitable et performant</h2>
+<section id="sec-production" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="sec-production"><span class="header-section-number">7.3</span> Parvenir à un outil exploitable et performant</h2>
 <p>La phase d’évaluation finale consistera en un <strong>benchmark complet</strong> des différents générateurs développés. Celui-ci mesurera à la fois les performances du classifieur entraîné sur la donnée synthétique, et les caractéristiques intrinsèques des données générées — diversité et similarité avec la distribution originale. Ce benchmark permettra de sélectionner le générateur le plus performant en vue de la mise en production.</p>
 <p>L’objectif final est de déployer une <strong>API de génération pour la nomenclature NAF</strong>, directement utilisable par les équipes de l’INSEE. La question d’un déploiement pour la NACE européenne, qui nécessiterait une étape de traduction automatique, est également à l’étude. À plus long terme, l’ambition est de fournir des scripts génériques réutilisables pour d’autres nomenclatures statistiques.</p>
 </section>
-<section id="sec-planning" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="sec-planning"><span class="header-section-number">5.3</span> Planning</h2>
+<section id="sec-planning" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="sec-planning"><span class="header-section-number">7.4</span> Planning</h2>
 <div id="fig-planning" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Diagramme de planning du stage">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-planning-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -4559,10 +4601,16 @@ Figure 5: Planning prévisionnel du stage
 </figcaption>
 </figure>
 </div>
-
-
-
 </section>
+</section>
+<section id="annexe" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Annexe</h1>
+<p>Détail configuration du classifieur</p>
+<p>Prompts de référence</p>
+<p>Tableau ML pour le choix du modèle</p>
+
+
+
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Les références</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
@@ -4581,14 +4629,26 @@ Cynthia, Dwork, et Roth Aaron. 2014. <span>« The Algorithmic Foundations of Di
 <div id="ref-dettmar1998knowledge" class="csl-entry" role="listitem">
 Dettmar, Harvey, Xiaohui Liu, Roger Johnson, et Alan Payne. 1998. <span>« Knowledge-based data generation »</span>. <em>Knowledge-Based Systems</em> 11 (3-4): 167‑77.
 </div>
+<div id="ref-gemma3" class="csl-entry" role="listitem">
+<span class="nocase">Gemma Team, Aishwarya Kamath, et al.</span> 2025. <em>Gemma 3 Technical Report</em>. <a href="https://arxiv.org/abs/2503.19786">https://arxiv.org/abs/2503.19786</a>.
+</div>
+<div id="ref-gemma4" class="csl-entry" role="listitem">
+Google DeepMind. 2026. <em>Gemma 4: Open Models for Evaluation and Research</em>. Hugging Face. <a href="https://huggingface.co/google/gemma-4-26b-a4b-it">https://huggingface.co/google/gemma-4-26b-a4b-it</a>.
+</div>
 <div id="ref-inseecoicop" class="csl-entry" role="listitem">
 Insee. 2021. <span>« Classification des fonctions de consommation des ménages - COICOP 1999 »</span>. <a href="https://www.insee.fr/fr/information/2408172">https://www.insee.fr/fr/information/2408172</a>.
+</div>
+<div id="ref-insee2025naf" class="csl-entry" role="listitem">
+Insee. 2025. <em>NAF 2025 structure et notes explicatives, Edition 2025</em>. Disponible au téléchargement à depuis l’adresse <a href="https://www.insee.fr/fr/information/8617910" class="uri">https://www.insee.fr/fr/information/8617910</a>.
 </div>
 <div id="ref-jin2025knowledge" class="csl-entry" role="listitem">
 Jin, Xiaomeng. 2025. <em>Knowledge-aware data generation</em>.
 </div>
 <div id="ref-xu2019" class="csl-entry" role="listitem">
 Lei, Xu, Skoularidou Maria, Cuesta-Infante Alfredo, et Veeramachaneni Kalyan. 2019. <span>« Modeling Tabular Data using Conditional GAN »</span>. <em>Advances in Neural Information Processing Systems (NeurIPS)</em>.
+</div>
+<div id="ref-openai2025gptoss" class="csl-entry" role="listitem">
+OpenAI. 2025. <em><span>gpt-oss-120b &amp; gpt-oss-20b Model Card</span></em>. <a href="https://arxiv.org/abs/2508.10925">https://arxiv.org/abs/2508.10925</a>.
 </div>
 <div id="ref-schick2021" class="csl-entry" role="listitem">
 Schick, Timo, et Hinrich Schütze. 2021. <span>« Generating Datasets with Pretrained Language Models »</span>. <em>Proceedings of the 2021 Conference concerning Empirical Methods in Natural Language Processing (EMNLP)</em>.
