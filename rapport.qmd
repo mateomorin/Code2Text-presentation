@@ -34,14 +34,98 @@ bibliography: references.bib
 
 **Tuteur de stage :** Meilame Tayebjee, SSP Lab (Insee)
 
+# Abstract {#sec-summary .unnumbered}
+
+*[TBD]*
+
 
 # Préambule {#sec-preambule .unnumbered}
 
 Mon stage s'est déroulé à l'Institut National de la Statistique et des Etudes Economiques (Insee), et plus précisément au sein de son laboratoire d'innovation : le SSP Lab. Très centré autour du Natural Language Processing (NLP), j'ai été amené à travailler sur la génération de données synthétiques textuelles. Ce rapport présente ma démarche, les difficultés rencontrées ainsi que les résultats que j'ai obtenus. Il se termine par un regard critique sur les contributions apportées et sur les perspectives envisagées.
 
-# Executive summary {#sec-summary .unnumbered}
+# Introduction
 
-*[TBD]*
+### Le défi de la codification automatique de la NAF
+
+Classer des textes dans des catégories fixes (appelées nomenclatures) est essentiel pour produire des statistiques publiques de qualité. D'un côté, les chiffres publiés doivent être précis pour éclairer le débat économique. Prenez l'Indice des Prix à la Consommation (IPC) qui mesure l'inflation, celui-ci utilise la nomenclature internationale COICOP [@inseecoicop] pour donner le bon poids à chaque type de dépense des ménages. D'un autre côté, respecter ces catégories est souvent une obligation légale : chaque pays de l'Union européenne doit classer l'activité économique de ses entreprises selon la Nomenclature statistique des Activités économiques (NACE) [@statbelnace].
+
+En pratique, appliquer ce système à l'échelle d'un pays pose de gros problèmes industriels. Il faut d'abord créer un guide très précis (la notice de codification), puis être capable de gérer un flux massif de données. En France, la version nationale de la NACE s'appelle la Nomenclature d'Activité Française (NAF). Elle impose d'associer chaque année plus d'un million de nouvelles entreprises à l'un des 747 codes existants. À l'origine, ce travail était fait par des agents administratifs qui lisaient la description textuelle écrite par les créateurs d'entreprises. Mais face à ce volume énorme et au coût de l'analyse humaine, il est devenu indispensable d'automatiser ce traitement avec des méthodes de NLP (*Natural Language Processing*) pour aider les agents et harmoniser les choix.
+
+### Déséquilibre extrême et limites du secret statistique
+
+Pour entraîner un classifieur de type *Text-to-Code* (du texte vers le code), on se heurte à un problème classique en IA : le déséquilibre extrême des classes (*long-tail classification*). Les données réelles ne couvrent pas toutes les catégories de la même manière. Les activités courantes saturent le début de la distribution, tandis que la majorité des codes de la nomenclature se situent dans la "queue de distribution", où il n'y a presque aucun exemple.
+
+Les chiffres de la NAF 2025 montrent bien ce déséquilibre : sur un fichier d'entraînement de plus d'un million de libellés réels, la moitié des 747 codes comprend moins de 50 exemples. À cause de cette rareté, les modèles supervisés classiques ne parviennent pas à apprendre ces catégories, ce qui crée des erreurs importantes lors de la mise en production.
+
+À cela s'ajoutent deux contraintes majeures :
+
+1. Quand une nomenclature est mise à jour, cela crée un décalage immédiat (*distribution shift*) entre les données passées et les nouvelles données réelles.
+2. La loi sur le secret statistique et le RGPD interdisent de diffuser ces vrais fichiers à des personnes extérieures (pour des cours, des hackathons ou des concours d'écoles). Ce manque de données ouvertes empêche la communauté scientifique de tester de nouveaux modèles sur ces sujets.
+
+### Tension entre performance de classification et fidélité de diffusion
+
+Le système actuel de l'Insee utilise un premier niveau de classification automatique (basé sur FastText *[Insérer citation]*). Il permet de coder tout seul environ 70 % des cas les plus simples. Cependant, ses performances bloquent sur les concepts complexes ou rares. La limite de cette méthode est qu'elle n'utilise pas la notice officielle, alors que c'est l'outil de base de l'expert humain pour trancher les cas difficiles.
+
+Les grands modèles de langage (LLM) permettent de changer d'approche car ils savent intégrer des connaissances textuelles externes. Mais utiliser un LLM pour générer des données synthétiques crée une contradiction directe entre deux objectifs :
+
+1. **L'Axe Performance (Aide au classifieur) :** Pour améliorer le classifieur *Text-to-Code* sur les codes rares, il faut lui donner un maximum d'informations théoriques issues de la notice. On cherche à générer des descriptions fidèles au dictionnaire.
+2. **L'Axe Diffusion (Création de jeux de données) :** Pour diffuser un fichier synthétique réaliste, il faut au contraire copier les défauts des données réelles. Le modèle doit reproduire le déséquilibre des codes, mais aussi le style des humains (fautes d'orthographe, abréviations bizarres, phrases coupées, ...).
+
+Comme rien ne garantit qu'un même outil puisse réussir ces deux tâches opposées, trouver une méthode capable de gérer cette tension est le cœur scientifique de ce travail.
+
+### Approche proposée et Contributions : Le découplage entre la structure et l'expression humaine
+
+Pour résoudre cette tension, nous proposons une idée simple : **séparer strictement la structure de la nomenclature (la distribution des codes) et l'expression humaine (le style du texte)**. Notre hypothèse est qu'un bon générateur (*Code-to-Text*) doit apprendre un style stable, sans se soucier de la fréquence réelle des codes. Une fois que le modèle maîtrise ce style, il suffit de changer la loi d'échantillonnage des codes $P(Y)$ en entrée pour répondre à l'un ou l'autre des objectifs.
+
+Les contributions principales de ce travail sont :
+
+* **La création de `LabelGuard` :** Un discriminateur capable de mesurer le décalage de domaine (*domain shift*) entre le style parfait du LLM et le style bruité de l'humain. Il met en évidence la signature stylistique (« watermark ») laissée par les modèles de langage.
+* **L'architecture `Code2ReText` :** Un système à deux LLM (Acteur-Superviseur) qui utilise les alertes de `LabelGuard` pour forcer le modèle à ajouter des défauts humains dans son texte, rendant l'IA plus difficile à détecter.
+* **Une évaluation par ensembles imbriqués (Protocole $\mathcal{M}_\alpha$) :** Une analyse précise de l'impact des données synthétiques sur le classifieur `Text2Code`. Elle montre un gain ciblé sur les classes rares, mais aussi une chute des performances si le fichier contient plus de 85 % de données synthétiques.
+* **Un outil reproductible :** Un pipeline open source et agnostique, réutilisable pour d'autres nomenclatures (comme la NACE européenne).
+
+Le reste de ce rapport est structuré ainsi. La Section 2 présente l'état de l'art de la génération de données en NLP. La Section 3 détaille le fonctionnement de `LabelGuard`. La Section 4 introduit les générateurs `NaiveCode2Text` et `Code2ReText`. La Section 5 décrit le protocole expérimental et les choix d'échantillonnage. La Section 6 analyse les résultats, et la Section 7 présente les conclusions et les perspectives.
+
+
+# État de l'Art
+## Augmentation de données classique en NLP vs Génération par Grands Modèles de Langage (LLM)
+## Génération guidée par taxonomie et génération augmentée par récupération (RAG)
+## Transfert de style et discrimination de la qualité dans les jeux de données synthétiques
+
+
+# LabelGuard : Quantification du biais sémantique
+## Architecture du discriminateur : Perceptron Multicouche (MLP) sur plongements lexicaux denses (Embeddings)
+## Mesure de l'empreinte (« Watermark ») du LLM : Analyse de la séparabilité des distributions
+## Analyse des résidus : Profils d'erreur et modes d'échec comme approximations du style humain
+
+
+# Cadres méthodologiques de génération synthétique
+## Approche de référence : NaiveCode2Text (Génération descendante guidée par la notice)
+## Architecture proposée : Code2ReText par alignement Acteur-Superviseur
+### Framework Double-LLM : Acteur génératif et Superviseur évaluatif
+### Optimisation en boucle fermée : Incitation multi-coups (Multi-Shot) guidée par LabelGuard et exemples Few-Shot
+### Injection de bruit anthropique (abréviations, ruptures syntaxiques, hâte déclarative)
+
+
+# Protocole Expérimental et Stratégies d'Échantillonnage
+## Classifieur aval : Architecture de la baseline Text2Code
+## Protocole d'évaluation : Évaluation par ensembles imbriqués (Protocole Mα​)
+## Formalisation mathématique des lois de composition des données P(Y)
+### Scénario A (Uniformisation) : Soutien ciblé aux classes de faible fréquence (Performance)
+### Scénario B (Distribution empirique) : Alignement sur la loi de puissance pour la diffusion (Open-Data)
+
+
+# Résultats et Analyses Critiques
+## Performances globales en aval et analyse du point de saturation synthétique (Le drop à 85 %)
+## Évaluation granulaire : Gains de performance par buckets de fréquence (Classes de Tête vs Classes de Queue)
+## Évaluation intrinsèque des datasets : Diversité lexicale (Type-Token Ratio) et convergence stylistique
+
+
+# Conclusion et Travaux Futurs
+## Synthèse des contributions
+## Du Prompting Agentique au Fine-Tuning Supervisé (SFT) stylistique
+## Généralisation à des cadres multilingues (NACE européenne)
+
 
 # Introduction {#sec-intro}
 
@@ -57,13 +141,9 @@ Cette manière de procéder à ses limites. Notamment, cela coûte cher d'employ
 
 ## Codifier automatiquement des libellés dans une nomenclature {#sec-text2code}
 
-Actuellement, la manière dont l'Insee codifie automatiquement les libellés est comme suit. *[Ajouter des détails sur la manière dont c'est fait, citer le projet github.]*
-- Entrée :
-- Process :
-- Output :
-Confiance et schéma.
-
-*[Dire les résultats de la méthode]*
+Actuellement, la manière dont l'Insee codifie automatiquement les libellés est comme suit. *[Ajouter un schéma, citer le projet github.]*
+- Entrée : libellé textuel et informations supplémentaires conernant l'entreprise (catégorie juridique, nature d'activité, surface de l'établissement, ...)
+- Process : premier codificateur automatique (fasttext), si confiance > X% → codification automatique sans feedback humain (70% des cas environ), sinon top 5 proposé à l'annotateur.
 
 *[Limites en mode state of the art 2017, nouvelles choses maintenant.]* Les performances actuelles restent certes satisfaisantes, mais le classifieur n'exploite pas l'entièreté des ressources disponibles ni la puissance des dernières technologies : les grands modèles de langage (*large language models*, LLM en anglais). En effet, la méthode utilisée ne prend pas du tout en compte l'usage de la notice, qui sert pourtant de support à la codification manuelle, et qui peut parfaitement s'intégrer dans un processus automatique incluant des LLM.
 
@@ -110,7 +190,10 @@ L'usage d'une source exhaustive extérieure n'est donc pas référencée dans la
 
 ## Evaluation de la génération
 
-La première approche retenue repose sur une méthode d'évaluation par tâche aval (*downstream task evaluation*), adossée au paradigme de l'entraînement sur données synthétiques et test sur données réelles (*TSTR*). L'hypothèse fondamentale de cette méthodologie stipule que la qualité et la fidélité d'un jeu de données synthétiques se mesurent à sa capacité à se substituer, partiellement ou totalement, aux données réelles pour l'entraînement d'un classifieur, sans dégrader ses performances de généralisation sur un environnement de test authentique.
+Pour ce qui est de l'évaluation, la génération de données synthétiques textuelles est reliée à plusieurs domaines dont nous pouvons récupérer les méthodes.
+
+Une première approche repose sur une l'évaluation par tâche aval (*downstream task evaluation*) avec le paradigme de l'entraînement sur données synthétiques et test sur données réelles (*TSTR*). Originellement développée pour de la génération de données synthétiques médicales [@esteban2017real], l'hypothèse fondamentale de cette méthodologie stipule que la qualité et la fidélité d'un jeu de données synthétiques se mesurent à sa capacité à se substituer, partiellement ou totalement, aux données réelles pour l'entraînement d'un classifieur, sans dégrader ses performances de généralisation sur un environnement de test authentique.
+
 
 
 # La donnée disponible
@@ -119,7 +202,7 @@ Pour rappel, l'étude se concentre sur le cas de la NAF 2025, mais la structure 
 
 ## La notice de la nomenclature
 
-La notice NAF 2025 a une structure hiérarchique sur cinq niveaux emboîtés. Elle est composée de 21 sections, 87 divisions, 287 groupes, 651 classes et 747 sous-classes, de sorte à partager des points communs avec les nomenclatures européennes et internationales d'activités d'entreprise [@insee2025naf]. On peut retrouver tous les détail sous forme de tableau dans un fichier `.xlsx` avec les attributs suivants pour chaque catégorie :
+La notice NAF 2025 a une structure hiérarchique sur cinq niveaux emboîtés. Elle est composée de 21 sections, 87 divisions, 287 groupes, 651 classes et 747 sous-classes, de sorte à partager des points communs avec les nomenclatures européennes et internationales d'activités d'entreprise [@insee2025naf]. On peut retrouver tous les détails sous forme de tableau dans un fichier `.xlsx` avec les attributs suivants pour chaque catégorie :
 
 - **Code** : chaîne de caractère courte unique à chaque catégorie, dont l'écriture conserve l'aspect hiérarchique.
 -	**Titre**	: nom décrivant la catégorie.
@@ -129,11 +212,33 @@ La notice NAF 2025 a une structure hiérarchique sur cinq niveaux emboîtés. El
 - **IncludesAlso** : d'autres éléments inclus dans la catégorie.
 - **Excludes** : tous les éléments exclus de la catégorie, mais qui ressemblent à ceux inclus.
 
-D'autres éléments peuvent être présents mais sont redondants des informations indiquées ci-dessus. Un exemple de notice détaillée se trouve également en annexe.
+D'autres éléments peuvent être présents mais sont redondants par rapport aux informations indiquées ci-dessus. Un exemple de notice détaillée se trouve en annexe.
+
+On notera $\mathcal{Y}$ l'ensemble des codes (uniques) des sous-classes de la NAF 2025. On a $|\mathcal{Y}| = 747$. Par simplicité, en dehors de cette sous-partie, le mot code dans le rapport désigne un code dans $\mathcal{Y}$.
  
 ## Les données orginales
 
-Choisir la NAF 2025 permet d'accéder à de la donnée récente
+Le choix de la NAF 2025 n'est pas annodin dans notre cas. En plus de comporter une notice exhaustive sans aucun attribut vide, la base de données originale est très large et déjà travaillée dans d'autres projets en science des données à l'Insee. Cela donne plus de légitimité à son utilisation comme base de travail, même si des erreurs d'annotations peuvent persister (voir en annexe).
+
+La donnée originale provient de demandes de création de SIRET entre le 8 novembre 2022 et 27 octobre 2024 et est divisée en trois grands groupes indépendants :
+
+- $\mathcal{X}_{train\_real}$ : la donnée d'entraînement, composée de $1\,523\,268$ lignes. Elle est utilisée pour l'entraînement de modèles et pour la génération de données.
+- $\mathcal{X}_{val}$ : la donnée de validation, composée $380\,631$ lignes. Elle est utilisée uniquement pour suivre les performances durant l'entraînement des codifieurs automatiques. 
+- $\mathcal{X}_{test}$ : la donnée de test, composée $475\,788$ lignes. Elle est uniquement exploitée pour calculer les performances finales des codifieurs après leur entraînement.
+
+Chacune de ces bases de données est composée d'un libellé, d'un code associé (soit par un codificateur automatique en production, soit par un humain), et de variables catégorielles supplémentaires (que l'on n'utilisera pas ici). 
+
+Il est à savoir que la taille des trois groupes a été actualiée à la mi-mai 2026, et donc que les travaux suivants ont été réalisés avec une base de donnée $\mathcal{X}_{train\_real}$ d'environ $800\,000$ lignes à la place : Naive Code2Text (pour le few-shot) et LabelGuard (pour l'entraînement).
+
+### Distribution des codes
+
+La distribution des codes est particulière. En ordonnant les codes par leur fréquence, la [@fig-code-log-freq] montre qu'environ 70 codes constituent la majeure partie de $\mathcal{X}_{train\_real}$, et que les autres codes suivent une distribution exponentielle selon leur rang. Cette distribution inégale impose des précautions lors de l'analyse de performances générales. 
+
+![Distribution des codes dans $\mathcal{X}_{train\_real}$](images/code_log_freq.png){#fig-code-log-freq fig-alt="Distribution des codes dans $\mathcal{X}_{train\_real}$, composée d'une tête à très haute fréquence (jusqu'à 10%), d'un corps qui suit une loi exponentielle, et d'une queue sous forme de marches (très faibles proportions) mais avec tendance globale la même équation que le corps."}
+
+Par ailleurs, les libellés contiennent des anomalies non négligeables. *La cause principale est le remplissage automatique du libellé par des agents du [Guichet unique](https://www.inpi.fr/decouvrir-inpi/formalites-dentreprises/guichet-unique-formalites-dentreprises-et-registre-national-entreprises) de l'Institut National de la Propriété Industrielle (INPI). Lorsqu'ils remplissent...*
+
+*[Ajouter graphique distrib longueur]*
 
 
 # Méthode de génération des données
@@ -352,3 +457,7 @@ Détail configuration du classifieur
 Prompts de référence
 
 Tableau ML pour le choix du modèle
+
+Erreurs d'annotation
+
+Exemple notice
