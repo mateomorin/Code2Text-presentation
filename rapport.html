@@ -4163,13 +4163,14 @@ window.Quarto = {
   <li><a href="#le-défi-de-la-codification-automatique-de-la-naf" id="toc-le-défi-de-la-codification-automatique-de-la-naf" class="nav-link" data-scroll-target="#le-défi-de-la-codification-automatique-de-la-naf">Le défi de la codification automatique de la NAF</a></li>
   <li><a href="#déséquilibre-extrême-et-limites-du-secret-statistique" id="toc-déséquilibre-extrême-et-limites-du-secret-statistique" class="nav-link" data-scroll-target="#déséquilibre-extrême-et-limites-du-secret-statistique">Déséquilibre extrême et limites du secret statistique</a></li>
   <li><a href="#tension-entre-performance-de-classification-et-fidélité-de-diffusion" id="toc-tension-entre-performance-de-classification-et-fidélité-de-diffusion" class="nav-link" data-scroll-target="#tension-entre-performance-de-classification-et-fidélité-de-diffusion">Tension entre performance de classification et fidélité de diffusion</a></li>
-  <li><a href="#approche-proposée-et-contributions-le-découplage-entre-la-structure-et-lexpression-humaine" id="toc-approche-proposée-et-contributions-le-découplage-entre-la-structure-et-lexpression-humaine" class="nav-link" data-scroll-target="#approche-proposée-et-contributions-le-découplage-entre-la-structure-et-lexpression-humaine">Approche proposée et Contributions : Le découplage entre la structure et l’expression humaine</a></li>
+  <li><a href="#approche-proposée-et-contributions" id="toc-approche-proposée-et-contributions" class="nav-link" data-scroll-target="#approche-proposée-et-contributions">Approche proposée et contributions</a></li>
   </ul></li>
   <li><a href="#état-de-lart" id="toc-état-de-lart" class="nav-link" data-scroll-target="#état-de-lart"><span class="header-section-number">2</span> État de l’Art</a>
   <ul class="collapse">
-  <li><a href="#augmentation-de-données-classique-en-nlp-vs-génération-par-grands-modèles-de-langage-llm" id="toc-augmentation-de-données-classique-en-nlp-vs-génération-par-grands-modèles-de-langage-llm" class="nav-link" data-scroll-target="#augmentation-de-données-classique-en-nlp-vs-génération-par-grands-modèles-de-langage-llm"><span class="header-section-number">2.1</span> Augmentation de données classique en NLP vs Génération par Grands Modèles de Langage (LLM)</a></li>
-  <li><a href="#génération-guidée-par-taxonomie-et-génération-augmentée-par-récupération-rag" id="toc-génération-guidée-par-taxonomie-et-génération-augmentée-par-récupération-rag" class="nav-link" data-scroll-target="#génération-guidée-par-taxonomie-et-génération-augmentée-par-récupération-rag"><span class="header-section-number">2.2</span> Génération guidée par taxonomie et génération augmentée par récupération (RAG)</a></li>
-  <li><a href="#transfert-de-style-et-discrimination-de-la-qualité-dans-les-jeux-de-données-synthétiques" id="toc-transfert-de-style-et-discrimination-de-la-qualité-dans-les-jeux-de-données-synthétiques" class="nav-link" data-scroll-target="#transfert-de-style-et-discrimination-de-la-qualité-dans-les-jeux-de-données-synthétiques"><span class="header-section-number">2.3</span> Transfert de style et discrimination de la qualité dans les jeux de données synthétiques</a></li>
+  <li><a href="#augmentation-de-données-textuelles-par-des-modèles-de-langage" id="toc-augmentation-de-données-textuelles-par-des-modèles-de-langage" class="nav-link" data-scroll-target="#augmentation-de-données-textuelles-par-des-modèles-de-langage">Augmentation de données textuelles par des modèles de langage</a></li>
+  <li><a href="#génération-synthétique-pilotée-par-connaissances-externes" id="toc-génération-synthétique-pilotée-par-connaissances-externes" class="nav-link" data-scroll-target="#génération-synthétique-pilotée-par-connaissances-externes">Génération synthétique pilotée par connaissances externes</a></li>
+  <li><a href="#transfert-de-style" id="toc-transfert-de-style" class="nav-link" data-scroll-target="#transfert-de-style">Transfert de style</a></li>
+  <li><a href="#evaluation" id="toc-evaluation" class="nav-link" data-scroll-target="#evaluation">Evaluation</a></li>
   </ul></li>
   <li><a href="#labelguard-quantification-du-biais-sémantique" id="toc-labelguard-quantification-du-biais-sémantique" class="nav-link" data-scroll-target="#labelguard-quantification-du-biais-sémantique"><span class="header-section-number">3</span> LabelGuard : Quantification du biais sémantique</a>
   <ul class="collapse">
@@ -4209,70 +4210,65 @@ window.Quarto = {
   <li><a href="#du-prompting-agentique-au-fine-tuning-supervisé-sft-stylistique" id="toc-du-prompting-agentique-au-fine-tuning-supervisé-sft-stylistique" class="nav-link" data-scroll-target="#du-prompting-agentique-au-fine-tuning-supervisé-sft-stylistique"><span class="header-section-number">7.2</span> Du Prompting Agentique au Fine-Tuning Supervisé (SFT) stylistique</a></li>
   <li><a href="#généralisation-à-des-cadres-multilingues-nace-européenne" id="toc-généralisation-à-des-cadres-multilingues-nace-européenne" class="nav-link" data-scroll-target="#généralisation-à-des-cadres-multilingues-nace-européenne"><span class="header-section-number">7.3</span> Généralisation à des cadres multilingues (NACE européenne)</a></li>
   </ul></li>
-  <li><a href="#sec-intro" id="toc-sec-intro" class="nav-link" data-scroll-target="#sec-intro"><span class="header-section-number">8</span> Introduction</a>
+  <li><a href="#sec-generation" id="toc-sec-generation" class="nav-link" data-scroll-target="#sec-generation"><span class="header-section-number">8</span> Contexte : La génération de données synthétiques</a>
   <ul class="collapse">
-  <li><a href="#sec-intro-codif" id="toc-sec-intro-codif" class="nav-link" data-scroll-target="#sec-intro-codif"><span class="header-section-number">8.1</span> Les enjeux de la codification</a></li>
-  <li><a href="#sec-text2code" id="toc-sec-text2code" class="nav-link" data-scroll-target="#sec-text2code"><span class="header-section-number">8.2</span> Codifier automatiquement des libellés dans une nomenclature</a></li>
-  <li><a href="#sec-objectifs" id="toc-sec-objectifs" class="nav-link" data-scroll-target="#sec-objectifs"><span class="header-section-number">8.3</span> Objectifs recherchés</a></li>
+  <li><a href="#létat-de-lart-habituel" id="toc-létat-de-lart-habituel" class="nav-link" data-scroll-target="#létat-de-lart-habituel"><span class="header-section-number">8.1</span> L’état de l’art habituel</a></li>
+  <li><a href="#sec-contexte-gen" id="toc-sec-contexte-gen" class="nav-link" data-scroll-target="#sec-contexte-gen"><span class="header-section-number">8.2</span> Un contexte particulier : la présence d’une notice</a></li>
+  <li><a href="#evaluation-de-la-génération" id="toc-evaluation-de-la-génération" class="nav-link" data-scroll-target="#evaluation-de-la-génération"><span class="header-section-number">8.3</span> Evaluation de la génération</a></li>
   </ul></li>
-  <li><a href="#sec-generation" id="toc-sec-generation" class="nav-link" data-scroll-target="#sec-generation"><span class="header-section-number">9</span> Contexte : La génération de données synthétiques</a>
+  <li><a href="#la-donnée-disponible" id="toc-la-donnée-disponible" class="nav-link" data-scroll-target="#la-donnée-disponible"><span class="header-section-number">9</span> La donnée disponible</a>
   <ul class="collapse">
-  <li><a href="#létat-de-lart-habituel" id="toc-létat-de-lart-habituel" class="nav-link" data-scroll-target="#létat-de-lart-habituel"><span class="header-section-number">9.1</span> L’état de l’art habituel</a></li>
-  <li><a href="#sec-contexte-gen" id="toc-sec-contexte-gen" class="nav-link" data-scroll-target="#sec-contexte-gen"><span class="header-section-number">9.2</span> Un contexte particulier : la présence d’une notice</a></li>
-  <li><a href="#evaluation-de-la-génération" id="toc-evaluation-de-la-génération" class="nav-link" data-scroll-target="#evaluation-de-la-génération"><span class="header-section-number">9.3</span> Evaluation de la génération</a></li>
-  </ul></li>
-  <li><a href="#la-donnée-disponible" id="toc-la-donnée-disponible" class="nav-link" data-scroll-target="#la-donnée-disponible"><span class="header-section-number">10</span> La donnée disponible</a>
-  <ul class="collapse">
-  <li><a href="#la-notice-de-la-nomenclature" id="toc-la-notice-de-la-nomenclature" class="nav-link" data-scroll-target="#la-notice-de-la-nomenclature"><span class="header-section-number">10.1</span> La notice de la nomenclature</a></li>
-  <li><a href="#les-données-orginales" id="toc-les-données-orginales" class="nav-link" data-scroll-target="#les-données-orginales"><span class="header-section-number">10.2</span> Les données orginales</a>
+  <li><a href="#la-notice-de-la-nomenclature" id="toc-la-notice-de-la-nomenclature" class="nav-link" data-scroll-target="#la-notice-de-la-nomenclature"><span class="header-section-number">9.1</span> La notice de la nomenclature</a></li>
+  <li><a href="#les-données-orginales" id="toc-les-données-orginales" class="nav-link" data-scroll-target="#les-données-orginales"><span class="header-section-number">9.2</span> Les données orginales</a></li>
+  <li><a href="#bruit-dans-la-donnée" id="toc-bruit-dans-la-donnée" class="nav-link" data-scroll-target="#bruit-dans-la-donnée"><span class="header-section-number">9.3</span> Bruit dans la donnée</a>
   <ul class="collapse">
   <li><a href="#distribution-des-codes" id="toc-distribution-des-codes" class="nav-link" data-scroll-target="#distribution-des-codes">Distribution des codes</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#méthode-de-génération-des-données" id="toc-méthode-de-génération-des-données" class="nav-link" data-scroll-target="#méthode-de-génération-des-données"><span class="header-section-number">11</span> Méthode de génération des données</a>
+  <li><a href="#méthode-de-génération-des-données" id="toc-méthode-de-génération-des-données" class="nav-link" data-scroll-target="#méthode-de-génération-des-données"><span class="header-section-number">10</span> Méthode de génération des données</a>
   <ul class="collapse">
-  <li><a href="#sec-naive" id="toc-sec-naive" class="nav-link" data-scroll-target="#sec-naive"><span class="header-section-number">11.1</span> Naive Code2Text — Génération augmentée par la notice</a>
+  <li><a href="#sec-naive" id="toc-sec-naive" class="nav-link" data-scroll-target="#sec-naive"><span class="header-section-number">10.1</span> Naive Code2Text — Génération augmentée par la notice</a>
   <ul class="collapse">
   <li><a href="#sec-principe" id="toc-sec-principe" class="nav-link" data-scroll-target="#sec-principe">Principe général</a></li>
   <li><a href="#sec-parallelisation" id="toc-sec-parallelisation" class="nav-link" data-scroll-target="#sec-parallelisation">Passage à l’échelle : parallélisation</a></li>
   </ul></li>
-  <li><a href="#sec-retext" id="toc-sec-retext" class="nav-link" data-scroll-target="#sec-retext"><span class="header-section-number">11.2</span> Code2ReText — Ajouter un niveau de profondeur</a>
+  <li><a href="#sec-retext" id="toc-sec-retext" class="nav-link" data-scroll-target="#sec-retext"><span class="header-section-number">10.2</span> Code2ReText — Ajouter un niveau de profondeur</a>
   <ul class="collapse">
   <li><a href="#sec-labelguard" id="toc-sec-labelguard" class="nav-link" data-scroll-target="#sec-labelguard">LabelGuard : discrimination des libellés IA/humain</a></li>
   </ul></li>
-  <li><a href="#sec-architecture" id="toc-sec-architecture" class="nav-link" data-scroll-target="#sec-architecture"><span class="header-section-number">11.3</span> Architecture : Une interface à deux agents</a></li>
+  <li><a href="#sec-architecture" id="toc-sec-architecture" class="nav-link" data-scroll-target="#sec-architecture"><span class="header-section-number">10.3</span> Architecture : Une interface à deux agents</a></li>
   </ul></li>
-  <li><a href="#méthode-dévaluation-de-la-génération" id="toc-méthode-dévaluation-de-la-génération" class="nav-link" data-scroll-target="#méthode-dévaluation-de-la-génération"><span class="header-section-number">12</span> Méthode d’évaluation de la génération</a>
+  <li><a href="#méthode-dévaluation-de-la-génération" id="toc-méthode-dévaluation-de-la-génération" class="nav-link" data-scroll-target="#méthode-dévaluation-de-la-génération"><span class="header-section-number">11</span> Méthode d’évaluation de la génération</a>
   <ul class="collapse">
-  <li><a href="#évaluation-des-performances" id="toc-évaluation-des-performances" class="nav-link" data-scroll-target="#évaluation-des-performances"><span class="header-section-number">12.1</span> Évaluation des performances</a>
+  <li><a href="#évaluation-des-performances" id="toc-évaluation-des-performances" class="nav-link" data-scroll-target="#évaluation-des-performances"><span class="header-section-number">11.1</span> Évaluation des performances</a>
   <ul class="collapse">
   <li><a href="#donnée-utilisée" id="toc-donnée-utilisée" class="nav-link" data-scroll-target="#donnée-utilisée">Donnée utilisée</a></li>
   <li><a href="#phase-1-sélection-de-larchitecture-et-recherche-sur-grille" id="toc-phase-1-sélection-de-larchitecture-et-recherche-sur-grille" class="nav-link" data-scroll-target="#phase-1-sélection-de-larchitecture-et-recherche-sur-grille">Phase 1 : Sélection de l’architecture et recherche sur grille</a></li>
   <li><a href="#phase-2-évaluation-quantitative-par-ensembles-imbriqués" id="toc-phase-2-évaluation-quantitative-par-ensembles-imbriqués" class="nav-link" data-scroll-target="#phase-2-évaluation-quantitative-par-ensembles-imbriqués">Phase 2 : Évaluation quantitative par ensembles imbriqués</a></li>
   </ul></li>
-  <li><a href="#evaluation-sémantique" id="toc-evaluation-sémantique" class="nav-link" data-scroll-target="#evaluation-sémantique"><span class="header-section-number">12.2</span> Evaluation sémantique</a></li>
+  <li><a href="#evaluation-sémantique" id="toc-evaluation-sémantique" class="nav-link" data-scroll-target="#evaluation-sémantique"><span class="header-section-number">11.2</span> Evaluation sémantique</a></li>
   </ul></li>
-  <li><a href="#résultats" id="toc-résultats" class="nav-link" data-scroll-target="#résultats"><span class="header-section-number">13</span> Résultats</a>
+  <li><a href="#résultats" id="toc-résultats" class="nav-link" data-scroll-target="#résultats"><span class="header-section-number">12</span> Résultats</a>
   <ul class="collapse">
-  <li><a href="#evaluation-des-performances" id="toc-evaluation-des-performances" class="nav-link" data-scroll-target="#evaluation-des-performances"><span class="header-section-number">13.1</span> Evaluation des performances</a>
+  <li><a href="#evaluation-des-performances" id="toc-evaluation-des-performances" class="nav-link" data-scroll-target="#evaluation-des-performances"><span class="header-section-number">12.1</span> Evaluation des performances</a>
   <ul class="collapse">
   <li><a href="#sec-resultats-naive" id="toc-sec-resultats-naive" class="nav-link" data-scroll-target="#sec-resultats-naive">NaiveCode2Text</a></li>
   <li><a href="#code2retext" id="toc-code2retext" class="nav-link" data-scroll-target="#code2retext">Code2ReText</a></li>
   </ul></li>
-  <li><a href="#analyse-quantitative" id="toc-analyse-quantitative" class="nav-link" data-scroll-target="#analyse-quantitative"><span class="header-section-number">13.2</span> Analyse quantitative</a>
+  <li><a href="#analyse-quantitative" id="toc-analyse-quantitative" class="nav-link" data-scroll-target="#analyse-quantitative"><span class="header-section-number">12.2</span> Analyse quantitative</a>
   <ul class="collapse">
   <li><a href="#naivecode2text" id="toc-naivecode2text" class="nav-link" data-scroll-target="#naivecode2text">NaiveCode2Text</a></li>
   <li><a href="#code2retext-1" id="toc-code2retext-1" class="nav-link" data-scroll-target="#code2retext-1">Code2ReText</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#sec-perspectives" id="toc-sec-perspectives" class="nav-link" data-scroll-target="#sec-perspectives"><span class="header-section-number">14</span> Perspectives</a>
+  <li><a href="#sec-perspectives" id="toc-sec-perspectives" class="nav-link" data-scroll-target="#sec-perspectives"><span class="header-section-number">13</span> Perspectives</a>
   <ul class="collapse">
-  <li><a href="#limites-actuelles" id="toc-limites-actuelles" class="nav-link" data-scroll-target="#limites-actuelles"><span class="header-section-number">14.1</span> Limites actuelles</a></li>
-  <li><a href="#sec-futur" id="toc-sec-futur" class="nav-link" data-scroll-target="#sec-futur"><span class="header-section-number">14.2</span> Travail futur</a></li>
-  <li><a href="#sec-production" id="toc-sec-production" class="nav-link" data-scroll-target="#sec-production"><span class="header-section-number">14.3</span> Parvenir à un outil exploitable et performant</a></li>
-  <li><a href="#sec-planning" id="toc-sec-planning" class="nav-link" data-scroll-target="#sec-planning"><span class="header-section-number">14.4</span> Planning</a></li>
+  <li><a href="#limites-actuelles" id="toc-limites-actuelles" class="nav-link" data-scroll-target="#limites-actuelles"><span class="header-section-number">13.1</span> Limites actuelles</a></li>
+  <li><a href="#sec-futur" id="toc-sec-futur" class="nav-link" data-scroll-target="#sec-futur"><span class="header-section-number">13.2</span> Travail futur</a></li>
+  <li><a href="#sec-production" id="toc-sec-production" class="nav-link" data-scroll-target="#sec-production"><span class="header-section-number">13.3</span> Parvenir à un outil exploitable et performant</a></li>
+  <li><a href="#sec-planning" id="toc-sec-planning" class="nav-link" data-scroll-target="#sec-planning"><span class="header-section-number">13.4</span> Planning</a></li>
   </ul></li>
-  <li><a href="#annexe" id="toc-annexe" class="nav-link" data-scroll-target="#annexe"><span class="header-section-number">15</span> Annexe</a></li>
+  <li><a href="#annexe" id="toc-annexe" class="nav-link" data-scroll-target="#annexe"><span class="header-section-number">14</span> Annexe</a></li>
   </ul>
 </nav>
 </nav>
@@ -4330,58 +4326,78 @@ window.Quarto = {
 </section>
 <section id="sec-preambule" class="level1 unnumbered">
 <h1 class="unnumbered">Préambule</h1>
-<p>Mon stage s’est déroulé à l’Institut National de la Statistique et des Etudes Economiques (Insee), et plus précisément au sein de son laboratoire d’innovation : le SSP Lab. Très centré autour du Natural Language Processing (NLP), j’ai été amené à travailler sur la génération de données synthétiques textuelles. Ce rapport présente ma démarche, les difficultés rencontrées ainsi que les résultats que j’ai obtenus. Il se termine par un regard critique sur les contributions apportées et sur les perspectives envisagées.</p>
+<p>Mon stage s’est déroulé à l’Institut National de la Statistique et des Etudes Economiques (Insee), et plus précisément au sein de son laboratoire d’innovation : le SSP Lab. Très centré autour du traitement automatique du langage, j’ai été amené à travailler sur la génération de données synthétiques textuelles. Ce rapport présente ma démarche, les difficultés rencontrées ainsi que les résultats que j’ai obtenus. Il se termine par un regard critique sur les contributions apportées et sur les perspectives envisagées.</p>
 </section>
 <section id="introduction" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
 <section id="le-défi-de-la-codification-automatique-de-la-naf" class="level3">
 <h3 class="anchored" data-anchor-id="le-défi-de-la-codification-automatique-de-la-naf">Le défi de la codification automatique de la NAF</h3>
-<p>Classer des textes dans des catégories fixes (appelées nomenclatures) est essentiel pour produire des statistiques publiques de qualité. D’un côté, les chiffres publiés doivent être précis pour éclairer le débat économique. Prenez l’Indice des Prix à la Consommation (IPC) qui mesure l’inflation, celui-ci utilise la nomenclature internationale COICOP <span class="citation" data-cites="inseecoicop">(<a href="#ref-inseecoicop" role="doc-biblioref">Insee 2021</a>)</span> pour donner le bon poids à chaque type de dépense des ménages. D’un autre côté, respecter ces catégories est souvent une obligation légale : chaque pays de l’Union européenne doit classer l’activité économique de ses entreprises selon la Nomenclature statistique des Activités économiques (NACE) <span class="citation" data-cites="statbelnace">(<a href="#ref-statbelnace" role="doc-biblioref">StatBel, s. d.</a>)</span>.</p>
-<p>En pratique, appliquer ce système à l’échelle d’un pays pose de gros problèmes industriels. Il faut d’abord créer un guide très précis (la notice de codification), puis être capable de gérer un flux massif de données. En France, la version nationale de la NACE s’appelle la Nomenclature d’Activité Française (NAF). Elle impose d’associer chaque année plus d’un million de nouvelles entreprises à l’un des 747 codes existants. À l’origine, ce travail était fait par des agents administratifs qui lisaient la description textuelle écrite par les créateurs d’entreprises. Mais face à ce volume énorme et au coût de l’analyse humaine, il est devenu indispensable d’automatiser ce traitement avec des méthodes de NLP (<em>Natural Language Processing</em>) pour aider les agents et harmoniser les choix.</p>
+<p>Classer des textes dans des catégories fixes (appelées nomenclatures) est essentiel pour produire des statistiques publiques de qualité. D’un côté, les chiffres publiés doivent être précis pour éclairer le débat économique. Prenez l’Indice des Prix à la Consommation (IPC) qui mesure l’inflation, celui-ci utilise la nomenclature internationale COICOP <span class="citation" data-cites="inseecoicop">(<a href="#ref-inseecoicop" role="doc-biblioref">Insee 2021</a>)</span> pour donner le bon poids à chaque type de dépense des ménages. D’un autre côté, respecter ces catégories est souvent une obligation légale : chaque pays de l’Union européenne doit classer l’activité économique de ses entreprises selon la Nomenclature statistique des Activités économiques dans la Communauté Européenne (NACE) <span class="citation" data-cites="statbelnace">(<a href="#ref-statbelnace" role="doc-biblioref">StatBel, s. d.</a>)</span>.</p>
+<p>En pratique, appliquer ce système à l’échelle d’un pays pose de gros problèmes industriels. Il faut d’abord créer un guide très précis (la notice de codification), puis être capable de gérer un flux massif de données. En France, la version nationale de la NACE s’appelle la Nomenclature d’Activité Française (NAF). Elle impose d’associer chaque année des millions d’établissements d’entreprise à l’un des 747 codes existants. À l’origine, ce travail était fait par des agents administratifs qui lisaient la description textuelle écrite par les créateurs d’entreprises. Mais face à ce volume énorme, il est devenu indispensable d’automatiser le processus avec des méthodes de traitement automatique du langage (<em>Natural Language Processing</em>, NLP) pour aider les agents et limiter les erreurs.</p>
 </section>
 <section id="déséquilibre-extrême-et-limites-du-secret-statistique" class="level3">
 <h3 class="anchored" data-anchor-id="déséquilibre-extrême-et-limites-du-secret-statistique">Déséquilibre extrême et limites du secret statistique</h3>
-<p>Pour entraîner un classifieur de type <em>Text-to-Code</em> (du texte vers le code), on se heurte à un problème classique en IA : le déséquilibre extrême des classes (<em>long-tail classification</em>). Les données réelles ne couvrent pas toutes les catégories de la même manière. Les activités courantes saturent le début de la distribution, tandis que la majorité des codes de la nomenclature se situent dans la “queue de distribution”, où il n’y a presque aucun exemple.</p>
-<p>Les chiffres de la NAF 2025 montrent bien ce déséquilibre : sur un fichier d’entraînement de plus d’un million de libellés réels, la moitié des 747 codes comprend moins de 50 exemples. À cause de cette rareté, les modèles supervisés classiques ne parviennent pas à apprendre ces catégories, ce qui crée des erreurs importantes lors de la mise en production.</p>
+<p>Pour entraîner un classifieur de type <em>Text2Code</em> (du texte vers le code), on se heurte à un problème classique en IA : le déséquilibre extrême des classes (<em>long-tail classification</em>). Les données réelles ne couvrent pas toutes les catégories de la même manière. Les activités courantes saturent le début de la distribution, tandis que la majorité des codes de la nomenclature se situent dans la “queue de distribution”, où il n’y a presque aucun exemple.</p>
+<p>Les chiffres de la NAF 2025 montrent bien ce déséquilibre : sur un fichier d’entraînement de plus d’un million de libellés réels, un code sur deux comprend moins de 60 exemples. À cause de cette rareté, les modèles supervisés classiques ne parviennent pas à apprendre ces catégories, ce qui crée des erreurs importantes lors de la mise en production.</p>
 <p>À cela s’ajoutent deux contraintes majeures :</p>
 <ol type="1">
-<li>Quand une nomenclature est mise à jour, cela crée un décalage immédiat (<em>distribution shift</em>) entre les données passées et les nouvelles données réelles.</li>
-<li>La loi sur le secret statistique et le RGPD interdisent de diffuser ces vrais fichiers à des personnes extérieures (pour des cours, des hackathons ou des concours d’écoles). Ce manque de données ouvertes empêche la communauté scientifique de tester de nouveaux modèles sur ces sujets.</li>
+<li>Quand une nomenclature est mise à jour ou que les tendances changent dans les créations d’entreprise, cela crée un décalage immédiat (<em>distribution shift</em>) entre les données passées et les nouvelles données réelles. Un bon exemple est la popularité récente des logements meublés non professionnels (LMNP) qui a fait grimper le nombre de codes <code>68.20G</code>, anciennement <code>68.20A</code> (NAF 2008).</li>
+<li>La loi sur le secret statistique et le RGPD interdisent de diffuser ces vrais fichiers à des personnes extérieures (pour des cours, des hackathons ou des concours d’écoles). Ce manque de données ouvertes empêche la communauté scientifique de tester de nouveaux modèles sur ces sujets et donc de contribuer à des progrès technologiques.</li>
 </ol>
 </section>
 <section id="tension-entre-performance-de-classification-et-fidélité-de-diffusion" class="level3">
 <h3 class="anchored" data-anchor-id="tension-entre-performance-de-classification-et-fidélité-de-diffusion">Tension entre performance de classification et fidélité de diffusion</h3>
-<p>Le système actuel de l’Insee utilise un premier niveau de classification automatique (basé sur FastText <em>[Insérer citation]</em>). Il permet de coder tout seul environ 70 % des cas les plus simples. Cependant, ses performances bloquent sur les concepts complexes ou rares. La limite de cette méthode est qu’elle n’utilise pas la notice officielle, alors que c’est l’outil de base de l’expert humain pour trancher les cas difficiles.</p>
-<p>Les grands modèles de langage (LLM) permettent de changer d’approche car ils savent intégrer des connaissances textuelles externes. Mais utiliser un LLM pour générer des données synthétiques crée une contradiction directe entre deux objectifs :</p>
+<p>Le système de codification automatique utilisé depuis novembre 2022 à l’Insee repose sur FastText <span class="citation" data-cites="bojanowski2017enriching">(<a href="#ref-bojanowski2017enriching" role="doc-biblioref">Bojanowski et al. 2017</a>)</span>. S’il permet de traiter seul environ 70 % des cas les plus simples, ce modèle n’est plus à jour face aux architectures modernes de l’état de l’art, comme les transformeurs légers <span class="citation" data-cites="sanh2019distilbert">(<a href="#ref-sanh2019distilbert" role="doc-biblioref">Sanh et al. 2019</a>)</span> ou les encodeurs denses <span class="citation" data-cites="reimers2019sentence">(<a href="#ref-reimers2019sentence" role="doc-biblioref">Reimers et Gurevych 2019</a>)</span>, qui offrent de bien meilleures capacités de compréhension contextuelle. De plus, les retours métiers des experts de la nomenclature mettent régulièrement en évidence des erreurs de prédiction de ce classifieur. Une voie majeure pour franchir un cap en performance réside dans l’augmentation du jeu de données d’entraînement par l’injection de données synthétiques issues de grands modèles de langage (LLM).</p>
+<p>Cependant, l’introduction de ces données synthétiques au sein d’un flux de production réel soulève des défis théoriques profonds. En s’appuyant sur le cadre de référence du décalage de données (<em>dataset shift</em>) théorisé par <span class="citation" data-cites="quinonero2008dataset">Quiñonero-Candela et al. (<a href="#ref-quinonero2008dataset" role="doc-biblioref">2008</a>)</span>, notre cas d’étude est confronté à trois mécanismes potentitels de décalage de la loi jointe <span class="math inline">P(X, Y)</span> (où <span class="math inline">X</span> représente le libellé textuel et <span class="math inline">Y</span> le code de la nomenclature) :</p>
 <ol type="1">
-<li><strong>L’Axe Performance (Aide au classifieur) :</strong> Pour améliorer le classifieur <em>Text-to-Code</em> sur les codes rares, il faut lui donner un maximum d’informations théoriques issues de la notice. On cherche à générer des descriptions fidèles au dictionnaire.</li>
-<li><strong>L’Axe Diffusion (Création de jeux de données) :</strong> Pour diffuser un fichier synthétique réaliste, il faut au contraire copier les défauts des données réelles. Le modèle doit reproduire le déséquilibre des codes, mais aussi le style des humains (fautes d’orthographe, abréviations bizarres, phrases coupées, …).</li>
+<li><strong>Le <em>prior probability shift</em> :</strong> Il intervient lorsque la distribution des classes <span class="math inline">P(Y)</span> est modifiée. La nomenclature réelle présente une distribution très déséquilibrée. Pour aider un classifieur à apprendre les catégories rares, la pratique classique en apprentissage automatique consiste à modifier artificiellement <span class="math inline">P(Y)</span> (par exemple via une loi uniforme), créant un <em>prior shift</em> volontaire par rapport au flux réel.</li>
+<li><strong>Le <em>covariate shift</em> :</strong> Il apparaît lorsque la distribution des variables explicatives <span class="math inline">P(X)</span> change. C’est le risque majeur de la génération synthétique naïve : un LLM non guidé produit des textes académiques, parfaits et sans défauts. Sa distribution <span class="math inline">P_{synth}(X|Y)</span> présente un décalage de domaine critique par rapport au style empirique des déclarants humains <span class="math inline">P_{real}(X|Y)</span> (caractérisé par des fautes, des abréviations et des structures hachées).</li>
+<li><strong>Le <em>concept drift</em></strong>, théorisé par <span class="citation" data-cites="tsymbal2004problem">(<a href="#ref-tsymbal2004problem" role="doc-biblioref">Tsymbal 2004</a>)</span> : Il se traduit par une modification de la règle de décision <span class="math inline">P(Y|X)</span>. C’est le point de départ de notre étude, matérialisé par le passage à la nouvelle nomenclature NAF 2025. Un même libellé textuel peut changer de catégorie légale par rapport aux années précédentes. Dans notre cas, ce shift est documenté et encadré par la notice officielle.</li>
 </ol>
-<p>Comme rien ne garantit qu’un même outil puisse réussir ces deux tâches opposées, trouver une méthode capable de gérer cette tension est le cœur scientifique de ce travail.</p>
+<p>La tension de notre travail réside dans le fait que la création d’un jeu de données optimisé pour l’apprentissage d’un classifieur ne coïncide pas naturellement avec celle d’un jeu de données destiné à la diffusion publique (<em>open-data</em>). L’objectif de diffusion pure exige de mimer fidèlement la distribution <span class="math inline">P(X)</span> réelle qui contient des libellés hors-sujets (valeurs aberrantes) et demande la même distribution <span class="math inline">P(Y)</span>, alors que l’optimisation du classifieur demande une stratégie inverse sur <span class="math inline">P(Y)</span> et un contrôle strict de la pertinence du bruit textuel injecté.</p>
 </section>
-<section id="approche-proposée-et-contributions-le-découplage-entre-la-structure-et-lexpression-humaine" class="level3">
-<h3 class="anchored" data-anchor-id="approche-proposée-et-contributions-le-découplage-entre-la-structure-et-lexpression-humaine">Approche proposée et Contributions : Le découplage entre la structure et l’expression humaine</h3>
-<p>Pour résoudre cette tension, nous proposons une idée simple : <strong>séparer strictement la structure de la nomenclature (la distribution des codes) et l’expression humaine (le style du texte)</strong>. Notre hypothèse est qu’un bon générateur (<em>Code-to-Text</em>) doit apprendre un style stable, sans se soucier de la fréquence réelle des codes. Une fois que le modèle maîtrise ce style, il suffit de changer la loi d’échantillonnage des codes <span class="math inline">P(Y)</span> en entrée pour répondre à l’un ou l’autre des objectifs.</p>
+<section id="approche-proposée-et-contributions" class="level3">
+<h3 class="anchored" data-anchor-id="approche-proposée-et-contributions">Approche proposée et contributions</h3>
+<p>Pour articuler ces objectifs sans qu’ils ne se nuisent, nous proposons de <strong>découpler la structure de la nomenclature de l’expression humaine en utilisant le LLM pour réduire le <em>covariate shift</em> au niveau conditionnel, c’est-à-dire pour chaque code <span class="math inline">Y</span></strong>.</p>
+<p>Notre approche consiste à guider le processus de génération pour que la distribution conditionnelle synthétique <span class="math inline">P_{synth}(X | Y)</span> converge vers la distribution humaine <span class="math inline">P_{real}(X | Y)</span>. Plutôt que de laisser le LLM dériver vers son style académique naturel, nous lui apprenons à transférer le style et la texture sémantique des déclarants (abréviations, syntaxe métier brute) sur la base des concepts immuables de la notice. Une fois ce générateur conditionnel robuste obtenu, la dualité des cas d’usage se résout par simple manipulation de la loi d’échantillonnage des codes <span class="math inline">P(Y)</span> en entrée du pipeline : le <em>prior probability shift</em> est ainsi annulé pour le scénario de diffusion open-data, ou volontairement exploité (distribution uniforme) pour maximiser les performances du classifieur aval sur la queue de distribution.</p>
 <p>Les contributions principales de ce travail sont :</p>
 <ul>
-<li><strong>La création de <code>LabelGuard</code> :</strong> Un discriminateur capable de mesurer le décalage de domaine (<em>domain shift</em>) entre le style parfait du LLM et le style bruité de l’humain. Il met en évidence la signature stylistique (« watermark ») laissée par les modèles de langage.</li>
-<li><strong>L’architecture <code>Code2ReText</code> :</strong> Un système à deux LLM (Acteur-Superviseur) qui utilise les alertes de <code>LabelGuard</code> pour forcer le modèle à ajouter des défauts humains dans son texte, rendant l’IA plus difficile à détecter.</li>
-<li><strong>Une évaluation par ensembles imbriqués (Protocole <span class="math inline">\mathcal{M}_\alpha</span>) :</strong> Une analyse précise de l’impact des données synthétiques sur le classifieur <code>Text2Code</code>. Elle montre un gain ciblé sur les classes rares, mais aussi une chute des performances si le fichier contient plus de 85 % de données synthétiques.</li>
-<li><strong>Un outil reproductible :</strong> Un pipeline open source et agnostique, réutilisable pour d’autres nomenclatures (comme la NACE européenne).</li>
+<li><strong>La création de <code>LabelGuard</code> :</strong> Un discriminateur capable de détecter le <em>covariate shift</em> entre les styles employés par le LLM et l’humain, mettant en évidence l’empreinte (<em>watermark</em>) laissée par les modèles de langage dans l’espace des plongements vectoriels.</li>
+<li><strong>L’architecture <code>Code2ReText</code> :</strong> Un framework agentique à deux LLM (Générateur-Superviseur) qui utilise le signal de <code>LabelGuard</code> pour forcer l’alignement stylistique et réduire le <em>covariate shift</em> conditionnel.</li>
+<li><strong>Une évaluation par ensembles imbriqués (protocole <span class="math inline">\mathcal{M}_\alpha</span>) :</strong> Une analyse fine de l’influence de la proportion de données synthétiques sur le classifieur <code>Text2Code</code>, isolant les gains spécifiques sur les classes de faible fréquence et identifiant le point de saturation synthétique.</li>
+<li><strong>Un pipeline reproductible :</strong> Un code entièrement open source et agnostique, conçu pour être immédiatement transposable à d’autres nomenclatures hiérarchiques (comme la NACE européenne).</li>
 </ul>
 <p>Le reste de ce rapport est structuré ainsi. La Section 2 présente l’état de l’art de la génération de données en NLP. La Section 3 détaille le fonctionnement de <code>LabelGuard</code>. La Section 4 introduit les générateurs <code>NaiveCode2Text</code> et <code>Code2ReText</code>. La Section 5 décrit le protocole expérimental et les choix d’échantillonnage. La Section 6 analyse les résultats, et la Section 7 présente les conclusions et les perspectives.</p>
 </section>
 </section>
 <section id="état-de-lart" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> État de l’Art</h1>
-<section id="augmentation-de-données-classique-en-nlp-vs-génération-par-grands-modèles-de-langage-llm" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="augmentation-de-données-classique-en-nlp-vs-génération-par-grands-modèles-de-langage-llm"><span class="header-section-number">2.1</span> Augmentation de données classique en NLP vs Génération par Grands Modèles de Langage (LLM)</h2>
+<section id="augmentation-de-données-textuelles-par-des-modèles-de-langage" class="level3">
+<h3 class="anchored" data-anchor-id="augmentation-de-données-textuelles-par-des-modèles-de-langage">Augmentation de données textuelles par des modèles de langage</h3>
+<p>Avant l’avènement des grands modèles de langage, l’augmentation de données textuelles en NLP reposait principalement sur des règles de transformation de surface ou des substitutions locales. Les approches traditionnelles exploitent des perturbations syntaxiques, du remplacement lexical basé sur des thésaurus comme WordNet, ou des techniques de traduction aller-retour (<em>back-translation</em>) <span class="citation" data-cites="shorten2021">(<a href="#ref-shorten2021" role="doc-biblioref">Connor et al. 2021</a>)</span>. Bien que ces méthodes permettent d’accroître artificiellement le volume du corpus d’entraînement, elles souffrent d’une forte rigidité sémantique : elles se contentent de reformuler les structures existantes sans introduire de nouveaux concepts ni enrichir le vocabulaire métier.</p>
+<p>L’introduction des grands modèles de langage (LLM) a transformé ce domaine en permettant une génération de données textuelles sensible au contexte. L’approche la plus courante repose sur l’apprentissage en contexte (<em>in-context learning</em>) via des techniques de <em>few-shot prompting</em> <span class="citation" data-cites="brown2020">(<a href="#ref-brown2020" role="doc-biblioref"><span class="nocase">Brown et al.</span> 2020</a>)</span>. Dans ce cadre, le modèle reçoit une poignée d’exemples issus du jeu de données réel pour assimiler le style, la structure et le ton des libellés cibles. Des frameworks plus avancés incitent le LLM à générer des variations textuelles en introduisant des contraintes de diversité sémantique ou linguistique directement dans le prompt <span class="citation" data-cites="schick2021">(<a href="#ref-schick2021" role="doc-biblioref">Schick et Schütze 2021</a>)</span>.</p>
+<p>Une étape fondatrice dans la génération de données textuelle est Self-Instruct proposé par <span class="citation" data-cites="wang2022self">(<a href="#ref-wang2022self" role="doc-biblioref"><strong>wang2022self?</strong></a>)</span>. L’idée consiste à utiliser un LLM pour générer automatiquement des paires instruction-réponse qui serviront ensuite à entraîner ou spécialiser un autre modèle. Cette approche a démontré qu’un système pouvait améliorer ses performances à partir de données qu’il avait lui-même contribué à produire.</p>
+<p>Néanmoins, qu’elles soient basées sur des règles heuristiques ou sur du <em>few-shot prompting</em>, ces méthodologies partagent une limite fondamentale : la donnée générée demeure intrinsèquement bornée par le périmètre informationnel du jeu de données d’origine. En l’absence d’un référentiel externe, le modèle ne fait que cloner, interpoler ou reformuler des concepts déjà présents dans l’échantillon initial. Il est incapable d’explorer des thématiques absentes ou sous-représentées, ce qui expose le système au risque de propager, voire d’amplifier, les biais de sélection de la base de données source.</p>
 </section>
-<section id="génération-guidée-par-taxonomie-et-génération-augmentée-par-récupération-rag" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="génération-guidée-par-taxonomie-et-génération-augmentée-par-récupération-rag"><span class="header-section-number">2.2</span> Génération guidée par taxonomie et génération augmentée par récupération (RAG)</h2>
+<section id="génération-synthétique-pilotée-par-connaissances-externes" class="level3">
+<h3 class="anchored" data-anchor-id="génération-synthétique-pilotée-par-connaissances-externes">Génération synthétique pilotée par connaissances externes</h3>
+<p>Pour s’affranchir de la dépendance aux données historiques, plusieurs travaux explorent l’injection de connaissances structurées exogènes au sein des architectures génératives, un domaine désigné sous le terme de génération guidée par taxonomie (<em>taxonomy-guided generation</em>). Dans notre cadre applicatif, la présence d’une notice officielle constitue une ressource documentaire exhaustive et immuable, qui fournit pour chaque catégorie son code, son titre, ainsi que ses critères d’inclusion et d’exclusion.</p>
+<p>Historiquement, l’intégration de telles connaissances nécessitait le développement d’architectures dédiées. Par exemple, <span class="citation" data-cites="chen2020kgpt">Chen et al. (<a href="#ref-chen2020kgpt" role="doc-biblioref">2020</a>)</span> introduisent le framework KGPT, qui repose sur un pré-entraînement lourd et spécifique pour aligner des structures de données (graphes de connaissances) avec du texte. Cette stratégie s’avère plus coûteuse à mettre en œuvre que les LLMs actuels, et donc moins adaptée à notre cas d’usage.</p>
+<p>L’apparition des grands modèles de langage a favorisé une approche plus flexible fondée sur la récupération d’information (<em>retrieval</em>). Dans les systèmes de <em>Retrieval-Augmented Generation</em> (RAG), introduits par <span class="citation" data-cites="lewis2020retrieval">(<a href="#ref-lewis2020retrieval" role="doc-biblioref"><strong>lewis2020retrieval?</strong></a>)</span>, le modèle ne s’appuie plus uniquement sur ses connaissances paramétriques : il consulte d’abord une source documentaire externe avant de produire sa réponse. Cette stratégie permet d’améliorer la factualité des contenus générés tout en facilitant l’adaptation à des domaines spécialisés.</p>
+<p>Dans le cadre de la génération de données synthétiques, des travaux récents montrent que l’utilisation de documents récupérés dynamiquement améliore la pertinence et la diversité des exemples produits. Les informations externes peuvent être injectées sous différentes formes : passages textuels, exemples similaires retrouvés dans un espace d’embedding, taxonomies hiérarchiques ou bases de connaissances structurées <span class="citation" data-cites="long2024llms">(<a href="#ref-long2024llms" role="doc-biblioref">Long et al. 2024</a>)</span>.</p>
+<p>Notre cas d’étude présente une situation particulièrement favorable à ce type de méthode. Contrairement à de nombreux contextes applicatifs où les connaissances doivent être recherchées dans de larges corpus, l’ensemble de l’information pertinente peut être injecté directement dans la fenêtre de contexte du modèle. Notre approche peut ainsi être interprétée comme une forme spécialisée de génération augmentée par récupération, où la notice joue le rôle de source documentaire de référence. L’objectif n’est cependant pas la production d’une réponse à une question utilisateur, mais la génération de libellés synthétiques destinés à l’entraînement d’un classifieur Text2Code. La qualité du système dépend alors de sa capacité à transformer cette connaissance normative en formulations proches du langage réellement employé par les déclarants.</p>
 </section>
-<section id="transfert-de-style-et-discrimination-de-la-qualité-dans-les-jeux-de-données-synthétiques" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="transfert-de-style-et-discrimination-de-la-qualité-dans-les-jeux-de-données-synthétiques"><span class="header-section-number">2.3</span> Transfert de style et discrimination de la qualité dans les jeux de données synthétiques</h2>
+<section id="transfert-de-style" class="level3">
+<h3 class="anchored" data-anchor-id="transfert-de-style">Transfert de style</h3>
+<p>L’utilisation exclusive de la notice comme source d’inspiration introduit un biais stylistique. Par construction, les LLMs subissent un alignement strict conçu pour éliminer les erreurs de syntaxe et produire un langage formel, neutre et grammaticalement parfait. Cela peut être dû au <em>Reinforcement Learning from Human Feedback</em> (RLHF) <span class="citation" data-cites="ouyang2022training">(<a href="#ref-ouyang2022training" role="doc-biblioref"><span class="nocase">Ouyang et al.</span> 2022</a>)</span>, au <em>Supervised-Fine-Tuning</em> (SFT) <span class="citation" data-cites="zhang2026instruction">(<a href="#ref-zhang2026instruction" role="doc-biblioref"><span class="nocase">Zhang et al.</span> 2026</a>)</span>, où à d’autres facteurs. <span class="citation" data-cites="reinhart2025do">Reinhart et al. (<a href="#ref-reinhart2025do" role="doc-biblioref">2025</a>)</span> confirment la différence de style avec le langage humain, qui change selon les modèles mais reste toujours présente.</p>
+<p>Ce phénomène crée un <em>covariate shift</em> : comme le prouvent <span class="citation" data-cites="belinkov2018synthetic">Belinkov et Bisk (<a href="#ref-belinkov2018synthetic" role="doc-biblioref">2018</a>)</span>, les modèles en NLP ont des difficultés à faire face à du bruit inconnu. Dans notre cas, un classifieur entraîné sur des textes parfaits issus des données synthétiques pourrait donc subir une baisse drastique de ses performances lorsqu’il est confronté au bruit des données originales. Pour corriger ce décalage, il est nécessaire de recourir au transfert de style (<em>style transfer</em>). <span class="citation" data-cites="gao2023self">Gao et al. (<a href="#ref-gao2023self" role="doc-biblioref">2023</a>)</span> montrent qu’un processus de réécriture grâce à une série de dialogues entre LLMs devance le <em>few-shot prompting</em> en terme de performances pour les tâches. Pour du transfert de style, cela permettrait de mimer le comportement des déclarants réels en introduisant un bruit anthropique ciblé (abréviations métiers, troncatures de mots, fautes d’orthographe de saisie).</p>
+</section>
+<section id="evaluation" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation">Evaluation</h3>
+<p>Pour rappel, nous souhaitons que <span class="math inline">P_{synth}( \cdot | Y)</span> converge vers <span class="math inline">P_{real}( \cdot | Y)</span> pour tout code <span class="math inline">Y</span> de sorte à atteindre le double objectif d’amélioration des performances du classifieur Text2Code et de diffusion des données. Plusieurs méthodes d’évaluation s’offrent à nous.</p>
+<p>Pour la partie performances, le protocole <em>Train on Synthetic, Test on Real</em> (TSTR), formalisé par <span class="citation" data-cites="esteban2017real">Esteban et al. (<a href="#ref-esteban2017real" role="doc-biblioref">2017</a>)</span>, est très adapté. L’idée est d’entraîner le classifieur uniquement sur la donnée synthétique, et d’évaluer uniquement sur la donnée originale.</p>
+<p>Pour quantifier la réduction du <em>covariate shift</em>, une solution peut être d’utiliser des discriminateurs entraînés à distinguer les productions humaines des productions synthétiques <span class="citation" data-cites="bowman2016generating">(<a href="#ref-bowman2016generating" role="doc-biblioref">Bowman et al. 2016</a>)</span>. Dans ce cadre d’évaluation antagoniste, l’exactitude du discriminateur sert de proxy pour mesurer la convergence stylistique : une baisse de sa capacité de détection indique que le générateur parvient à effacer sa signature pour s’aligner sur la sémantique humaine.</p>
+<p>Plus généralement, des métriques de similarités entre des données textuelles existent. De simples comparaisons entre les mots employés comme avec le <em>Jaccard Similarity Index</em> <span class="citation" data-cites="travieso2024analytical">(<a href="#ref-travieso2024analytical" role="doc-biblioref">Travieso et al. 2024</a>)</span>, jusqu’à l’<em>Integrated Maximum Mean Discrepancy</em> (IMMD) <span class="citation" data-cites="ding2025testing">(<a href="#ref-ding2025testing" role="doc-biblioref">Ding et al. 2025</a>)</span>, plein de métriques permettent de comparer deux corpus de textes — ici, données synthétiques et données réelles pour un même code. La limite de ces approches réside dans l’incapacité à mesurer la créativité des données synthétiques, ce que l’on cherche pourtant si on veut améliorer la classification ou diffuser des données qui ne soient pas des copies propres des données originales. C’est pourquoi ces métriques seront moins mises en valeurs face aux deux premières.</p>
 </section>
 </section>
 <section id="labelguard-quantification-du-biais-sémantique" class="level1" data-number="3">
@@ -4456,69 +4472,33 @@ window.Quarto = {
 <h2 data-number="7.3" class="anchored" data-anchor-id="généralisation-à-des-cadres-multilingues-nace-européenne"><span class="header-section-number">7.3</span> Généralisation à des cadres multilingues (NACE européenne)</h2>
 </section>
 </section>
-<section id="sec-intro" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> Introduction</h1>
-<section id="sec-intro-codif" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="sec-intro-codif"><span class="header-section-number">8.1</span> Les enjeux de la codification</h2>
-<p>Être capable de catégoriser les éléments dans une nomenclature est très important pour les services statistiques publiques. D’un côté, le débat public a besoin d’être alimenté de chiffres fiables et précis, ce qui se traduit par le maillage fin d’une nomenclature. Prenez l’indice des prix à la consommation (IPC), métrique phare pour évaluer l’inflation : si une nomenclature pour les produits de consommation comme la COICOP <span class="citation" data-cites="inseecoicop">(<a href="#ref-inseecoicop" role="doc-biblioref">Insee 2021</a>)</span> n’existait pas, il serait difficile d’évaluer les paniers des ménages lors de leurs achats, et donc difficile d’accorder les poids aux bons éléments dans l’indice. De l’autre, les législations imposent parfois des nomenclatures à respecter. Par exemple, chaque pays de l’Union Européenne doit rendre compte des activités économiques de leurs entreprises en respectant la Nomenclature statistique des Activités économiques dans la Communauté Européenne (NACE) <span class="citation" data-cites="statbelnace">(<a href="#ref-statbelnace" role="doc-biblioref">StatBel, s. d.</a>)</span>.</p>
-<p>Cependant, mettre en place un système de codification demande beaucoup de ressources. Déjà, il faut parvenir à converger vers un standard général et concevoir une notice exhaustive. Puis, il faut subvenir aux besoins pratiques lors de l’application de la nomenclature. De ce fait, la donnée qui doit être classée arrive avec un grand débit et demande de choisir parmi un grand nombre de catégories. Pour le cas de la NACE, on compte ainsi chaque année plus d’un millions de nouvelles entreprises à associer à un code parmi les plus de six cent existants (plus de sept cent pour la nomenclature française). Il faut donc une très grande efficacité ainsi qu’une expertise de la notice de codification.</p>
-<p>Historiquement, la codification a été assurée par des annotateurs humains liés au domaine administratif visé. Cela permet d’éviter de donner la charge à la personne derrière l’élément à classer et qui n’est pas forcément au point sur la nomenclature — qui pourrait donc faire des erreurs —, en lui imposant à la place de remplir un libellé textuel qui décrit le domaine que l’administration cherche à codifier. Pour illustrer, prenons l’exemple de la Nomenclature d’Activité Française (NAF), la version française de la NACE. Le futur chef d’entreprise français qui fait sa demande de SIRET indique dans un champ textuel l’activité économique principale de son entreprise expliquée avec ses propres mots. Puis, son dossier est envoyé auprès de l’administration qui reçoit des éléments comme la raison sociale de l’entreprise, son siège social, … ainsi que le libellé décrivant l’activité. Alors, durant l’étude du dossier, un des membres de l’administration va associer un code NAF, qui sera retransmis à l’Insee.</p>
-<p>Cette manière de procéder à ses limites. Notamment, cela coûte cher d’employer des personnes à faire la même tâche répétitive pour l’ensemble des éléments à classer, car ceux-ci peuvent se tromper en lisant trop rapidement ou en oubliant une partie de la notice — surtout pour les cas rares. L’Insee a donc mis en place un système de codification automatique basé sur la donnée textuelle — et potentiellement d’autres données auxilières numériques ou catégorielles — pour aider les annotateurs.</p>
-</section>
-<section id="sec-text2code" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="sec-text2code"><span class="header-section-number">8.2</span> Codifier automatiquement des libellés dans une nomenclature</h2>
-<p>Actuellement, la manière dont l’Insee codifie automatiquement les libellés est comme suit. <em>[Ajouter un schéma, citer le projet github.]</em> - Entrée : libellé textuel et informations supplémentaires conernant l’entreprise (catégorie juridique, nature d’activité, surface de l’établissement, …) - Process : premier codificateur automatique (fasttext), si confiance &gt; X% → codification automatique sans feedback humain (70% des cas environ), sinon top 5 proposé à l’annotateur.</p>
-<p><em>[Limites en mode state of the art 2017, nouvelles choses maintenant.]</em> Les performances actuelles restent certes satisfaisantes, mais le classifieur n’exploite pas l’entièreté des ressources disponibles ni la puissance des dernières technologies : les grands modèles de langage (<em>large language models</em>, LLM en anglais). En effet, la méthode utilisée ne prend pas du tout en compte l’usage de la notice, qui sert pourtant de support à la codification manuelle, et qui peut parfaitement s’intégrer dans un processus automatique incluant des LLM.</p>
-<p>Par ailleurs, la construction d’un classifieur robuste se heurte à plusieurs difficultés majeures. En premier lieu, les données d’entraînement souffrent fréquemment d’un défaut de couverture : certains codes sont peu ou pas représentés, ce qui crée des zones d’ombre pour le modèle. Par exemple, pour la NAF 2025 (deuxième version de la nomenclature), sur 800 000 libellés d’entraînement, la moitié des 747 codes comprend moins de 50 occurences. À cela s’ajoute le risque lié à l’actualisation possible de la nomenclature, avec un potentiel décalage entre la distribution d’entraînement et de production.</p>
-<p>Les données réelles introduisent également du bruit sémantique — fautes d’orthographe, informations personnelles, abréviations, typographies fantaisistes — ainsi que du bruit d’annotation, lorsqu’un code incorrect a été associé à un libellé lors de la constitution du jeu de données. Enfin, dans certaines situations, la donnée est simplement insuffisante : lorsqu’on travaille sur une nomenclature nouvelle ou qu’on doit basculer vers une langue différente, les données existantes ne sont plus exploitables telles quelles. Un moyen de remédier à ce problème est de générer de la nouvelle donnée de manière synthétique.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Sans génération de données synthétiques, la codification automatique peut être imprécise, voire totalement impossible dans les cas extrêmes. C’est ce constat qui motive l’ensemble du travail présenté ici.</p>
-</div>
-</div>
-</section>
-<section id="sec-objectifs" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="sec-objectifs"><span class="header-section-number">8.3</span> Objectifs recherchés</h2>
-<p>L’objectif principal est donc de créer un générateur de données synthétiques (code vers texte) qui améliore les performances d’un classifieur (texte vers code). L’étude se concentrera majoritairement sur la NAF 2025 car la base de donnée est très large, la nomenclature a une structure hiérarchique simple, et la notice est très détaillée. Cependant, pour permettre la reprise de ce travail dans d’autres domaines, une contrainte aditionnelle a été choisie : tout code et tout prompt créé doit être agnostique de la nomenclature et open source.</p>
-<p>Par ailleurs, j’ai voulu profiter de ce stage pour explorer plus loin que la simple performance de classification. Notamment, en discutant avec les membres du SSP Lab, j’ai remarqué que la génération de données synthétiques par des LLM permettait dans certains cas la diffusion de données de façon anonymisée. Je me suis donc fixé comme objectif secondaire de créer un générateur de données capable de mimer la donnée originale sans la faire fuiter.</p>
-<p>Il est à noter que, a priori, rien ne garantit la réalisation commune des deux objectifs par un même outil.</p>
-</section>
-</section>
-<section id="sec-generation" class="level1" data-number="9">
-<h1 data-number="9"><span class="header-section-number">9</span> Contexte : La génération de données synthétiques</h1>
-<section id="létat-de-lart-habituel" class="level2" data-number="9.1">
-<h2 data-number="9.1" class="anchored" data-anchor-id="létat-de-lart-habituel"><span class="header-section-number">9.1</span> L’état de l’art habituel</h2>
+<section id="sec-generation" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Contexte : La génération de données synthétiques</h1>
+<section id="létat-de-lart-habituel" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="létat-de-lart-habituel"><span class="header-section-number">8.1</span> L’état de l’art habituel</h2>
 <p>Dans le paysage de la génération de données synthétiques, les approches classique se caractérisent par une dépendance stricte vis-à-vis de la distribution ou de la structure de la donnée d’entrée, sans apport de connaissances directrices externes.</p>
 <p>Pour les données numériques et tabulaires, la génération a longtemps reposé sur la modélisation statistique de la distribution jointe des variables. Les méthodes traditionnelles utilisent des techniques telles que les copules (<em>rule-based</em>) ou le lissage de densité par noyau (KDE) pour échantillonner de nouveaux points respectant les corrélations d’origine [<em>Insérer citation</em>]. Pour pallier le manque de diversité ou protéger la confidentialité, des perturbations contrôlées, comme l’injection d’un bruit gaussien ou l’application de la confidentialité différentielle, sont fréquemment introduites <span class="citation" data-cites="dwork2014">(<a href="#ref-dwork2014" role="doc-biblioref">Cynthia et Aaron 2014</a>)</span>. Puis, avec l’essor du deep learning, les modèles génératifs profonds comme les Réseaux Antagonistes Génératifs (GANs), notamment CTGAN pour les données tabulaires, et les Autoencodeurs Variationnels (VAEs) ont permis de capturer des relations non linéaires complexes directement à partir du jeu de données initial <span class="citation" data-cites="xu2019">(<a href="#ref-xu2019" role="doc-biblioref">Lei et al. 2019</a>)</span>.</p>
 <p>Dans le domaine textuel, avant l’essor des grands modèles de langage, l’augmentation de données reposait principalement sur des règles de transformation syntaxique, du remplacement lexical basé sur des thésaurus (comme WordNet) ou des techniques de traduction aller-retour (<em>back-translation</em>) <span class="citation" data-cites="shorten2021">(<a href="#ref-shorten2021" role="doc-biblioref">Connor et al. 2021</a>)</span>. Ces méthodes, bien qu’efficaces pour accroître le volume de données, souffrent d’une rigidité sémantique forte : les formulations restent les mêmes, les thèmes abordés aussi.</p>
 <p>L’introduction des grands modèles de langage (LLMs) a profondément transformé la génération de données textuelles en permettant une prise en compte plus forte du contexte. L’approche la plus répandue consiste à exploiter l’apprentissage en contexte (<em>in-context learning</em>) via des techniques de <em>few-shot prompting</em>, où le modèle reçoit une poignée d’exemples issus de la base de données originale pour guider la structure et le ton des libellés à générer <span class="citation" data-cites="brown2020">(<a href="#ref-brown2020" role="doc-biblioref"><span class="nocase">Brown et al.</span> 2020</a>)</span>. Certains cas formalisent ce processus en incitant le LLM à générer des variations textuelles basées sur des instructions de similarité ou de diversité sémantique <span class="citation" data-cites="schick2021">(<a href="#ref-schick2021" role="doc-biblioref">Schick et Schütze 2021</a>)</span>.</p>
 <p>Néanmoins, qu’elles soient basées sur des statistiques traditionnelles, des architectures GAN/VAE ou des LLMs en mode few-shot, ces méthodologies partagent une limite fondamentale : la donnée générée demeure intrinsèquement bornée par le périmètre informationnel du jeu de données d’origine. En l’absence d’un référentiel externe, le modèle ne fait que cloner, interpoler ou reformuler des concepts déjà existants. Il est incapable d’explorer des thématiques absentes de l’échantillon initial, ce qui restreint la couverture sémantique globale et expose le système au risque de propager, voire d’amplifier, les biais de sélection de la base de données source. Cette particularité pourrait être ignorée si la donnée à codifier en production ne change pas de distribution. Cependant, dans le cas des nomenclatures étudiées ici, la distribution des codes ainsi que les codes eux-mêmes varient dans le temps. Par exemple, pour la NAF 2025, le développement récent de la Location Meublée Non Professionelle (LMNP) a fait grimper le nombre de codes <code>68.20G</code>, autrefois appelé <code>68.20A</code> pour la NAF 2008.</p>
 </section>
-<section id="sec-contexte-gen" class="level2" data-number="9.2">
-<h2 data-number="9.2" class="anchored" data-anchor-id="sec-contexte-gen"><span class="header-section-number">9.2</span> Un contexte particulier : la présence d’une notice</h2>
+<section id="sec-contexte-gen" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="sec-contexte-gen"><span class="header-section-number">8.2</span> Un contexte particulier : la présence d’une notice</h2>
 <p>Notre contexte est particulier, car nous disposons d’une <strong>notice</strong> associée à chaque nomenclature, qui constitue une ressource documentaire exhaustive. Celle-ci contient typiquement quatre champs structurés : le code, le titre, les types d’éléments inclus dans la catégorie et ceux similaires mais exclus de cette catégorie (car appartenant à une autre). Cette notice est indépendante des données d’entraînement, et particulièrement bien adaptée à l’alimentation des LLMs en contexte. Elle permet d’envisager une génération de libellés qui s’affranchit partiellement des limites de la donnée réelle.</p>
 <p>Dans la littérature, on peut retrouver les thèmes de génération de données textuelles à partir de connaissances (<em>knowledge-based data generation</em>), mais les thématiques sont tellement diverses qu’elle ne se rapprochent pas de notre cas. Soit les sources sont trop anciennes pour correspondre à l’usage de LLMs <span class="citation" data-cites="dettmar1998knowledge">(<a href="#ref-dettmar1998knowledge" role="doc-biblioref">Dettmar et al. 1998</a>)</span>, soit ce sont des approches mimant les LLMs actuels mais qui demandent beaucoup de ressources <span class="citation" data-cites="chen2020kgpt">(<a href="#ref-chen2020kgpt" role="doc-biblioref">Chen et al. 2020</a>)</span>, soit les finalités sont proches mais pour des le domaine d’étude change et implémente des méthodes très différentes des notres <span class="citation" data-cites="jin2025knowledge">(<a href="#ref-jin2025knowledge" role="doc-biblioref">Jin 2025</a>)</span>.</p>
 <p>L’usage d’une source exhaustive extérieure n’est donc pas référencée dans la littérature pour la génération de données synthéthiques. Le travail principal de l’étude reposera donc sur certains choix, et certaines possibilités ne seront pas couvertes.</p>
 </section>
-<section id="evaluation-de-la-génération" class="level2" data-number="9.3">
-<h2 data-number="9.3" class="anchored" data-anchor-id="evaluation-de-la-génération"><span class="header-section-number">9.3</span> Evaluation de la génération</h2>
+<section id="evaluation-de-la-génération" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="evaluation-de-la-génération"><span class="header-section-number">8.3</span> Evaluation de la génération</h2>
 <p>Pour ce qui est de l’évaluation, la génération de données synthétiques textuelles est reliée à plusieurs domaines dont nous pouvons récupérer les méthodes.</p>
 <p>Une première approche repose sur une l’évaluation par tâche aval (<em>downstream task evaluation</em>) avec le paradigme de l’entraînement sur données synthétiques et test sur données réelles (<em>TSTR</em>). Originellement développée pour de la génération de données synthétiques médicales <span class="citation" data-cites="esteban2017real">(<a href="#ref-esteban2017real" role="doc-biblioref">Esteban et al. 2017</a>)</span>, l’hypothèse fondamentale de cette méthodologie stipule que la qualité et la fidélité d’un jeu de données synthétiques se mesurent à sa capacité à se substituer, partiellement ou totalement, aux données réelles pour l’entraînement d’un classifieur, sans dégrader ses performances de généralisation sur un environnement de test authentique.</p>
 </section>
 </section>
-<section id="la-donnée-disponible" class="level1" data-number="10">
-<h1 data-number="10"><span class="header-section-number">10</span> La donnée disponible</h1>
+<section id="la-donnée-disponible" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> La donnée disponible</h1>
 <p>Pour rappel, l’étude se concentre sur le cas de la NAF 2025, mais la structure des données utilisées est très similaire à d’autres nomenclatures et donc appliquable dans d’autres cas, tant qu’il y a bien une notice exhaustive.</p>
-<section id="la-notice-de-la-nomenclature" class="level2" data-number="10.1">
-<h2 data-number="10.1" class="anchored" data-anchor-id="la-notice-de-la-nomenclature"><span class="header-section-number">10.1</span> La notice de la nomenclature</h2>
+<section id="la-notice-de-la-nomenclature" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="la-notice-de-la-nomenclature"><span class="header-section-number">9.1</span> La notice de la nomenclature</h2>
 <p>La notice NAF 2025 a une structure hiérarchique sur cinq niveaux emboîtés. Elle est composée de 21 sections, 87 divisions, 287 groupes, 651 classes et 747 sous-classes, de sorte à partager des points communs avec les nomenclatures européennes et internationales d’activités d’entreprise <span class="citation" data-cites="insee2025naf">(<a href="#ref-insee2025naf" role="doc-biblioref">Insee 2025</a>)</span>. On peut retrouver tous les détails sous forme de tableau dans un fichier <code>.xlsx</code> avec les attributs suivants pour chaque catégorie :</p>
 <ul>
 <li><strong>Code</strong> : chaîne de caractère courte unique à chaque catégorie, dont l’écriture conserve l’aspect hiérarchique.</li>
@@ -4532,17 +4512,24 @@ Important
 <p>D’autres éléments peuvent être présents mais sont redondants par rapport aux informations indiquées ci-dessus. Un exemple de notice détaillée se trouve en annexe.</p>
 <p>On notera <span class="math inline">\mathcal{Y}</span> l’ensemble des codes (uniques) des sous-classes de la NAF 2025. On a <span class="math inline">|\mathcal{Y}| = 747</span>. Par simplicité, en dehors de cette sous-partie, le mot code dans le rapport désigne un code dans <span class="math inline">\mathcal{Y}</span>.</p>
 </section>
-<section id="les-données-orginales" class="level2" data-number="10.2">
-<h2 data-number="10.2" class="anchored" data-anchor-id="les-données-orginales"><span class="header-section-number">10.2</span> Les données orginales</h2>
+<section id="les-données-orginales" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="les-données-orginales"><span class="header-section-number">9.2</span> Les données orginales</h2>
 <p>Le choix de la NAF 2025 n’est pas annodin dans notre cas. En plus de comporter une notice exhaustive sans aucun attribut vide, la base de données originale est très large et déjà travaillée dans d’autres projets en science des données à l’Insee. Cela donne plus de légitimité à son utilisation comme base de travail, même si des erreurs d’annotations peuvent persister (voir en annexe).</p>
-<p>La donnée originale provient de demandes de création de SIRET entre le 8 novembre 2022 et 27 octobre 2024 et est divisée en trois grands groupes indépendants :</p>
+<p>La donnée originale provient de formulaires remplis pour la création ou de modification d’établissements d’entreprise (création d’un nouveau SIRET) entre le 8 novembre 2022 et 27 octobre 2024. Elle est divisée en trois grands groupes indépendants :</p>
 <ul>
 <li><span class="math inline">\mathcal{X}_{train\_real}</span> : la donnée d’entraînement, composée de <span class="math inline">1\,523\,268</span> lignes. Elle est utilisée pour l’entraînement de modèles et pour la génération de données.</li>
 <li><span class="math inline">\mathcal{X}_{val}</span> : la donnée de validation, composée <span class="math inline">380\,631</span> lignes. Elle est utilisée uniquement pour suivre les performances durant l’entraînement des codifieurs automatiques.</li>
 <li><span class="math inline">\mathcal{X}_{test}</span> : la donnée de test, composée <span class="math inline">475\,788</span> lignes. Elle est uniquement exploitée pour calculer les performances finales des codifieurs après leur entraînement.</li>
 </ul>
 <p>Chacune de ces bases de données est composée d’un libellé, d’un code associé (soit par un codificateur automatique en production, soit par un humain), et de variables catégorielles supplémentaires (que l’on n’utilisera pas ici).</p>
-<p>Il est à savoir que la taille des trois groupes a été actualiée à la mi-mai 2026, et donc que les travaux suivants ont été réalisés avec une base de donnée <span class="math inline">\mathcal{X}_{train\_real}</span> d’environ <span class="math inline">800\,000</span> lignes à la place : Naive Code2Text (pour le few-shot) et LabelGuard (pour l’entraînement).</p>
+</section>
+<section id="bruit-dans-la-donnée" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="bruit-dans-la-donnée"><span class="header-section-number">9.3</span> Bruit dans la donnée</h2>
+<ul>
+<li><p>Il est à savoir que la taille des trois groupes a été actualisée à la mi-mai 2026, et donc que les travaux suivants ont été réalisés avec une base de donnée <span class="math inline">\mathcal{X}_{train\_real}</span> d’environ <span class="math inline">800\,000</span> lignes à la place : Naive Code2Text (pour le few-shot) et LabelGuard (pour l’entraînement). &gt; preprocessing</p></li>
+<li><p>NAF 2008 → 2025</p></li>
+<li><p>codification en partie faite par le codificateur automatique: accuracy totale estimée à 93%</p></li>
+</ul>
 <section id="distribution-des-codes" class="level3">
 <h3 class="anchored" data-anchor-id="distribution-des-codes">Distribution des codes</h3>
 <p>La distribution des codes est particulière. En ordonnant les codes par leur fréquence, la <a href="#fig-code-log-freq" class="quarto-xref">Figure 1</a> montre qu’environ 70 codes constituent la majeure partie de <span class="math inline">\mathcal{X}_{train\_real}</span>, et que les autres codes suivent une distribution exponentielle selon leur rang. Cette distribution inégale impose des précautions lors de l’analyse de performances générales.</p>
@@ -4561,12 +4548,12 @@ Figure 1: Distribution des codes dans <span class="math inline">\mathcal{X}_{tr
 </section>
 </section>
 </section>
-<section id="méthode-de-génération-des-données" class="level1" data-number="11">
-<h1 data-number="11"><span class="header-section-number">11</span> Méthode de génération des données</h1>
+<section id="méthode-de-génération-des-données" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Méthode de génération des données</h1>
 <p>La génération de données textuelles a été réalisée grâce à des LLMs. L’Insee détient sa propre infrastructure de calcul, sur laquelle on peut utiliser plusieurs modèles <em>open-weight</em>. Ces modèles pré-entrainés ont pour particularité d’être téléchargeables en ligne gratuitement et réutilisables par n’importe qui à condition d’avoir les ressources nécessaires. J’ai ainsi utilisé les LLMs <code>google/gemma-3-27b-it</code> <span class="citation" data-cites="gemma3">(<a href="#ref-gemma3" role="doc-biblioref"><span class="nocase">Gemma Team et al.</span> 2025</a>)</span> puis <code>google/gemma-4-26b-a4b-it</code> <span class="citation" data-cites="gemma4">(<a href="#ref-gemma4" role="doc-biblioref">Google DeepMind 2026</a>)</span> à sa sortie.</p>
 <p>Il est à savoir que d’autres modèles — par exemple <code>openai/gpt-oss-120b</code> <span class="citation" data-cites="openai2025gptoss">(<a href="#ref-openai2025gptoss" role="doc-biblioref">OpenAI 2025</a>)</span> — ont été testés initialement pour de la génération de libellés simple. Les différences entre les LLMs n’étant pas notables qualitativement, le choix a été de garder le modèle le plus utilisé par les équipes à l’Insee pour deux raisons. Déjà, celles-ci sont les plus susceptibles de reprendre les travaux réalisés, donc autant faciliter la reproductibilité du travail. Aussi, les modèles génératifs Gemma sont devenus agentiques à partir de Gemma 3, permettant des réflexions plus complexes, et surtout l’appel d’outils — fonction utile par la suite.</p>
-<section id="sec-naive" class="level2" data-number="11.1">
-<h2 data-number="11.1" class="anchored" data-anchor-id="sec-naive"><span class="header-section-number">11.1</span> Naive Code2Text — Génération augmentée par la notice</h2>
+<section id="sec-naive" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="sec-naive"><span class="header-section-number">10.1</span> Naive Code2Text — Génération augmentée par la notice</h2>
 <section id="sec-principe" class="level3">
 <h3 class="anchored" data-anchor-id="sec-principe">Principe général</h3>
 <p>L’approche Naive Code2Text constitue la base du projet. Son principe est simple : pour chaque code de la nomenclature, on extrait les informations pertinentes de la notice (code, titre, quelques éléments <em>includes</em>, tous les éléments <em>excludes</em>) et on les fournit en contexte à un LLM, auquel on demande de générer un certain nombre de libellés plausibles pour ce code. On a également la possibilité de rajouter des exemples de libellés issus du jeu de données original d’entraînement <span class="math inline">\mathcal{X}_{train\_real}</span>. Le détail du processus est expliqué <a href="#fig-naive-single" class="quarto-xref">Figure 2</a>.</p>
@@ -4601,8 +4588,8 @@ Figure 3: Architecture parallélisée de Naive Code2Text
 </div>
 </section>
 </section>
-<section id="sec-retext" class="level2" data-number="11.2">
-<h2 data-number="11.2" class="anchored" data-anchor-id="sec-retext"><span class="header-section-number">11.2</span> Code2ReText — Ajouter un niveau de profondeur</h2>
+<section id="sec-retext" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="sec-retext"><span class="header-section-number">10.2</span> Code2ReText — Ajouter un niveau de profondeur</h2>
 <section id="sec-labelguard" class="level3">
 <h3 class="anchored" data-anchor-id="sec-labelguard">LabelGuard : discrimination des libellés IA/humain</h3>
 <p>Pour résoudre le problème de perfection des données générées, il fallait d’abord le quantifier. C’est l’objet de <strong>LabelGuard</strong> : un discriminateur entraîné à distinguer les libellés générés par une IA des libellés saisis par des humains. Le modèle s’appuie sur les <strong>embeddings des libellés</strong> en dimension 4096, ce qui lui permet de capturer des nuances sémantiques et stylistiques fines que les métriques de surface ne permettraient pas de détecter.</p>
@@ -4624,8 +4611,8 @@ Figure 3: Architecture parallélisée de Naive Code2Text
 <p>Ces performances sont remarquables et témoignent de la capacité du modèle à séparer nettement les deux distributions. LabelGuard est déployé en tant qu’API publique accessible à l’adresse <a href="https://labelguard.lab.sspcloud.fr/">labelguard.lab.sspcloud.fr</a>.</p>
 </section>
 </section>
-<section id="sec-architecture" class="level2" data-number="11.3">
-<h2 data-number="11.3" class="anchored" data-anchor-id="sec-architecture"><span class="header-section-number">11.3</span> Architecture : Une interface à deux agents</h2>
+<section id="sec-architecture" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="sec-architecture"><span class="header-section-number">10.3</span> Architecture : Une interface à deux agents</h2>
 <p>Fort de ce discriminateur, l’idée de Code2ReText est d’introduire une <strong>boucle de filtrage ou de réécriture</strong> dans le pipeline de génération. Dans le schéma de base, les libellés produits par le LLM sont soumis à LabelGuard : ceux qui sont identifiés comme trop artificiels sont soit rejetés, soit renvoyés au modèle pour réécriture.</p>
 <div id="fig-retext-loop" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Schéma Code2ReText avec LabelGuard en boucle">
 <figure class="quarto-float quarto-float-fig figure">
@@ -4650,11 +4637,11 @@ Figure 5: Code2ReText en version agentique
 </div>
 </section>
 </section>
-<section id="méthode-dévaluation-de-la-génération" class="level1" data-number="12">
-<h1 data-number="12"><span class="header-section-number">12</span> Méthode d’évaluation de la génération</h1>
+<section id="méthode-dévaluation-de-la-génération" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Méthode d’évaluation de la génération</h1>
 <p>L’évaluation d’un générateur de libellés synthétiques repose sur un axe principal et un secondaire, reprenant les objectifs décris en introduction. Le premier impose de mesurer l’influence de la présence de données synthétiques sur les performances du classifieur, et le second demande d’analyser la construction des libellés générés — autrement dit, leur sémantique.</p>
-<section id="évaluation-des-performances" class="level2" data-number="12.1">
-<h2 data-number="12.1" class="anchored" data-anchor-id="évaluation-des-performances"><span class="header-section-number">12.1</span> Évaluation des performances</h2>
+<section id="évaluation-des-performances" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="évaluation-des-performances"><span class="header-section-number">11.1</span> Évaluation des performances</h2>
 <p>Le protocole expérimental se déroule en deux phases successives. Une première phase est dédiée à l’optimisation de l’architecture du classifieur sur les données réelles. Une deuxième phase applique cette configuration optimale pour mesurer l’impact de l’injection progressive de données synthétiques via des structures d’ensembles imbriqués.</p>
 <section id="donnée-utilisée" class="level3">
 <h3 class="anchored" data-anchor-id="donnée-utilisée">Donnée utilisée</h3>
@@ -4704,8 +4691,8 @@ Figure 5: Code2ReText en version agentique
 <p>L’évaluation des performances de la donnée synthétique consistera alors à étudier les mêmes métriques qu’à la phase 1, mais avec différentes proportions <span class="math inline">\alpha</span> de données synthétiques. On s’intéressera par ailleurs à quelques métriques sur les données d’entraînement <span class="math inline">\mathcal{M}_{\alpha}</span> qui apportent un regard différent sur les données injectées.</p>
 </section>
 </section>
-<section id="evaluation-sémantique" class="level2" data-number="12.2">
-<h2 data-number="12.2" class="anchored" data-anchor-id="evaluation-sémantique"><span class="header-section-number">12.2</span> Evaluation sémantique</h2>
+<section id="evaluation-sémantique" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="evaluation-sémantique"><span class="header-section-number">11.2</span> Evaluation sémantique</h2>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -4721,10 +4708,10 @@ Note
 </div>
 </section>
 </section>
-<section id="résultats" class="level1" data-number="13">
-<h1 data-number="13"><span class="header-section-number">13</span> Résultats</h1>
-<section id="evaluation-des-performances" class="level2" data-number="13.1">
-<h2 data-number="13.1" class="anchored" data-anchor-id="evaluation-des-performances"><span class="header-section-number">13.1</span> Evaluation des performances</h2>
+<section id="résultats" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> Résultats</h1>
+<section id="evaluation-des-performances" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="evaluation-des-performances"><span class="header-section-number">12.1</span> Evaluation des performances</h2>
 <section id="sec-resultats-naive" class="level3">
 <h3 class="anchored" data-anchor-id="sec-resultats-naive">NaiveCode2Text</h3>
 <p>Les résultats obtenus avec cette approche sont à la fois encourageants et révélateurs d’une limite fondamentale. Du côté positif, la génération s’avère <strong>très fidèle</strong> à la notice, ce qui garantit une bonne cohérence sémantique entre les libellés générés et les codes correspondants. La <strong>diversité thématique</strong> est également au rendez-vous, héritée directement de la richesse de la notice.</p>
@@ -4761,8 +4748,8 @@ Important
 <h3 class="anchored" data-anchor-id="code2retext">Code2ReText</h3>
 </section>
 </section>
-<section id="analyse-quantitative" class="level2" data-number="13.2">
-<h2 data-number="13.2" class="anchored" data-anchor-id="analyse-quantitative"><span class="header-section-number">13.2</span> Analyse quantitative</h2>
+<section id="analyse-quantitative" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="analyse-quantitative"><span class="header-section-number">12.2</span> Analyse quantitative</h2>
 <section id="naivecode2text" class="level3">
 <h3 class="anchored" data-anchor-id="naivecode2text">NaiveCode2Text</h3>
 </section>
@@ -4771,10 +4758,10 @@ Important
 </section>
 </section>
 </section>
-<section id="sec-perspectives" class="level1" data-number="14">
-<h1 data-number="14"><span class="header-section-number">14</span> Perspectives</h1>
-<section id="limites-actuelles" class="level2" data-number="14.1">
-<h2 data-number="14.1" class="anchored" data-anchor-id="limites-actuelles"><span class="header-section-number">14.1</span> Limites actuelles</h2>
+<section id="sec-perspectives" class="level1" data-number="13">
+<h1 data-number="13"><span class="header-section-number">13</span> Perspectives</h1>
+<section id="limites-actuelles" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="limites-actuelles"><span class="header-section-number">13.1</span> Limites actuelles</h2>
 <ul>
 <li>génération faite sur un ensemble plus large que lors de l’évaluation</li>
 <li>pas d’entrainement de nouveaux modèles (on en fixe un)</li>
@@ -4782,18 +4769,18 @@ Important
 <li></li>
 </ul>
 </section>
-<section id="sec-futur" class="level2" data-number="14.2">
-<h2 data-number="14.2" class="anchored" data-anchor-id="sec-futur"><span class="header-section-number">14.2</span> Travail futur</h2>
+<section id="sec-futur" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="sec-futur"><span class="header-section-number">13.2</span> Travail futur</h2>
 <p>La prochaine étape pour Code2ReText est son amélioration systématique. Il s’agit notamment d’<strong>intégrer LabelGuard de façon plus robuste</strong> dans le pipeline, afin qu’il soit consulté de manière systématique et non optionnelle. Un défi important concerne également la prévention des <strong>hallucinations et autres comportements indésirables</strong> du modèle générateur : recopier le même libellé en boucle, produire du texte vide de sens, ou pire, apprendre à tromper le discriminateur plutôt qu’à générer des données de qualité.</p>
 <p>Sur un horizon plus long, le projet envisage de passer au <strong>Supervised Fine-Tuning (SFT)</strong> d’un modèle de langage sur la tâche de génération. L’idée centrale est de mimer directement la distribution sémantique des libellés réels, en entraînant le modèle à reproduire les caractéristiques stylistiques et linguistiques observées dans les données humaines. Cette approche soulève cependant un enjeu important de <strong>stabilité</strong> au cours des itérations d’entraînement. Si le SFT s’avère insuffisant, le projet pourrait évoluer vers un paradigme d’apprentissage par renforcement à partir du retour humain (<strong>RLHF</strong>), où le signal de récompense serait fourni par LabelGuard.</p>
 </section>
-<section id="sec-production" class="level2" data-number="14.3">
-<h2 data-number="14.3" class="anchored" data-anchor-id="sec-production"><span class="header-section-number">14.3</span> Parvenir à un outil exploitable et performant</h2>
+<section id="sec-production" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="sec-production"><span class="header-section-number">13.3</span> Parvenir à un outil exploitable et performant</h2>
 <p>La phase d’évaluation finale consistera en un <strong>benchmark complet</strong> des différents générateurs développés. Celui-ci mesurera à la fois les performances du classifieur entraîné sur la donnée synthétique, et les caractéristiques intrinsèques des données générées — diversité et similarité avec la distribution originale. Ce benchmark permettra de sélectionner le générateur le plus performant en vue de la mise en production.</p>
 <p>L’objectif final est de déployer une <strong>API de génération pour la nomenclature NAF</strong>, directement utilisable par les équipes de l’INSEE. La question d’un déploiement pour la NACE européenne, qui nécessiterait une étape de traduction automatique, est également à l’étude. À plus long terme, l’ambition est de fournir des scripts génériques réutilisables pour d’autres nomenclatures statistiques.</p>
 </section>
-<section id="sec-planning" class="level2" data-number="14.4">
-<h2 data-number="14.4" class="anchored" data-anchor-id="sec-planning"><span class="header-section-number">14.4</span> Planning</h2>
+<section id="sec-planning" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="sec-planning"><span class="header-section-number">13.4</span> Planning</h2>
 <div id="fig-planning" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Diagramme de planning du stage">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-planning-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -4806,8 +4793,8 @@ Figure 6: Planning prévisionnel du stage
 </div>
 </section>
 </section>
-<section id="annexe" class="level1" data-number="15">
-<h1 data-number="15"><span class="header-section-number">15</span> Annexe</h1>
+<section id="annexe" class="level1" data-number="14">
+<h1 data-number="14"><span class="header-section-number">14</span> Annexe</h1>
 <p>Détail configuration du classifieur</p>
 <p>Prompts de référence</p>
 <p>Tableau ML pour le choix du modèle</p>
@@ -4819,6 +4806,15 @@ Figure 6: Planning prévisionnel du stage
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Les références</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-belinkov2018synthetic" class="csl-entry" role="listitem">
+Belinkov, Yonatan, et Yonatan Bisk. 2018. <em>Synthetic and Natural Noise Both Break Neural Machine Translation</em>. <a href="https://arxiv.org/abs/1711.02173">https://arxiv.org/abs/1711.02173</a>.
+</div>
+<div id="ref-bojanowski2017enriching" class="csl-entry" role="listitem">
+Bojanowski, Piotr, Edouard Grave, Armand Joulin, et Tomas Mikolov. 2017. <em>Enriching Word Vectors with Subword Information</em>. <a href="https://arxiv.org/abs/1607.04606">https://arxiv.org/abs/1607.04606</a>.
+</div>
+<div id="ref-bowman2016generating" class="csl-entry" role="listitem">
+Bowman, Samuel, Luke Vilnis, Oriol Vinyals, Andrew Dai, Rafal Jozefowicz, et Samy Bengio. 2016. <span>« Generating sentences from a continuous space »</span>. <em>Proceedings of the 20th SIGNLL conference on computational natural language learning</em>, 10‑21.
+</div>
 <div id="ref-brown2020" class="csl-entry" role="listitem">
 <span class="nocase">Brown, Tom B., Benjamin Mann, Nick Ryder, et and others</span>. 2020. <span>« Language Models are Few-Shot Learners »</span>. <em>Advances in Neural Information Processing Systems (NeurIPS)</em>.
 </div>
@@ -4834,8 +4830,14 @@ Cynthia, Dwork, et Roth Aaron. 2014. <span>« The Algorithmic Foundations of Di
 <div id="ref-dettmar1998knowledge" class="csl-entry" role="listitem">
 Dettmar, Harvey, Xiaohui Liu, Roger Johnson, et Alan Payne. 1998. <span>« Knowledge-based data generation »</span>. <em>Knowledge-Based Systems</em> 11 (3-4): 167‑77.
 </div>
+<div id="ref-ding2025testing" class="csl-entry" role="listitem">
+Ding, Tianxuan, Zhimei Li, et Yaowu Zhang. 2025. <span>« Testing the equality of distributions using integrated maximum mean discrepancy »</span>. <em>Journal of Statistical Planning and Inference</em> 236: 106246. https://doi.org/<a href="https://doi.org/10.1016/j.jspi.2024.106246">https://doi.org/10.1016/j.jspi.2024.106246</a>.
+</div>
 <div id="ref-esteban2017real" class="csl-entry" role="listitem">
 Esteban, Cristóbal, Stephanie L Hyland, et Gunnar Rätsch. 2017. <span>« Real-valued (medical) time series generation with recurrent conditional gans »</span>. <em>arXiv preprint arXiv:1706.02633</em>.
+</div>
+<div id="ref-gao2023self" class="csl-entry" role="listitem">
+Gao, Haoyu, Ting-En Lin, Hangyu Li, et al. 2023. <em>Self-Explanation Prompting Improves Dialogue Understanding in Large Language Models</em>. <a href="https://arxiv.org/abs/2309.12940">https://arxiv.org/abs/2309.12940</a>.
 </div>
 <div id="ref-gemma3" class="csl-entry" role="listitem">
 <span class="nocase">Gemma Team, Aishwarya Kamath, et al.</span> 2025. <em>Gemma 3 Technical Report</em>. <a href="https://arxiv.org/abs/2503.19786">https://arxiv.org/abs/2503.19786</a>.
@@ -4855,14 +4857,41 @@ Jin, Xiaomeng. 2025. <em>Knowledge-aware data generation</em>.
 <div id="ref-xu2019" class="csl-entry" role="listitem">
 Lei, Xu, Skoularidou Maria, Cuesta-Infante Alfredo, et Veeramachaneni Kalyan. 2019. <span>« Modeling Tabular Data using Conditional GAN »</span>. <em>Advances in Neural Information Processing Systems (NeurIPS)</em>.
 </div>
+<div id="ref-long2024llms" class="csl-entry" role="listitem">
+Long, Lin, Rui Wang, Ruixuan Xiao, et al. 2024. <span>« On LLMs-driven synthetic data generation, curation, and evaluation: A survey »</span>. <em>Findings of the Association for Computational Linguistics: ACL 2024</em>, 11065‑82.
+</div>
 <div id="ref-openai2025gptoss" class="csl-entry" role="listitem">
 OpenAI. 2025. <em><span>gpt-oss-120b &amp; gpt-oss-20b Model Card</span></em>. <a href="https://arxiv.org/abs/2508.10925">https://arxiv.org/abs/2508.10925</a>.
+</div>
+<div id="ref-ouyang2022training" class="csl-entry" role="listitem">
+<span class="nocase">Ouyang, Long, Jeffrey Wu, Xu Jiang, et al.</span> 2022. <span>« Training language models to follow instructions with human feedback »</span>. <em>Advances in neural information processing systems</em> 35: 27730‑44.
+</div>
+<div id="ref-quinonero2008dataset" class="csl-entry" role="listitem">
+Quiñonero-Candela, Joaquin, Masashi Sugiyama, Anton Schwaighofer, et Neil D Lawrence. 2008. <em>Dataset shift in machine learning</em>. Mit Press.
+</div>
+<div id="ref-reimers2019sentence" class="csl-entry" role="listitem">
+Reimers, Nils, et Iryna Gurevych. 2019. <span>« Sentence-<span>BERT</span>: Sentence Embeddings using <span>S</span>iamese <span>BERT</span>-Networks »</span>. In <em>Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)</em>, édité par Kentaro Inui, Jing Jiang, Vincent Ng, et Xiaojun Wan. Association for Computational Linguistics. <a href="https://doi.org/10.18653/v1/D19-1410">https://doi.org/10.18653/v1/D19-1410</a>.
+</div>
+<div id="ref-reinhart2025do" class="csl-entry" role="listitem">
+Reinhart, Alex, Ben Markey, Michael Laudenbach, et al. 2025. <span>« Do LLMs write like humans? Variation in grammatical and rhetorical styles »</span>. <em>Proceedings of the National Academy of Sciences</em> 122 (8). <a href="https://doi.org/10.1073/pnas.2422455122">https://doi.org/10.1073/pnas.2422455122</a>.
+</div>
+<div id="ref-sanh2019distilbert" class="csl-entry" role="listitem">
+Sanh, Victor, Lysandre Debut, Julien Chaumond, et Thomas Wolf. 2019. <span>« DistilBERT, a distilled version of <span>BERT:</span> smaller, faster, cheaper and lighter »</span>. <em>CoRR</em> abs/1910.01108. <a href="http://arxiv.org/abs/1910.01108">http://arxiv.org/abs/1910.01108</a>.
 </div>
 <div id="ref-schick2021" class="csl-entry" role="listitem">
 Schick, Timo, et Hinrich Schütze. 2021. <span>« Generating Datasets with Pretrained Language Models »</span>. <em>Proceedings of the 2021 Conference concerning Empirical Methods in Natural Language Processing (EMNLP)</em>.
 </div>
 <div id="ref-statbelnace" class="csl-entry" role="listitem">
 StatBel. s. d. <span>« NACE-BEL 2025 »</span>. Consulté le 4 juillet 2026. <a href="https://statbel.fgov.be/fr/propos-de-statbel/methodologie/classifications/nace-bel-2025">https://statbel.fgov.be/fr/propos-de-statbel/methodologie/classifications/nace-bel-2025</a>.
+</div>
+<div id="ref-travieso2024analytical" class="csl-entry" role="listitem">
+Travieso, Gonzalo, Alexandre Benatti, et Luciano da F. Costa. 2024. <em>An Analytical Approach to the Jaccard Similarity Index</em>. <a href="https://arxiv.org/abs/2410.16436">https://arxiv.org/abs/2410.16436</a>.
+</div>
+<div id="ref-tsymbal2004problem" class="csl-entry" role="listitem">
+Tsymbal, Alexey. 2004. <span>« The problem of concept drift: definitions and related work »</span>. <em>Computer Science Department, Trinity College Dublin</em> 106 (2): 58.
+</div>
+<div id="ref-zhang2026instruction" class="csl-entry" role="listitem">
+<span class="nocase">Zhang, Shengyu, Linfeng Dong, Xiaoya Li, et al.</span> 2026. <span>« Instruction tuning for large language models: A survey »</span>. <em>ACM Computing Surveys</em> 58 (7): 1‑36.
 </div>
 </div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
