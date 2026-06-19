@@ -41,56 +41,95 @@ bibliography: references.bib
 
 # Préambule {#sec-preambule .unnumbered}
 
-Mon stage s'est déroulé à l'Institut National de la Statistique et des Etudes Economiques (Insee), et plus précisément au sein de son laboratoire d'innovation : le SSP Lab. Très centré autour du Natural Language Processing (NLP), j'ai été amené à travailler sur la génération de données synthétiques textuelles. Ce rapport présente ma démarche, les difficultés rencontrées ainsi que les résultats que j'ai obtenus. Il se termine par un regard critique sur les contributions apportées et sur les perspectives envisagées.
+Mon stage s'est déroulé à l'Institut National de la Statistique et des Etudes Economiques (Insee), et plus précisément au sein de son laboratoire d'innovation : le SSP Lab. Très centré autour du traitement automatique du langage, j'ai été amené à travailler sur la génération de données synthétiques textuelles. Ce rapport présente ma démarche, les difficultés rencontrées ainsi que les résultats que j'ai obtenus. Il se termine par un regard critique sur les contributions apportées et sur les perspectives envisagées.
 
 # Introduction
 
 ### Le défi de la codification automatique de la NAF
 
-Classer des textes dans des catégories fixes (appelées nomenclatures) est essentiel pour produire des statistiques publiques de qualité. D'un côté, les chiffres publiés doivent être précis pour éclairer le débat économique. Prenez l'Indice des Prix à la Consommation (IPC) qui mesure l'inflation, celui-ci utilise la nomenclature internationale COICOP [@inseecoicop] pour donner le bon poids à chaque type de dépense des ménages. D'un autre côté, respecter ces catégories est souvent une obligation légale : chaque pays de l'Union européenne doit classer l'activité économique de ses entreprises selon la Nomenclature statistique des Activités économiques (NACE) [@statbelnace].
+Classer des textes dans des catégories fixes (appelées nomenclatures) est essentiel pour produire des statistiques publiques de qualité. D'un côté, les chiffres publiés doivent être précis pour éclairer le débat économique. Prenez l'Indice des Prix à la Consommation (IPC) qui mesure l'inflation, celui-ci utilise la nomenclature internationale COICOP [@inseecoicop] pour donner le bon poids à chaque type de dépense des ménages. D'un autre côté, respecter ces catégories est souvent une obligation légale : chaque pays de l'Union européenne doit classer l'activité économique de ses entreprises selon la Nomenclature statistique des Activités économiques dans la Communauté Européenne (NACE) [@statbelnace].
 
-En pratique, appliquer ce système à l'échelle d'un pays pose de gros problèmes industriels. Il faut d'abord créer un guide très précis (la notice de codification), puis être capable de gérer un flux massif de données. En France, la version nationale de la NACE s'appelle la Nomenclature d'Activité Française (NAF). Elle impose d'associer chaque année plus d'un million de nouvelles entreprises à l'un des 747 codes existants. À l'origine, ce travail était fait par des agents administratifs qui lisaient la description textuelle écrite par les créateurs d'entreprises. Mais face à ce volume énorme et au coût de l'analyse humaine, il est devenu indispensable d'automatiser ce traitement avec des méthodes de NLP (*Natural Language Processing*) pour aider les agents et harmoniser les choix.
+En pratique, appliquer ce système à l'échelle d'un pays pose de gros problèmes industriels. Il faut d'abord créer un guide très précis (la notice de codification), puis être capable de gérer un flux massif de données. En France, la version nationale de la NACE s'appelle la Nomenclature d'Activité Française (NAF). Elle impose d'associer chaque année des millions d'établissements d'entreprise à l'un des 747 codes existants. À l'origine, ce travail était fait par des agents administratifs qui lisaient la description textuelle écrite par les créateurs d'entreprises. Mais face à ce volume énorme, il est devenu indispensable d'automatiser le processus avec des méthodes de traitement automatique du langage (*Natural Language Processing*, NLP) pour aider les agents et limiter les erreurs.
 
 ### Déséquilibre extrême et limites du secret statistique
 
-Pour entraîner un classifieur de type *Text-to-Code* (du texte vers le code), on se heurte à un problème classique en IA : le déséquilibre extrême des classes (*long-tail classification*). Les données réelles ne couvrent pas toutes les catégories de la même manière. Les activités courantes saturent le début de la distribution, tandis que la majorité des codes de la nomenclature se situent dans la "queue de distribution", où il n'y a presque aucun exemple.
+Pour entraîner un classifieur de type *Text2Code* (du texte vers le code), on se heurte à un problème classique en IA : le déséquilibre extrême des classes (*long-tail classification*). Les données réelles ne couvrent pas toutes les catégories de la même manière. Les activités courantes saturent le début de la distribution, tandis que la majorité des codes de la nomenclature se situent dans la "queue de distribution", où il n'y a presque aucun exemple.
 
-Les chiffres de la NAF 2025 montrent bien ce déséquilibre : sur un fichier d'entraînement de plus d'un million de libellés réels, la moitié des 747 codes comprend moins de 50 exemples. À cause de cette rareté, les modèles supervisés classiques ne parviennent pas à apprendre ces catégories, ce qui crée des erreurs importantes lors de la mise en production.
+Les chiffres de la NAF 2025 montrent bien ce déséquilibre : sur un fichier d'entraînement de plus d'un million de libellés réels, un code sur deux comprend moins de 60 exemples. À cause de cette rareté, les modèles supervisés classiques ne parviennent pas à apprendre ces catégories, ce qui crée des erreurs importantes lors de la mise en production.
 
 À cela s'ajoutent deux contraintes majeures :
 
-1. Quand une nomenclature est mise à jour, cela crée un décalage immédiat (*distribution shift*) entre les données passées et les nouvelles données réelles.
-2. La loi sur le secret statistique et le RGPD interdisent de diffuser ces vrais fichiers à des personnes extérieures (pour des cours, des hackathons ou des concours d'écoles). Ce manque de données ouvertes empêche la communauté scientifique de tester de nouveaux modèles sur ces sujets.
+1. Quand une nomenclature est mise à jour ou que les tendances changent dans les créations d'entreprise, cela crée un décalage immédiat (*distribution shift*) entre les données passées et les nouvelles données réelles. Un bon exemple est la popularité récente des logements meublés non professionnels (LMNP) qui a fait grimper le nombre de codes `68.20G`, anciennement `68.20A` (NAF 2008).
+2. La loi sur le secret statistique et le RGPD interdisent de diffuser ces vrais fichiers à des personnes extérieures (pour des cours, des hackathons ou des concours d'écoles). Ce manque de données ouvertes empêche la communauté scientifique de tester de nouveaux modèles sur ces sujets et donc de contribuer à des progrès technologiques.
+
 
 ### Tension entre performance de classification et fidélité de diffusion
 
-Le système actuel de l'Insee utilise un premier niveau de classification automatique (basé sur FastText *[Insérer citation]*). Il permet de coder tout seul environ 70 % des cas les plus simples. Cependant, ses performances bloquent sur les concepts complexes ou rares. La limite de cette méthode est qu'elle n'utilise pas la notice officielle, alors que c'est l'outil de base de l'expert humain pour trancher les cas difficiles.
+Le système de codification automatique utilisé depuis novembre 2022 à l'Insee repose sur FastText [@bojanowski2017enriching]. S'il permet de traiter seul environ 70 % des cas les plus simples, ce modèle n'est plus à jour face aux architectures modernes de l'état de l'art, comme les transformeurs légers [@sanh2019distilbert] ou les encodeurs denses [@reimers2019sentence], qui offrent de bien meilleures capacités de compréhension contextuelle. De plus, les retours métiers des experts de la nomenclature mettent régulièrement en évidence des erreurs de prédiction de ce classifieur. Une voie majeure pour franchir un cap en performance réside dans l'augmentation du jeu de données d'entraînement par l'injection de données synthétiques issues de grands modèles de langage (LLM).
 
-Les grands modèles de langage (LLM) permettent de changer d'approche car ils savent intégrer des connaissances textuelles externes. Mais utiliser un LLM pour générer des données synthétiques crée une contradiction directe entre deux objectifs :
+Cependant, l'introduction de ces données synthétiques au sein d'un flux de production réel soulève des défis théoriques profonds. En s'appuyant sur le cadre de référence du décalage de données (*dataset shift*) théorisé par @quinonero2008dataset, notre cas d'étude est confronté à trois mécanismes potentitels de décalage de la loi jointe $P(X, Y)$ (où $X$ représente le libellé textuel et $Y$ le code de la nomenclature) :
 
-1. **L'Axe Performance (Aide au classifieur) :** Pour améliorer le classifieur *Text-to-Code* sur les codes rares, il faut lui donner un maximum d'informations théoriques issues de la notice. On cherche à générer des descriptions fidèles au dictionnaire.
-2. **L'Axe Diffusion (Création de jeux de données) :** Pour diffuser un fichier synthétique réaliste, il faut au contraire copier les défauts des données réelles. Le modèle doit reproduire le déséquilibre des codes, mais aussi le style des humains (fautes d'orthographe, abréviations bizarres, phrases coupées, ...).
+1. **Le *prior probability shift* :** Il intervient lorsque la distribution des classes $P(Y)$ est modifiée. La nomenclature réelle présente une distribution très déséquilibrée. Pour aider un classifieur à apprendre les catégories rares, la pratique classique en apprentissage automatique consiste à modifier artificiellement $P(Y)$ (par exemple via une loi uniforme), créant un *prior shift* volontaire par rapport au flux réel.
+2. **Le *covariate shift* :** Il apparaît lorsque la distribution des variables explicatives $P(X)$ change. C'est le risque majeur de la génération synthétique naïve : un LLM non guidé produit des textes académiques, parfaits et sans défauts. Sa distribution $P_{synth}(X|Y)$ présente un décalage de domaine critique par rapport au style empirique des déclarants humains $P_{real}(X|Y)$ (caractérisé par des fautes, des abréviations et des structures hachées).
+3. **Le *concept drift***, théorisé par [@tsymbal2004problem] : Il se traduit par une modification de la règle de décision $P(Y|X)$. C'est le point de départ de notre étude, matérialisé par le passage à la nouvelle nomenclature NAF 2025. Un même libellé textuel peut changer de catégorie légale par rapport aux années précédentes. Dans notre cas, ce shift est documenté et encadré par la notice officielle.
 
-Comme rien ne garantit qu'un même outil puisse réussir ces deux tâches opposées, trouver une méthode capable de gérer cette tension est le cœur scientifique de ce travail.
+La tension de notre travail réside dans le fait que la création d'un jeu de données optimisé pour l'apprentissage d'un classifieur ne coïncide pas naturellement avec celle d'un jeu de données destiné à la diffusion publique (*open-data*). L'objectif de diffusion pure exige de mimer fidèlement la distribution $P(X)$ réelle qui contient des libellés hors-sujets (valeurs aberrantes) et demande la même distribution $P(Y)$, alors que l'optimisation du classifieur demande une stratégie inverse sur $P(Y)$ et un contrôle strict de la pertinence du bruit textuel injecté.
 
-### Approche proposée et Contributions : Le découplage entre la structure et l'expression humaine
+### Approche proposée et contributions
 
-Pour résoudre cette tension, nous proposons une idée simple : **séparer strictement la structure de la nomenclature (la distribution des codes) et l'expression humaine (le style du texte)**. Notre hypothèse est qu'un bon générateur (*Code-to-Text*) doit apprendre un style stable, sans se soucier de la fréquence réelle des codes. Une fois que le modèle maîtrise ce style, il suffit de changer la loi d'échantillonnage des codes $P(Y)$ en entrée pour répondre à l'un ou l'autre des objectifs.
+Pour articuler ces objectifs sans qu'ils ne se nuisent, nous proposons de **découpler la structure de la nomenclature de l'expression humaine en utilisant le LLM pour réduire le *covariate shift* au niveau conditionnel, c'est-à-dire pour chaque code $Y$**.
+
+Notre approche consiste à guider le processus de génération pour que la distribution conditionnelle synthétique $P_{synth}(X | Y)$ converge vers la distribution humaine $P_{real}(X | Y)$. Plutôt que de laisser le LLM dériver vers son style académique naturel, nous lui apprenons à transférer le style et la texture sémantique des déclarants (abréviations, syntaxe métier brute) sur la base des concepts immuables de la notice. Une fois ce générateur conditionnel robuste obtenu, la dualité des cas d'usage se résout par simple manipulation de la loi d'échantillonnage des codes $P(Y)$ en entrée du pipeline : le *prior probability shift* est ainsi annulé pour le scénario de diffusion open-data, ou volontairement exploité (distribution uniforme) pour maximiser les performances du classifieur aval sur la queue de distribution.
 
 Les contributions principales de ce travail sont :
 
-* **La création de `LabelGuard` :** Un discriminateur capable de mesurer le décalage de domaine (*domain shift*) entre le style parfait du LLM et le style bruité de l'humain. Il met en évidence la signature stylistique (« watermark ») laissée par les modèles de langage.
-* **L'architecture `Code2ReText` :** Un système à deux LLM (Acteur-Superviseur) qui utilise les alertes de `LabelGuard` pour forcer le modèle à ajouter des défauts humains dans son texte, rendant l'IA plus difficile à détecter.
-* **Une évaluation par ensembles imbriqués (Protocole $\mathcal{M}_\alpha$) :** Une analyse précise de l'impact des données synthétiques sur le classifieur `Text2Code`. Elle montre un gain ciblé sur les classes rares, mais aussi une chute des performances si le fichier contient plus de 85 % de données synthétiques.
-* **Un outil reproductible :** Un pipeline open source et agnostique, réutilisable pour d'autres nomenclatures (comme la NACE européenne).
+* **La création de `LabelGuard` :** Un discriminateur capable de détecter le *covariate shift* entre les styles employés par le LLM et l'humain, mettant en évidence l'empreinte (*watermark*) laissée par les modèles de langage dans l'espace des plongements vectoriels.
+* **L'architecture `Code2ReText` :** Un framework agentique à deux LLM (Générateur-Superviseur) qui utilise le signal de `LabelGuard` pour forcer l'alignement stylistique et réduire le *covariate shift* conditionnel.
+* **Une évaluation par ensembles imbriqués (protocole $\mathcal{M}_\alpha$) :** Une analyse fine de l'influence de la proportion de données synthétiques sur le classifieur `Text2Code`, isolant les gains spécifiques sur les classes de faible fréquence et identifiant le point de saturation synthétique.
+* **Un pipeline reproductible :** Un code entièrement open source et agnostique, conçu pour être immédiatement transposable à d'autres nomenclatures hiérarchiques (comme la NACE européenne).
 
 Le reste de ce rapport est structuré ainsi. La Section 2 présente l'état de l'art de la génération de données en NLP. La Section 3 détaille le fonctionnement de `LabelGuard`. La Section 4 introduit les générateurs `NaiveCode2Text` et `Code2ReText`. La Section 5 décrit le protocole expérimental et les choix d'échantillonnage. La Section 6 analyse les résultats, et la Section 7 présente les conclusions et les perspectives.
 
 
 # État de l'Art
-## Augmentation de données classique en NLP vs Génération par Grands Modèles de Langage (LLM)
-## Génération guidée par taxonomie et génération augmentée par récupération (RAG)
-## Transfert de style et discrimination de la qualité dans les jeux de données synthétiques
+
+### Augmentation de données textuelles par des modèles de langage
+
+Avant l'avènement des grands modèles de langage, l'augmentation de données textuelles en NLP reposait principalement sur des règles de transformation de surface ou des substitutions locales. Les approches traditionnelles exploitent des perturbations syntaxiques, du remplacement lexical basé sur des thésaurus comme WordNet, ou des techniques de traduction aller-retour (*back-translation*) [@shorten2021]. Bien que ces méthodes permettent d'accroître artificiellement le volume du corpus d'entraînement, elles souffrent d'une forte rigidité sémantique : elles se contentent de reformuler les structures existantes sans introduire de nouveaux concepts ni enrichir le vocabulaire métier.
+
+L'introduction des grands modèles de langage (LLM) a transformé ce domaine en permettant une génération de données textuelles sensible au contexte. L'approche la plus courante repose sur l'apprentissage en contexte (*in-context learning*) via des techniques de *few-shot prompting* [@brown2020]. Dans ce cadre, le modèle reçoit une poignée d'exemples issus du jeu de données réel pour assimiler le style, la structure et le ton des libellés cibles. Des frameworks plus avancés incitent le LLM à générer des variations textuelles en introduisant des contraintes de diversité sémantique ou linguistique directement dans le prompt [@schick2021].
+
+Une étape fondatrice dans la génération de données textuelle est Self-Instruct proposé par @wang2022self. L'idée consiste à utiliser un LLM pour générer automatiquement des paires instruction-réponse qui serviront ensuite à entraîner ou spécialiser un autre modèle. Cette approche a démontré qu'un système pouvait améliorer ses performances à partir de données qu'il avait lui-même contribué à produire.
+
+Néanmoins, qu'elles soient basées sur des règles heuristiques ou sur du *few-shot prompting*, ces méthodologies partagent une limite fondamentale : la donnée générée demeure intrinsèquement bornée par le périmètre informationnel du jeu de données d'origine. En l'absence d'un référentiel externe, le modèle ne fait que cloner, interpoler ou reformuler des concepts déjà présents dans l'échantillon initial. Il est incapable d'explorer des thématiques absentes ou sous-représentées, ce qui expose le système au risque de propager, voire d'amplifier, les biais de sélection de la base de données source.
+
+### Génération synthétique pilotée par connaissances externes
+
+Pour s'affranchir de la dépendance aux données historiques, plusieurs travaux explorent l'injection de connaissances structurées exogènes au sein des architectures génératives, un domaine désigné sous le terme de génération guidée par taxonomie (*taxonomy-guided generation*). Dans notre cadre applicatif, la présence d'une notice officielle constitue une ressource documentaire exhaustive et immuable, qui fournit pour chaque catégorie son code, son titre, ainsi que ses critères d'inclusion et d'exclusion.
+
+Historiquement, l'intégration de telles connaissances nécessitait le développement d'architectures dédiées. Par exemple, @chen2020kgpt introduisent le framework KGPT, qui repose sur un pré-entraînement lourd et spécifique pour aligner des structures de données (graphes de connaissances) avec du texte. Cette stratégie s'avère plus coûteuse à mettre en œuvre que les LLMs actuels, et donc moins adaptée à notre cas d'usage.
+
+L'apparition des grands modèles de langage a favorisé une approche plus flexible fondée sur la récupération d'information (*retrieval*). Dans les systèmes de *Retrieval-Augmented Generation* (RAG), introduits par @lewis2020retrieval, le modèle ne s'appuie plus uniquement sur ses connaissances paramétriques : il consulte d'abord une source documentaire externe avant de produire sa réponse. Cette stratégie permet d'améliorer la factualité des contenus générés tout en facilitant l'adaptation à des domaines spécialisés.
+
+Dans le cadre de la génération de données synthétiques, des travaux récents montrent que l'utilisation de documents récupérés dynamiquement améliore la pertinence et la diversité des exemples produits. Les informations externes peuvent être injectées sous différentes formes : passages textuels, exemples similaires retrouvés dans un espace d'embedding, taxonomies hiérarchiques ou bases de connaissances structurées [@long2024llms].
+
+Notre cas d'étude présente une situation particulièrement favorable à ce type de méthode. Contrairement à de nombreux contextes applicatifs où les connaissances doivent être recherchées dans de larges corpus, l'ensemble de l'information pertinente peut être injecté directement dans la fenêtre de contexte du modèle. Notre approche peut ainsi être interprétée comme une forme spécialisée de génération augmentée par récupération, où la notice joue le rôle de source documentaire de référence. L'objectif n'est cependant pas la production d'une réponse à une question utilisateur, mais la génération de libellés synthétiques destinés à l'entraînement d'un classifieur Text2Code. La qualité du système dépend alors de sa capacité à transformer cette connaissance normative en formulations proches du langage réellement employé par les déclarants.
+
+### Transfert de style
+
+L'utilisation exclusive de la notice comme source d'inspiration introduit un biais stylistique. Par construction, les LLMs subissent un alignement strict conçu pour éliminer les erreurs de syntaxe et produire un langage formel, neutre et grammaticalement parfait. Cela peut être dû au *Reinforcement Learning from Human Feedback* (RLHF) [@ouyang2022training], au *Supervised-Fine-Tuning* (SFT) [@zhang2026instruction], où à d'autres facteurs. @reinhart2025do confirment la différence de style avec le langage humain, qui change selon les modèles mais reste toujours présente.
+
+Ce phénomène crée un *covariate shift* : comme le prouvent @belinkov2018synthetic, les modèles en NLP ont des difficultés à faire face à du bruit inconnu. Dans notre cas, un classifieur entraîné sur des textes parfaits issus des données synthétiques pourrait donc subir une baisse drastique de ses performances lorsqu'il est confronté au bruit des données originales. Pour corriger ce décalage, il est nécessaire de recourir au transfert de style (*style transfer*). @gao2023self montrent qu'un processus de réécriture grâce à une série de dialogues entre LLMs devance le *few-shot prompting* en terme de performances pour les tâches. Pour du transfert de style, cela permettrait de mimer le comportement des déclarants réels en introduisant un bruit anthropique ciblé (abréviations métiers, troncatures de mots, fautes d'orthographe de saisie).
+
+### Evaluation
+
+Pour rappel, nous souhaitons que $P_{synth}( \cdot | Y)$ converge vers $P_{real}( \cdot | Y)$ pour tout code $Y$ de sorte à atteindre le double objectif d'amélioration des performances du classifieur Text2Code et de diffusion des données. Plusieurs méthodes d'évaluation s'offrent à nous.
+
+Pour la partie performances, le protocole *Train on Synthetic, Test on Real* (TSTR), formalisé par @esteban2017real, est très adapté. L'idée est d'entraîner le classifieur uniquement sur la donnée synthétique, et d'évaluer uniquement sur la donnée originale.
+
+Pour quantifier la réduction du *covariate shift*, une solution peut être d'utiliser des discriminateurs entraînés à distinguer les productions humaines des productions synthétiques [@bowman2016generating]. Dans ce cadre d'évaluation antagoniste, l'exactitude du discriminateur sert de proxy pour mesurer la convergence stylistique : une baisse de sa capacité de détection indique que le générateur parvient à effacer sa signature pour s'aligner sur la sémantique humaine. 
+
+Plus généralement, des métriques de similarités entre des données textuelles existent. De simples comparaisons entre les mots employés comme avec le *Jaccard Similarity Index* [@travieso2024analytical], jusqu'à l'*Integrated Maximum Mean Discrepancy* (IMMD) [@ding2025testing], plein de métriques permettent de comparer deux corpus de textes --- ici, données synthétiques et données réelles pour un même code. La limite de ces approches réside dans l'incapacité à mesurer la créativité des données synthétiques, ce que l'on cherche pourtant si on veut améliorer la classification ou diffuser des données qui ne soient pas des copies propres des données originales. C'est pourquoi ces métriques seront moins mises en valeurs face aux deux premières.
 
 
 # LabelGuard : Quantification du biais sémantique
@@ -125,44 +164,6 @@ Le reste de ce rapport est structuré ainsi. La Section 2 présente l'état de l
 ## Synthèse des contributions
 ## Du Prompting Agentique au Fine-Tuning Supervisé (SFT) stylistique
 ## Généralisation à des cadres multilingues (NACE européenne)
-
-
-# Introduction {#sec-intro}
-
-## Les enjeux de la codification {#sec-intro-codif}
-
-Être capable de catégoriser les éléments dans une nomenclature est très important pour les services statistiques publiques. D'un côté, le débat public a besoin d'être alimenté de chiffres fiables et précis, ce qui se traduit par le maillage fin d'une nomenclature. Prenez l'indice des prix à la consommation (IPC), métrique phare pour évaluer l'inflation : si une nomenclature pour les produits de consommation comme la COICOP [@inseecoicop] n'existait pas, il serait difficile d'évaluer les paniers des ménages lors de leurs achats, et donc difficile d'accorder les poids aux bons éléments dans l'indice. De l'autre, les législations imposent parfois des nomenclatures à respecter. Par exemple, chaque pays de l'Union Européenne doit rendre compte des activités économiques de leurs entreprises en respectant la Nomenclature statistique des Activités économiques dans la Communauté Européenne (NACE) [@statbelnace].
-
-Cependant, mettre en place un système de codification demande beaucoup de ressources. Déjà, il faut parvenir à converger vers un standard général et concevoir une notice exhaustive. Puis, il faut subvenir aux besoins pratiques lors de l'application de la nomenclature. De ce fait, la donnée qui doit être classée arrive avec un grand débit et demande de choisir parmi un grand nombre de catégories. Pour le cas de la NACE, on compte ainsi chaque année plus d'un millions de nouvelles entreprises à associer à un code parmi les plus de six cent existants (plus de sept cent pour la nomenclature française). Il faut donc une très grande efficacité ainsi qu'une expertise de la notice de codification.
-
-Historiquement, la codification a été assurée par des annotateurs humains liés au domaine administratif visé. Cela permet d'éviter de donner la charge à la personne derrière l'élément à classer et qui n'est pas forcément au point sur la nomenclature --- qui pourrait donc faire des erreurs ---, en lui imposant à la place de remplir un libellé textuel qui décrit le domaine que l'administration cherche à codifier. Pour illustrer, prenons l'exemple de la Nomenclature d'Activité Française (NAF), la version française de la NACE. Le futur chef d'entreprise français qui fait sa demande de SIRET indique dans un champ textuel l'activité économique principale de son entreprise expliquée avec ses propres mots. Puis, son dossier est envoyé auprès de l'administration qui reçoit des éléments comme la raison sociale de l'entreprise, son siège social, ... ainsi que le libellé décrivant l'activité. Alors, durant l'étude du dossier, un des membres de l'administration va associer un code NAF, qui sera retransmis à l'Insee.
-
-Cette manière de procéder à ses limites. Notamment, cela coûte cher d'employer des personnes à faire la même tâche répétitive pour l'ensemble des éléments à classer, car ceux-ci peuvent se tromper en lisant trop rapidement ou en oubliant une partie de la notice --- surtout pour les cas rares. L'Insee a donc mis en place un système de codification automatique basé sur la donnée textuelle --- et potentiellement d'autres données auxilières numériques ou catégorielles --- pour aider les annotateurs.
-
-## Codifier automatiquement des libellés dans une nomenclature {#sec-text2code}
-
-Actuellement, la manière dont l'Insee codifie automatiquement les libellés est comme suit. *[Ajouter un schéma, citer le projet github.]*
-- Entrée : libellé textuel et informations supplémentaires conernant l'entreprise (catégorie juridique, nature d'activité, surface de l'établissement, ...)
-- Process : premier codificateur automatique (fasttext), si confiance > X% → codification automatique sans feedback humain (70% des cas environ), sinon top 5 proposé à l'annotateur.
-
-*[Limites en mode state of the art 2017, nouvelles choses maintenant.]* Les performances actuelles restent certes satisfaisantes, mais le classifieur n'exploite pas l'entièreté des ressources disponibles ni la puissance des dernières technologies : les grands modèles de langage (*large language models*, LLM en anglais). En effet, la méthode utilisée ne prend pas du tout en compte l'usage de la notice, qui sert pourtant de support à la codification manuelle, et qui peut parfaitement s'intégrer dans un processus automatique incluant des LLM.
-
-Par ailleurs, la construction d'un classifieur robuste se heurte à plusieurs difficultés majeures. En premier lieu, les données d'entraînement souffrent fréquemment d'un défaut de couverture : certains codes sont peu ou pas représentés, ce qui crée des zones d'ombre pour le modèle. Par exemple, pour la NAF 2025 (deuxième version de la nomenclature), sur 800 000 libellés d'entraînement, la moitié des 747 codes comprend moins de 50 occurences. À cela s'ajoute le risque lié à l'actualisation possible de la nomenclature, avec un potentiel décalage entre la distribution d'entraînement et de production.
-
-Les données réelles introduisent également du bruit sémantique — fautes d'orthographe, informations personnelles, abréviations, typographies fantaisistes — ainsi que du bruit d'annotation, lorsqu'un code incorrect a été associé à un libellé lors de la constitution du jeu de données. Enfin, dans certaines situations, la donnée est simplement insuffisante : lorsqu'on travaille sur une nomenclature nouvelle ou qu'on doit basculer vers une langue différente, les données existantes ne sont plus exploitables telles quelles. Un moyen de remédier à ce problème est de générer de la nouvelle donnée de manière synthétique.
-
-::: {.callout-important}
-Sans génération de données synthétiques, la codification automatique peut être imprécise, voire totalement impossible dans les cas extrêmes. C'est ce constat qui motive l'ensemble du travail présenté ici.
-:::
-
-## Objectifs recherchés {#sec-objectifs}
-
-L'objectif principal est donc de créer un générateur de données synthétiques (code vers texte) qui améliore les performances d'un classifieur (texte vers code). L'étude se concentrera majoritairement sur la NAF 2025 car la base de donnée est très large, la nomenclature a une structure hiérarchique simple, et la notice est très détaillée. Cependant, pour permettre la reprise de ce travail dans d'autres domaines, une contrainte aditionnelle a été choisie : tout code et tout prompt créé doit être agnostique de la nomenclature et open source.
-
-Par ailleurs, j'ai voulu profiter de ce stage pour explorer plus loin que la simple performance de classification. Notamment, en discutant avec les membres du SSP Lab, j'ai remarqué que la génération de données synthétiques par des LLM permettait dans certains cas la diffusion de données de façon anonymisée. Je me suis donc fixé comme objectif secondaire de créer un générateur de données capable de mimer la donnée originale sans la faire fuiter.
-
-Il est à noter que, a priori, rien ne garantit la réalisation commune des deux objectifs par un même outil. 
-
 
 
 # Contexte : La génération de données synthétiques {#sec-generation}
@@ -220,7 +221,7 @@ On notera $\mathcal{Y}$ l'ensemble des codes (uniques) des sous-classes de la NA
 
 Le choix de la NAF 2025 n'est pas annodin dans notre cas. En plus de comporter une notice exhaustive sans aucun attribut vide, la base de données originale est très large et déjà travaillée dans d'autres projets en science des données à l'Insee. Cela donne plus de légitimité à son utilisation comme base de travail, même si des erreurs d'annotations peuvent persister (voir en annexe).
 
-La donnée originale provient de demandes de création de SIRET entre le 8 novembre 2022 et 27 octobre 2024 et est divisée en trois grands groupes indépendants :
+La donnée originale provient de formulaires remplis pour la création ou de modification d'établissements d'entreprise (création d'un nouveau SIRET) entre le 8 novembre 2022 et 27 octobre 2024. Elle est divisée en trois grands groupes indépendants :
 
 - $\mathcal{X}_{train\_real}$ : la donnée d'entraînement, composée de $1\,523\,268$ lignes. Elle est utilisée pour l'entraînement de modèles et pour la génération de données.
 - $\mathcal{X}_{val}$ : la donnée de validation, composée $380\,631$ lignes. Elle est utilisée uniquement pour suivre les performances durant l'entraînement des codifieurs automatiques. 
@@ -228,7 +229,13 @@ La donnée originale provient de demandes de création de SIRET entre le 8 novem
 
 Chacune de ces bases de données est composée d'un libellé, d'un code associé (soit par un codificateur automatique en production, soit par un humain), et de variables catégorielles supplémentaires (que l'on n'utilisera pas ici). 
 
-Il est à savoir que la taille des trois groupes a été actualiée à la mi-mai 2026, et donc que les travaux suivants ont été réalisés avec une base de donnée $\mathcal{X}_{train\_real}$ d'environ $800\,000$ lignes à la place : Naive Code2Text (pour le few-shot) et LabelGuard (pour l'entraînement).
+## Bruit dans la donnée
+
+- Il est à savoir que la taille des trois groupes a été actualisée à la mi-mai 2026, et donc que les travaux suivants ont été réalisés avec une base de donnée $\mathcal{X}_{train\_real}$ d'environ $800\,000$ lignes à la place : Naive Code2Text (pour le few-shot) et LabelGuard (pour l'entraînement). > preprocessing
+
+- NAF 2008 → 2025
+
+- codification en partie faite par le codificateur automatique: accuracy totale estimée à 93%
 
 ### Distribution des codes
 
