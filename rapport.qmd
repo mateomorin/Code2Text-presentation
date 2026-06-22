@@ -43,6 +43,8 @@ bibliography: references.bib
 
 Mon stage s'est déroulé à l'Institut National de la Statistique et des Etudes Economiques (Insee), et plus précisément au sein de son laboratoire d'innovation : le SSP Lab. Très centré autour du traitement automatique du langage, j'ai été amené à travailler sur la génération de données synthétiques textuelles. Ce rapport présente ma démarche, les difficultés rencontrées ainsi que les résultats que j'ai obtenus. Il se termine par un regard critique sur les contributions apportées et sur les perspectives envisagées.
 
+# Remerciements
+
 # Introduction
 
 ### Le défi de la codification automatique de la NAF
@@ -99,7 +101,7 @@ Avant l'avènement des grands modèles de langage, l'augmentation de données te
 
 L'introduction des grands modèles de langage (LLM) a transformé ce domaine en permettant une génération de données textuelles sensible au contexte. L'approche la plus courante repose sur l'apprentissage en contexte (*in-context learning*) via des techniques de *few-shot prompting* [@brown2020]. Dans ce cadre, le modèle reçoit une poignée d'exemples issus du jeu de données réel pour assimiler le style, la structure et le ton des libellés cibles. Des frameworks plus avancés incitent le LLM à générer des variations textuelles en introduisant des contraintes de diversité sémantique ou linguistique directement dans le prompt [@schick2021].
 
-Une étape fondatrice dans la génération de données textuelle est Self-Instruct proposé par @wang2022self. L'idée consiste à utiliser un LLM pour générer automatiquement des paires instruction-réponse qui serviront ensuite à entraîner ou spécialiser un autre modèle. Cette approche a démontré qu'un système pouvait améliorer ses performances à partir de données qu'il avait lui-même contribué à produire.
+Une étape fondatrice dans la génération de données textuelle est Self-Instruct proposé par @wang2023self. L'idée consiste à utiliser un LLM pour générer automatiquement des paires instruction-réponse qui serviront ensuite à entraîner ou spécialiser un autre modèle. Cette approche a démontré qu'un système pouvait améliorer ses performances à partir de données qu'il avait lui-même contribué à produire.
 
 Néanmoins, qu'elles soient basées sur des règles heuristiques ou sur du *few-shot prompting*, ces méthodologies partagent une limite fondamentale : la donnée générée demeure intrinsèquement bornée par le périmètre informationnel du jeu de données d'origine. En l'absence d'un référentiel externe, le modèle ne fait que cloner, interpoler ou reformuler des concepts déjà présents dans l'échantillon initial. Il est incapable d'explorer des thématiques absentes ou sous-représentées, ce qui expose le système au risque de propager, voire d'amplifier, les biais de sélection de la base de données source.
 
@@ -132,7 +134,7 @@ Pour quantifier la réduction du *covariate shift*, une solution peut être d'ut
 Plus généralement, des métriques de similarités entre des données textuelles existent. De simples comparaisons entre les mots employés comme avec le *Jaccard Similarity Index* [@travieso2024analytical], jusqu'à l'*Integrated Maximum Mean Discrepancy* (IMMD) [@ding2025testing], plein de métriques permettent de comparer deux corpus de textes --- ici, données synthétiques et données réelles pour un même code. La limite de ces approches réside dans l'incapacité à mesurer la créativité des données synthétiques, ce que l'on cherche pourtant si on veut améliorer la classification ou diffuser des données qui ne soient pas des copies propres des données originales. C'est pourquoi ces métriques seront moins mises en valeurs face aux deux premières.
 
 
-# La donnée disponible
+# La donnée disponible {#sec-data}
 
 Pour rappel, l'étude se concentre sur le cas de la NAF 2025, mais la structure des données utilisées est très similaire à d'autres nomenclatures et donc appliquable dans d'autres cas, tant qu'il y a bien une notice exhaustive.
 
@@ -168,7 +170,7 @@ Chacune de ces bases de données est composée d'un libellé, d'un code associé
 
 La donnée de travail a certaines particularités qu'il est nécessaire de présenter pour avoir un regard plus critique sur les résultats de cette étude. En effet, parce que c'est la donnée d'entraînement pour *Text2Code* sur la NAF 2025, cette base a subi un traitement qui peut générer un bruit dans nos résultats.
 
-Premièrement, la taille des trois groupes indépendants a été augmentée artificiellement à la mi-mai 2026 pour modifier la distribution des codes les plus fréquents et éviter des mauvaises classifications du modèle en production. La première partie du stage a donc été réalisée avec une base de donnée $\mathcal{X}_{train\_real}$ d'environ $800\,000$ lignes à la place, qui reflète la véritabe distribution des codes. Les travaux exploitant cette base plus petite sont Naive Code2Text (pour le few-shot) et LabelGuard (pour l'entraînement). Pour les travaux suivants, le jeu de données a donc changé de distribution en rajoutant artificiellement des copies de libellés déjà existants.
+Premièrement, la taille des trois groupes indépendants a été augmentée artificiellement à la mi-mai 2026 pour modifier la distribution des codes les plus fréquents et éviter des mauvaises classifications du modèle en production. La première partie du stage a donc été réalisée avec une base de donnée $\mathcal{X}_{train\_real}$ d'environ $800\,000$ lignes à la place, qui reflète la véritabe distribution des codes. Les travaux exploitant cette base plus petite sont NaiveCode2Text (pour le few-shot) et LabelGuard (pour l'entraînement). Pour les travaux suivants, le jeu de données a donc changé de distribution en rajoutant artificiellement des copies de libellés déjà existants.
 
 Par ailleurs, entre le 8 novembre 2022 et le 27 octobre 2024, la nomenclature utilisée était la NAF 2008. La codification en NAF 2025 s'est faite en post-production grâce à un LLM alimenté de la table de correspondance fournie par l'Insee ainsi que de consignes d'annotations humaines. Cependant, au moment de la transition de nomenclature, la table n'était pas totalement complète, et les consignes n'étaient pas exhaustives : des erreurs de codes ont donc pu apparaître. 
 
@@ -182,7 +184,7 @@ La distribution des codes est particulière. En ordonnant les codes par leur fr�
 
 Par ailleurs, les libellés contiennent des anomalies non négligeables. Pour que les partenaires de l'Insee puissent accéder aux données d'entreprises, les libellés ont été définis avec une taille maximale de 140 caractères (contraintes du format `XML`), et cela pose deux problèmes. Le premier repose du côté du demandeur, qui fait souvent appel à un mandataire qui remplit automatiquement pour lui les champs textuels, et a souvent tendance à copier coller des objets juridiques en activité. Le soucis est qu'un objet juridique est très long et donc tronqué, ce qui le rend imprécis. L'autre problème provient du [Guichet unique](https://www.inpi.fr/decouvrir-inpi/formalites-dentreprises/guichet-unique-formalites-dentreprises-et-registre-national-entreprises) de l'Institut National de la Propriété Industrielle (INPI), qui a pour but d'aider aux démarches. Ses agents peuvent remplir plus que 140 caractères dans la section libellés, et ceux-ci ne sont pas tronqués.
 
-Alors, si on s'intéresse à la distribution de la longueur des libellés dans $\mathcal{X}_{real\_train}$ (voir la [@fig-hist-label-len] intéractive), on remarque des pics énormes aux valeurs 141 et 161 qui correspondent au troncage suivi d'un espace, et potentiellement du suffixe "activité de services" (ajout d'une information supplémentaire dans le prétraitement de la donnée). Le code `68.20H` --- qui correspond à la location de biens immobiliers autre que des logements --- est prépondérant parmi les anomalies, et trois quarts des libellés associés ne sont pas uniques. En s'intéressant aux libellés tronqués les plus récurents, ce sont toujours des objets sociaux tronqués.
+Alors, si on s'intéresse à la distribution de la longueur des libellés dans $\mathcal{X}_{real\_train}$ (**voir la [fig-hist-label-len] intéractive -> trop couteuse en RAM**), on remarque des pics énormes aux valeurs 141 et 161 qui correspondent au troncage suivi d'un espace, et potentiellement du suffixe "activité de services" (ajout d'une information supplémentaire dans le prétraitement de la donnée). Le code `68.20H` --- qui correspond à la location de biens immobiliers autre que des logements --- est prépondérant parmi les anomalies, et trois quarts des libellés associés ne sont pas uniques. En s'intéressant aux libellés tronqués les plus récurents, ce sont toujours des objets sociaux tronqués.
 
 <!-- ::: {#fig-hist-label-len}
 
@@ -191,19 +193,83 @@ Alors, si on s'intéresse à la distribution de la longueur des libellés dans $
 Distribution des longueurs de libellés dans $\mathcal{X}_{train\_real}$
 ::: -->
 
+# NaiveCode2Text : Approche initiale pour la génération de données synthétiques
+### Préambule sur la génération de texte
+
+La génération de données textuelles a été réalisée grâce à des LLMs. L'Insee détient sa propre infrastructure de calcul, sur laquelle on peut utiliser plusieurs modèles *open-weight*. Ces modèles pré-entrainés ont pour particularité d'être téléchargeables en ligne gratuitement (souvent sur HuggingFace) et réutilisables par n'importe qui à condition d'avoir les ressources nécessaires. Nous avons ainsi utilisé `google/gemma-3-27b-it` [@gemma3] pour NaiveCode2Text.
+
+Il est à savoir que d'autres modèles --- par exemple `openai/gpt-oss-120b` [@openai2025gptoss] --- ont été testés initialement. Les différences entre les LLMs n'étant pas notables qualitativement, le choix a été de garder le modèle le plus utilisé par les équipes à l'Insee pour deux raisons. Déjà, celles-ci sont les plus susceptibles de reprendre les travaux réalisés, donc autant faciliter la reproductibilité du travail. Aussi, les modèles génératifs Gemma sont devenus agentiques à partir de Gemma 3, permettant des réflexions plus complexes, et surtout l'appel d'outils --- fonction utile par la suite. `google/gemma-4-26b-a4b-it` [@gemma4] est sorti malheureusement peu de temps après la génération de NaiveCode2Text, il ne sera utilisé que pour Code2ReText. 
+
+## Principe général de NaiveCode2Text
+
+L'approche NaiveCode2Text constitue la base du projet. Son principe est simple : pour chaque code de la nomenclature, nous extrayons les informations pertinentes de la notice (code, titre, quelques éléments *Includes*/*IncludesAlso*, tous les éléments *Excludes*), puis nous les fournissons en contexte au LLM auquel nous demandons de générer un certain nombre de libellés. Nous pouvons également rajouter des exemples de libellés issus du jeu de données original d'entraînement $\mathcal{X}_{train\_real}$ pour faire du *few-shot learning*. Le détail du processus est expliqué [@fig-naive-single].
+
+![Architecture du pipeline NaiveCode2Text (requête unique)](images/NaiveCode2Text_single.svg){#fig-naive-single fig-alt="Schéma du pipeline NaiveCode2Text avec une seule requête"}
+
+Pour cette structure de génération, les facteurs modifiables sont :
+
+- le nombre de libellés à générer à chaque appel,
+- le nombre d'éléments *Includes*,
+- le nombre d'exemples de libellés,
+- les consignes de génération dans le *system prompt* (retrouvable en annexe).
+
+## Passage à l'échelle : parallélisation {#sec-parallelisation}
+
+Pour traiter une nomenclature entière en temps raisonnable, le schéma de base a été adapté pour lancer des requêtes API en parallèle. Plutôt que d'interroger le modèle successivement pour chaque code, nous envoyons simultanément un lot de requêtes indépendantes de manière asynchrone grâce à des sémaphores. Leur principe est de lancer en concurrence plusieurs instructions (concurrence maximale de 50 dans notre cas), et de remplacer tout processus terminé par le premier dans la file d'attente. Sachant que la majorité du temps passé à générer la donnée consiste à attendre la réponse de l'API, paralléliser les appels permet d'atteindre des débits de génération significativement plus élevés (sous réserve de ressources du côté serveur). L'architecture finale est présentée @fig-naive-parallel. 
+
+![Architecture parallélisée de NaiveCode2Text](images/NaiveCode2Text_parallel.svg){#fig-naive-parallel fig-alt="Schéma du pipeline NaiveCode2Text avec requêtes parallèles"}
+
+Une première génération comprenant au total $62\,100$ libellés a été réalisée en 42 minutes avec pour idée de recenser tous les cas possibles dans la notice. Alors, tous les 5 éléments *Includes* ou *IncludesAlso* d'un code, au moins 5 appels demandant à chaque fois 10 libellés étaient faits au LLM. 6 exemples *few-shot* de libellés provenant du même code étaient fournis par prompt, sauf pour les codes rares qui ne fournissaient que le maximum d'exemples possibles (voir @sec-data pour la distribution hétérogène). La distribution finale du nombre de libellés par code est représentée @fig-label-count-synth-naive.
+
+![Distribution des codes de NaiveCode2Text](images/label_count_synth_naive.png){#fig-label-count-synth-naive fig-alt="Distribution des codes de NaiveCode2Text. Plus de la moitié des codes sont à 50 libellés, un quart est à 100, une très fine proportion dépasse ce niveau et peut atteindre jusqu'à 400 libellés."}
+
+Les libellés générés étaient très techniques et satisfaisants d'un point de vue métier. Cependant, une lecture qualitative rapide faisait déjà apparaître des tournures de phrases qui changeaient des textes originaux. Les changements de *system prompts* n'y faisant rien, nous avons décidé de créer un discriminateur à la fois comme métrique mais aussi comme outil pour une génération améliorée.
+
 
 # LabelGuard : Quantification du biais sémantique
-## Architecture du discriminateur : Perceptron Multicouche (MLP) sur plongements lexicaux denses (Embeddings)
-## Mesure de l'empreinte (« Watermark ») du LLM : Analyse de la séparabilité des distributions
-## Analyse des résidus : Profils d'erreur et modes d'échec comme approximations du style humain
+
+LabelGuard est un discriminateur entraîné pour distinguer les libellés générés par IA des libellés originaux humains. L'architecture prend en entrée un vecteur représentant le libellé (*embedding*) et retourne une valeur entre 0 et 1, 0 signifant humain, et 1 IA. 
+
+## Données utilisées
+
+Le jeu de données d'entraînement pour LabelGuard a une taille de $160\,000$ libellés, dont $80\,000$ synthétiques et $80\,000$ originaux. Un jeu de données de validation de $40\,000$ textes a également été créé avec une proportion égale IA/humain. Pour limiter au mieux l'influence de facteurs extérieurs au style des libellés, plusieurs stratégies ont été employées.
+
+D'abord, la base de données originale provenant de $\mathcal{X}_{real\_train}$ a été pré-traitée comme suit :
+
+1. **Suppression des anomalies** : les libellés comprenant exactement 141 et 161 caractères ont été retirés, car ils sont pour la grande majorité tronqués.
+2. **Suppression des marques personnelles** : même si cela n'a pas été décris dans la [@sec-data], certains libellés contiennent des données personnelles. Cela peut être des SIREN ou des codes postaux que l'on ne souhaite pas inclure comme facteur discriminant car marque trop simple pour discriminer. Tous les libellés ayant plus de deux chiffres (sans être un pourcentage) sont donc supprimés.
+3. **Suppression des libellés hors-sujet** : certains libellés ne décrivent pas l'activité d'entreprise mais plutôt quelque chose comme "Je souhaite avoir un SIRET au plus vite". Ces phrases tounées personnellement et peu nombreuses ont été supprimées.
+4. **Suppression de suffixes** : le suffixe "activité de services" est très utilisé dans les libellés originaux (information supplémentaire ajoutée qui n'apparait pas dans le code initial), il a donc été retiré pour tous les textes l'incluant à la fin.
+
+Après avoir modifié $\mathcal{X}_{real\_train}$, nous avons échantilloné d'abord 5 libellés par code avec remise (pour les codes rares notamment), puis échantilloné le reste des libellés parmi les données restantes pour atteindre une taille de $100\,000$. Ensuite, la base de donnée synthétique $\mathcal{X}_{synth}$ (issue de la génération quasi-uniforme de NaiveCode2Text) a été échantillonnée avec remise en respectant la distribution des codes originaux (pour un même code, le même nombre de libellés originaux et synthétiques existent).
+
+Finalement, le jeu de donnée obtenu (de taille $200\,000$) a été divisé dans des proportions $80\%/20\%$ en jeux d'entraînement et de validation. Tous les libellés ont ensuite été transformé en *embeddings* de dimension $4\,096$ avec `Qwen/Qwen3-Embedding-8B`.
+
+Il est à noter que, par soucis de coût de génération et de distribution des codes de la donnée synthétique (presque uniforme), les libellés pour les codes les plus populaires dans $\mathcal{X}_{real\_train}$ (modifiée) ont été tirés potentiellement un très grand nombre de fois dans $\mathcal{X}_{synth}$. Le problème posé par l'échantillonage est néanmoins à relativiser devant le grand nombre de libellés identiques dans la donnée originale (plus des deux tiers des libellés sont des copies des autres).
+
+## Sélection du modèle optimal
+
+Pour avoir la version de LabelGuard la plus adaptée à notre cas, nous avons cherché à minimiser le taux de faux-positifs (*False Positive Rate*, FPR) tout en préservant une bonne *accuracy* sur la donnée de validation pour éviter le plus possible de mal classifier les libellés avec le style humain.
+
+Plusieurs modèles ont été essayés avec différents hyperparamètres pour la prédiction : régression logistique, machine à vecteurs de support (SVM) [@cortes1995support], XGBoost [@chen2016xgboost], ou perceptron multicouche (MLP) [@murtagh1991multilayer]. Voici les configurations essayées (les bibliothèque python sont indiquées entre parenthèses) :
+
+- **Régression logistique** (`scikit learn`) : $C \in \{0.1, 1.0, 10.0\}$
+- **SVM** (`scikit learn`) : $C \in \{0.1, 1.0, 10.0\}$
+- **XGBoost** (`xgboost`) : $(max\_depth, n\_estimators) \in \{(3, 50), (3, 100), (3, 200), (6, 50), (6, 100), (6, 200)\}$
+- **MLP** (`pytorch-lightning`) : $(hidden\_layers, dropout\_layers, learning\_rate) \in \{([1024, 256], [0.3, 0], 0.01), ([1024, 256], [0.3, 0], 0.001), ([1024, 512, 256], [0.3, 0.2, 0], 0.01), ([1024, 512, 256], [0.3, 0.2, 0], 0.001)\}$
+
+De manière générale, les modèles les plus performants après entraînement étaient de la classe MLP (en *accuracy* et en FPR). Celui retenu a la configuration $(hidden\_layers, dropout\_layers, learning\_rate) =([1024, 256], [0.3, 0], 0.001)$, car il a moins de couches cachées et des performances presque identiques à des MLP à trois couches cachées. Un détail des résultats est retrouvable en annexe.
 
 
-# Cadres méthodologiques de génération synthétique
-## Approche de référence : NaiveCode2Text (Génération descendante guidée par la notice)
-## Architecture proposée : Code2ReText par alignement Acteur-Superviseur
-### Framework Double-LLM : Acteur génératif et Superviseur évaluatif
-### Optimisation en boucle fermée : Incitation multi-coups (Multi-Shot) guidée par LabelGuard et exemples Few-Shot
-### Injection de bruit anthropique (abréviations, ruptures syntaxiques, hâte déclarative)
+## Mesure de l'empreinte du LLM : Analyse de la séparabilité des distributions
+
+Un point est particulièrement alarmant pour LabelGuard : il ne se trompe presque jamais. Pour $40\,000$ libellés de validation, on obtient $99.4\%$ d'*accuracy* et $0.7\%$ de FPR --- soit seulement 139 libellés faux positifs. Ces performances restent du même acabit si on réduit drastiquement le nombre de données d'entraînement, ce qui témoigne que ce n'est pas un simple overfitting du modèle déployé mais bien de la présence d'une empreinte (*watermak*) propre au LLM qu'il faut pouvoir identifier.
+
+*[Analyse à faire : détail des FPR, jeu de la ponctuation, ...]*
+
+
+# Code2ReText : chnager le style par alignement Acteur-Superviseur
+## Framework Double-LLM : Acteur génératif et Superviseur évaluatif
 
 
 # Protocole d'évaluation de la génération
@@ -297,31 +363,6 @@ L'évaluation sémantique doit impérativement être conduite indépendamment du
 
 # Méthode de génération des données
 
-La génération de données textuelles a été réalisée grâce à des LLMs. L'Insee détient sa propre infrastructure de calcul, sur laquelle on peut utiliser plusieurs modèles *open-weight*. Ces modèles pré-entrainés ont pour particularité d'être téléchargeables en ligne gratuitement et réutilisables par n'importe qui à condition d'avoir les ressources nécessaires. J'ai ainsi utilisé les LLMs `google/gemma-3-27b-it` [@gemma3] puis `google/gemma-4-26b-a4b-it` [@gemma4] à sa sortie. 
-
-Il est à savoir que d'autres modèles --- par exemple `openai/gpt-oss-120b` [@openai2025gptoss] --- ont été testés initialement pour de la génération de libellés simple. Les différences entre les LLMs n'étant pas notables qualitativement, le choix a été de garder le modèle le plus utilisé par les équipes à l'Insee pour deux raisons. Déjà, celles-ci sont les plus susceptibles de reprendre les travaux réalisés, donc autant faciliter la reproductibilité du travail. Aussi, les modèles génératifs Gemma sont devenus agentiques à partir de Gemma 3, permettant des réflexions plus complexes, et surtout l'appel d'outils --- fonction utile par la suite.
-
-## Naive Code2Text — Génération augmentée par la notice {#sec-naive}
-
-### Principe général {#sec-principe}
-
-L'approche Naive Code2Text constitue la base du projet. Son principe est simple : pour chaque code de la nomenclature, on extrait les informations pertinentes de la notice (code, titre, quelques éléments *includes*, tous les éléments *excludes*) et on les fournit en contexte à un LLM, auquel on demande de générer un certain nombre de libellés plausibles pour ce code. On a également la possibilité de rajouter des exemples de libellés issus du jeu de données original d'entraînement $\mathcal{X}_{train\_real}$. Le détail du processus est expliqué [@fig-naive-single].
-
-Pour cette structure de génération, les facteurs modifiables sont donc:
-
-- le nombre de libellés à générer à chaque appel,
-- le nombre d'éléments *includes*,
-
-
-![Architecture du pipeline Naive Code2Text (requête unique)](images/NaiveCode2Text_single.svg){#fig-naive-single fig-alt="Schéma du pipeline Naive Code2Text avec une seule requête"}
-
-### Passage à l'échelle : parallélisation {#sec-parallelisation}
-
-Pour traiter une nomenclature entière en temps raisonnable, le schéma de base a été adapté pour lancer des requêtes API en parallèle. Plutôt que d'interroger le modèle successivement pour chaque code, on envoie simultanément un lot de requêtes indépendantes, ce qui permet d'atteindre des débits de génération significativement plus élevés.
-
-![Architecture parallélisée de Naive Code2Text](images/NaiveCode2Text_parallel.svg){#fig-naive-parallel fig-alt="Schéma du pipeline Naive Code2Text avec requêtes parallèles"}
-
-
 ## Code2ReText — Ajouter un niveau de profondeur {#sec-retext}
 
 ### LabelGuard : discrimination des libellés IA/humain {#sec-labelguard}
@@ -388,7 +429,7 @@ Les résultats obtenus avec cette approche sont à la fois encourageants et rév
 Cependant, un problème majeur est apparu à l'analyse des données générées : elles sont **trop parfaites**. Les libellés présentent systématiquement un ton professionnel, une syntaxe et une grammaire irréprochables, et un vocabulaire qui colle de trop près à celui de la notice. En d'autres termes, ils ne ressemblent pas aux libellés réels, qui sont saisis par des humains dans des contextes variés, souvent à la hâte, avec toute l'imperfection que cela implique.
 
 ::: {.callout-important}
-La donnée générée par Naive Code2Text est peu exploitable en l'état pour entraîner un classifieur performant sur des libellés réels : le fossé entre la distribution synthétique et la distribution naturelle est trop important.
+La donnée générée par NaiveCode2Text est peu exploitable en l'état pour entraîner un classifieur performant sur des libellés réels : le fossé entre la distribution synthétique et la distribution naturelle est trop important.
 :::
 
 
@@ -438,3 +479,5 @@ Tableau ML pour le choix du modèle
 Erreurs d'annotation
 
 Exemple notice
+
+Résultats LabelGuard
