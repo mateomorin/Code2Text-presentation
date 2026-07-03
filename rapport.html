@@ -4359,7 +4359,7 @@ window.Quarto = {
 </section>
 <section id="les-données-orginales" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="les-données-orginales"><span class="header-section-number">3.2</span> Les données orginales</h2>
-<p>Le choix de la NAF 2025 n’est pas annodin dans notre cas. En plus de comporter une notice exhaustive sans aucun attribut vide, la base de données originale est très large et déjà travaillée dans d’autres projets en science des données à l’Insee. Cela donne plus de légitimité à son utilisation comme base de travail, même si des erreurs d’annotations peuvent persister (voir en annexe).</p>
+<p>Le choix de la NAF 2025 n’est pas annodin dans notre cas. En plus de comporter une notice exhaustive sans aucun attribut vide, la base de données originale est très large et déjà travaillée dans d’autres projets en science des données à l’Insee. Cela donne plus de légitimité à son utilisation comme base de travail, même si des erreurs d’annotations peuvent persister (par exemple, un libellé présentant l’activité d’un psychologue a été codifié <code>68.20H</code>, soit de la location immmobilière).</p>
 <p>La donnée originale provient de formulaires remplis pour la création ou de modification d’établissements d’entreprise (création d’un nouveau SIRET) entre le 8 novembre 2022 et 27 octobre 2024. Elle est divisée en trois grands groupes indépendants :</p>
 <ul>
 <li><span class="math inline">\mathcal{X}_{train\_real}</span> : la donnée d’entraînement, composée de <span class="math inline">1\,523\,268</span> lignes. Elle est utilisée pour l’entraînement de modèles et pour la génération de données.</li>
@@ -4392,7 +4392,7 @@ Figure 1: Distribution des codes dans <span class="math inline">\mathcal{X}_{tr
 <p>Alors, si on s’intéresse à la distribution de la longueur des libellés dans <span class="math inline">\mathcal{X}_{real\_train}</span> (<strong>voir la [fig-hist-label-len] intéractive -&gt; trop couteuse en RAM</strong>), on remarque des pics énormes aux valeurs 141 et 161 qui correspondent au troncage suivi d’un espace, et potentiellement du suffixe “activité de services” (ajout d’une information supplémentaire dans le prétraitement de la donnée). Le code <code>68.20H</code> — qui correspond à la location de biens immobiliers autre que des logements — est prépondérant parmi les anomalies, et trois quarts des libellés associés ne sont pas uniques. En s’intéressant aux libellés tronqués les plus récurents, ce sont toujours des objets sociaux tronqués. Des précautions sont donc à prendre pour la suite.</p>
 <!-- ::: {#fig-hist-label-len}
 
-<iframe src="images/hist_label_len.html" width="100%" height="550px" frameborder="0" scrolling="no"></iframe>
+<iframe src="sources/images/hist_label_len.html" width="100%" height="550px" frameborder="0" scrolling="no"></iframe>
 
 Distribution des longueurs de libellés dans $\mathcal{X}_{train\_real}$
 ::: -->
@@ -4631,7 +4631,6 @@ Figure 6: Code2ReText — Version finale
 <p>Détail configuration du classifieur</p>
 <p>Prompts de référence</p>
 <p>Tableau ML pour le choix du modèle</p>
-<p>Erreurs d’annotation</p>
 <p>Exemple notice</p>
 <p>Résultats LabelGuard</p>
 
