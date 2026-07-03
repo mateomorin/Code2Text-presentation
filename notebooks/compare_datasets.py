@@ -19,7 +19,8 @@ client = QdrantClient(
 )
 COLLECTION_A = "naive_synth"
 COLLECTION_B = "retext_exhaustive"
-COLLECTION_C = "original_cleaned"
+COLLECTION_C = "test_prod"
+OUTPUT_FILE = "s3://mateom/graal/compare_datasets_test.parquet"
 VECTOR_NAME = ""
 
 
@@ -92,9 +93,10 @@ def calculate_wasserstein_distance(xs, xt):
 def compare_distribution_pipeline(target_code: str):
     vecs_A = get_embeddings_for_code(COLLECTION_A, target_code)
     vecs_B = get_embeddings_for_code(COLLECTION_B, target_code)
-    vecs_C = get_embeddings_for_code(COLLECTION_C, target_code)
+    vecs_C = get_embeddings_for_code(COLLECTION_C, target_code.replace(".", ""))
 
     if len(vecs_A) == 0 or len(vecs_B) == 0 or len(vecs_C) == 0:
+        print(f"Code {target_code} -> A: {len(vecs_A)}, B: {len(vecs_B)}, C: {len(vecs_C)}")
         return {}
 
     distance_AC = calculate_wasserstein_distance(vecs_A, vecs_C)
@@ -133,4 +135,4 @@ if __name__ == "__main__":
 
     df_metrics = pd.DataFrame.from_dict(metrics, orient="index")
 
-    df_metrics.to_parquet("s3://mateom/graal/compare_datasets.parquet", filesystem=fs)
+    df_metrics.to_parquet(OUTPUT_FILE, filesystem=fs)
