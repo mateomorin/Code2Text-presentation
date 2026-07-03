@@ -5,3 +5,4 @@
 _preview/
 _site/
 **/*.quarto_ipynb
+.env
