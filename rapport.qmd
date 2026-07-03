@@ -158,7 +158,7 @@ On notera $\mathcal{Y}$ l'ensemble des codes (uniques) des sous-classes de la NA
  
 ## Les données orginales
 
-Le choix de la NAF 2025 n'est pas annodin dans notre cas. En plus de comporter une notice exhaustive sans aucun attribut vide, la base de données originale est très large et déjà travaillée dans d'autres projets en science des données à l'Insee. Cela donne plus de légitimité à son utilisation comme base de travail, même si des erreurs d'annotations peuvent persister (voir en annexe).
+Le choix de la NAF 2025 n'est pas annodin dans notre cas. En plus de comporter une notice exhaustive sans aucun attribut vide, la base de données originale est très large et déjà travaillée dans d'autres projets en science des données à l'Insee. Cela donne plus de légitimité à son utilisation comme base de travail, même si des erreurs d'annotations peuvent persister (par exemple, un libellé présentant l'activité d'un psychologue a été codifié `68.20H`, soit de la location immmobilière).
 
 La donnée originale provient de formulaires remplis pour la création ou de modification d'établissements d'entreprise (création d'un nouveau SIRET) entre le 8 novembre 2022 et 27 octobre 2024. Elle est divisée en trois grands groupes indépendants :
 
@@ -182,7 +182,7 @@ Enfin, le jeu de donnée d'entraînement contient des paires $(libellé, code)$ 
 
 La distribution des codes est particulière. En ordonnant les codes par leur fréquence, la [@fig-code-log-freq] montre qu'environ 70 codes constituent la majeure partie de $\mathcal{X}_{train\_real}$, et que les autres codes suivent une distribution exponentielle selon leur rang. Cette distribution inégale impose des précautions lors de l'analyse de performances générales. 
 
-![Distribution des codes dans $\mathcal{X}_{train\_real}$](images/code_log_freq.png){#fig-code-log-freq fig-alt="Distribution des codes dans $\mathcal{X}_{train\_real}$, composée d'une tête à très haute fréquence (jusqu'à 10%), d'un corps qui suit une loi exponentielle, et d'une queue sous forme de marches (très faibles proportions) mais avec tendance globale la même équation que le corps."}
+![Distribution des codes dans $\mathcal{X}_{train\_real}$](sources/images/code_log_freq.png){#fig-code-log-freq fig-alt="Distribution des codes dans $\mathcal{X}_{train\_real}$, composée d'une tête à très haute fréquence (jusqu'à 10%), d'un corps qui suit une loi exponentielle, et d'une queue sous forme de marches (très faibles proportions) mais avec tendance globale la même équation que le corps."}
 
 Par ailleurs, les libellés contiennent des anomalies non négligeables. Pour que les partenaires de l'Insee puissent accéder aux données d'entreprises, les libellés ont été définis avec une taille maximale de 140 caractères (contraintes du format `XML`), et cela pose deux problèmes. Le premier repose du côté du demandeur, qui fait souvent appel à un mandataire qui remplit automatiquement pour lui les champs textuels, et a souvent tendance à copier coller des objets juridiques en activité. Le soucis est qu'un objet juridique est très long et donc tronqué, ce qui le rend imprécis. L'autre problème provient du [Guichet unique](https://www.inpi.fr/decouvrir-inpi/formalites-dentreprises/guichet-unique-formalites-dentreprises-et-registre-national-entreprises) de l'Institut National de la Propriété Industrielle (INPI), qui a pour but d'aider aux démarches. Ses agents peuvent remplir plus que 140 caractères dans la section libellés, et ceux-ci ne sont pas tronqués.
 
@@ -190,7 +190,7 @@ Alors, si on s'intéresse à la distribution de la longueur des libellés dans $
 
 <!-- ::: {#fig-hist-label-len}
 
-<iframe src="images/hist_label_len.html" width="100%" height="550px" frameborder="0" scrolling="no"></iframe>
+<iframe src="sources/images/hist_label_len.html" width="100%" height="550px" frameborder="0" scrolling="no"></iframe>
 
 Distribution des longueurs de libellés dans $\mathcal{X}_{train\_real}$
 ::: -->
@@ -206,7 +206,7 @@ Il est à savoir que d'autres modèles --- par exemple `openai/gpt-oss-120b` [@o
 
 L'approche NaiveCode2Text constitue la base du projet. Son principe est simple : pour chaque code de la nomenclature, nous extrayons les informations pertinentes de la notice (code, titre, quelques éléments *Includes*/*IncludesAlso*, tous les éléments *Excludes*), puis nous les fournissons en contexte au LLM auquel nous demandons de générer un certain nombre de libellés. Nous pouvons également rajouter des exemples de libellés issus du jeu de données original d'entraînement $\mathcal{X}_{train\_real}$ pour faire du *few-shot learning*. Le détail du processus est expliqué [@fig-naive-single].
 
-![Architecture du pipeline NaiveCode2Text (requête unique)](images/NaiveCode2Text_single.svg){#fig-naive-single fig-alt="Schéma du pipeline NaiveCode2Text avec une seule requête"}
+![Architecture du pipeline NaiveCode2Text (requête unique)](sources/images/NaiveCode2Text_single.svg){#fig-naive-single fig-alt="Schéma du pipeline NaiveCode2Text avec une seule requête"}
 
 Pour cette structure de génération, les facteurs modifiables sont :
 
@@ -219,11 +219,11 @@ Pour cette structure de génération, les facteurs modifiables sont :
 
 Pour traiter une nomenclature entière en temps raisonnable, le schéma de base a été adapté pour lancer des requêtes API en parallèle. Plutôt que d'interroger le modèle successivement pour chaque code, nous envoyons simultanément un lot de requêtes indépendantes de manière asynchrone grâce à des sémaphores. Leur principe est de lancer en concurrence plusieurs instructions (concurrence maximale de 50 dans notre cas), et de remplacer tout processus terminé par le premier dans la file d'attente. Sachant que la majorité du temps passé à générer la donnée consiste à attendre la réponse de l'API, paralléliser les appels permet d'atteindre des débits de génération significativement plus élevés (sous réserve de ressources du côté serveur). L'architecture finale est présentée @fig-naive-parallel. 
 
-![Architecture parallélisée de NaiveCode2Text](images/NaiveCode2Text_parallel.svg){#fig-naive-parallel fig-alt="Schéma du pipeline NaiveCode2Text avec requêtes parallèles"}
+![Architecture parallélisée de NaiveCode2Text](sources/images/NaiveCode2Text_parallel.svg){#fig-naive-parallel fig-alt="Schéma du pipeline NaiveCode2Text avec requêtes parallèles"}
 
 Une première génération comprenant au total $62\,100$ libellés a été réalisée en 42 minutes avec pour idée de recenser tous les cas possibles dans la notice. Alors, tous les 5 éléments *Includes* ou *IncludesAlso* d'un code, au moins 5 appels demandant à chaque fois 10 libellés étaient faits au LLM. 6 exemples *few-shot* de libellés provenant du même code étaient fournis par prompt, sauf pour les codes rares qui ne fournissaient que le maximum d'exemples possibles (voir @sec-data pour la distribution hétérogène). La distribution finale du nombre de libellés par code est représentée @fig-label-count-synth-naive.
 
-![Distribution des codes de NaiveCode2Text](images/label_count_synth_naive.png){#fig-label-count-synth-naive fig-alt="Distribution des codes de NaiveCode2Text. Plus de la moitié des codes sont à 50 libellés, un quart est à 100, une très fine proportion dépasse ce niveau et peut atteindre jusqu'à 400 libellés."}
+![Distribution des codes de NaiveCode2Text](sources/images/label_count_synth_naive.png){#fig-label-count-synth-naive fig-alt="Distribution des codes de NaiveCode2Text. Plus de la moitié des codes sont à 50 libellés, un quart est à 100, une très fine proportion dépasse ce niveau et peut atteindre jusqu'à 400 libellés."}
 
 Les libellés générés étaient très techniques et satisfaisants d'un point de vue métier (plus de détails accordés dans @sec-resultats). Cependant, une lecture qualitative rapide faisait déjà apparaître des tournures de phrases qui changeaient des textes originaux. Les changements de *system prompts* n'y faisant rien, nous avons décidé de créer un discriminateur à la fois comme métrique mais aussi comme outil pour une génération améliorée.
 
@@ -280,11 +280,11 @@ Il est à savoir que Code2ReText a été conçu peu de temps après la sortie de
 
 L'idée initiale de Code2ReText était de fournir simplement au LLM les outils (*tools*) pour évaluer sa génération, chercher des libellés similaires à ceux qu'il génère, et lui permettre ainsi de reformuler les libellés générés, comme présenté @fig-retext-agentic. Au départ, nous utilisions la bibliothèque `openai-python` [@openaipython2024] pour donner les *tools* et récupérions seulement les libellés finaux. Cependant, nous avons remarqué que fournir au même agent l'accès presque illimité à un discriminateur lui permettait de tricher et d'outrepasser les consignes. En effet, dès les premiers essais, il a commencé à concaténer des mots entre eux --- voire à écrire des mots inintelligibles --- et à recopier les libellés validés par le discrimateur pour l'ensemble de sa génération. 
 
-![Code2ReText en version agentique](images/retext_agent_2.svg){#fig-retext-agentic fig-alt="Schéma Code2ReText en version agentique"}
+![Code2ReText en version agentique](sources/images/retext_agent_2.svg){#fig-retext-agentic fig-alt="Schéma Code2ReText en version agentique"}
 
 Face à cela, nous avons fait deux choix pour Code2ReText. Premièrement, nous avons décidé de prendre plus de contrôle sur le LLM en utilisant LangGraph, un orchestrateur open-source [@langgraph2024] qui offre des fonctionnalités plus avancées dans l'utilisation de *tools* mais surtout dans le suivi. Aussi, nous sommes passé d'un schéma à un LLM à une paire Acteur/Superviseur.  L'Acteur est calqué sur le fonctionnement de NaiveCode2Text, avec la possibilité additionnelle de reformuler ses libellés. Le Superviseur quant à lui reçoit à chaque boucle les libellés générés par l'Acteur avec les résultats de LabelGuard et des libellés originaux similaires provenant du même code. Il formule alors des consignes pour l'Acteur de sorte à ce qu'il reformule les libellés discriminés (score fourni par LabelGuard supérieur à 0.70) en des libellés dans le style de ceux qui sont passés et/ou des originaux. Pour éviter de recopier les libellés originaux, le Superviseur a pour consigne de ne pas transmettre ceux auxquels il a accès, et l'Acteur ne peut que changer le style des libellés qu'il a générés sans pouvoir modifier le fond. Un maximum de 5 boucles est autorisé. Un schéma récapitulatif est affiché @fig-retext.
 
-![Code2ReText --- Version finale](images/Code2Retext.svg){#fig-retext fig-alt="Schéma Code2ReText"}
+![Code2ReText --- Version finale](sources/images/Code2Retext.svg){#fig-retext fig-alt="Schéma Code2ReText"}
 
 ## Validation de la démarche
 
@@ -400,7 +400,7 @@ Cependant, un problème majeur est apparu à l'analyse des données générées 
 # Planning {#sec-planning .unnumbered}
 
 Planning à potentiellement intégrer en conclusion
-![Planning prévisionnel du stage](images/Planning.svg){#fig-planning fig-alt="Diagramme de planning du stage"}
+![Planning prévisionnel du stage](sources/images/Planning.svg){#fig-planning fig-alt="Diagramme de planning du stage"}
 
 
 # Annexe
@@ -410,8 +410,6 @@ Détail configuration du classifieur
 Prompts de référence
 
 Tableau ML pour le choix du modèle
-
-Erreurs d'annotation
 
 Exemple notice
 

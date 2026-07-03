@@ -124,7 +124,7 @@ Génération augmentée par la notice
 
 ## Principe général de Naive Code2Text
 
-![](../images/NaiveCode2Text_single.svg){fig-alt="Naive Code2Text" fig-align="center"}
+![](../sources/images/NaiveCode2Text_single.svg){fig-alt="Naive Code2Text" fig-align="center"}
 
 ## Passage à l'échelle : parallélisation
 
@@ -132,7 +132,7 @@ On prend le schéma précédent, et on l'adapte pour lancer des requêtes API en
 
 \
 
-![](../images/NaiveCode2Text_parallel.svg){fig-alt="Naive Code2Text with parallel configuration" fig-align="center"}
+![](../sources/images/NaiveCode2Text_parallel.svg){fig-alt="Naive Code2Text with parallel configuration" fig-align="center"}
 
 
 ## Premiers résultats
@@ -187,17 +187,17 @@ Ajouter un niveau de profondeur
 
 ## Rappel : Naive Code2Text
 
-![](../images/naive_agent.svg){fig-alt="Naive Code2Text - agent version" fig-align="center"}
+![](../sources/images/naive_agent.svg){fig-alt="Naive Code2Text - agent version" fig-align="center"}
 
 
 ## Code2Retext : discriminateur in the loop
 
-![](../images/retext_agent_1.svg){fig-alt="Code2ReText - loop" fig-align="center"}
+![](../sources/images/retext_agent_1.svg){fig-alt="Code2ReText - loop" fig-align="center"}
 
 
 ## Autre structure possible (version agentic)
 
-![](../images/retext_agent_2.svg){fig-alt="Code2ReText - agentic" fig-align="center"}
+![](../sources/images/retext_agent_2.svg){fig-alt="Code2ReText - agentic" fig-align="center"}
 
 
 # 5️⃣ Perspectives
@@ -242,4 +242,4 @@ Ajouter un niveau de profondeur
 
 ## Planning
 
-![](../images/Planning.svg){fig-alt="Planning du stage" fig-align="center"}
+![](../sources/images/Planning.svg){fig-alt="Planning du stage" fig-align="center"}
