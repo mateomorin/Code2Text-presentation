@@ -1,0 +1,11 @@
+tqdm>=4.68
+scipy>=1.18
+matplotlib>=3.11
+seaborn>=0.13
+numpy>=2.5
+scikit-learn>=1.9
+python-dotenv>=1.2
+pandas>=2.3
+polars>=1.42
+s3fs>=2026
+pingouin>=0.6
