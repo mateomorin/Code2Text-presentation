@@ -354,7 +354,7 @@ a {
 }
 
 .stat-card .val {
-  font-size: 1.4rem;
+  font-size: 1rem;
   font-weight: 500;
   color: $ink;
   letter-spacing: -0.02em;
@@ -364,7 +364,6 @@ a {
 .stat-card .lbl {
   font-size: 0.68rem;
   color: $ink-muted;
-  text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-top: 0.1rem;
   display: block;
