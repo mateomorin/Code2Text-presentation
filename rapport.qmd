@@ -1,6 +1,6 @@
 ---
 title: "Code2Text"
-subtitle: "Générer des libellés pour la codification automatique des nomenclatures statistiques"
+subtitle: "Générer des libellés par IA pour entraîner la codification automatique"
 author:
   - name: Matéo Morin
     email: mateo_morin@ensae.fr
@@ -36,7 +36,7 @@ bibliography: references.bib
 
 # Abstract {#sec-summary .unnumbered}
 
-La codification automatique des activités économiques dans les nomenclatures statistiques (telles que la NAF 2025) se heurte à un double défi : un déséquilibre extrême des classes et des restrictions strictes liées au secret statistique, qui interdisent la diffusion publique des données réelles des déclarants. Afin d'articuler au mieux la performance des classifieurs et la confidentialité des données, ce travail présente un nouveau cadre de génération de libellés textuels synthétiques par Grands Modèles de Langage (LLM). Nous formalisons d'abord l'existence d'une signature stylistique propre aux LLM en entraînant un discriminateur (`LabelGuard`) qui identifie les textes synthétiques avec une exactitude de $99,4\%$, mettant en évidence un *covariate shift* conditionnel marqué. Pour forcer l'alignement stylistique vers le langage brut des déclarants, nous proposons `Code2ReText`, une architecture agentique de type Acteur-Superviseur. À l'aide d'un protocole d'évaluation par ensembles imbriqués ($\mathcal{M}_\alpha$) appliqué à un corpus de 50 000 données, nous démontrons qu'un taux d'injection optimal de $40\%$ à $50\%$ de données synthétiques améliore significativement l'exactitude du classifieur sur les classes rares (queue de distribution) tout en préservant les performances sur les classes fréquentes. Néanmoins, l'analyse qualitative révèle des limites structurelles, notamment un taux de fuite de données de $0,5\%$ par recopie textuelle et une capture encore imparfaite du bruit anthropique.
+La codification automatique des activités économiques dans les nomenclatures statistiques se heurte à un double défi : un déséquilibre extrême des classes et des restrictions strictes liées au secret statistique, qui interdisent la diffusion publique des données réelles des déclarants. Afin d'articuler au mieux la performance des classifieurs et la confidentialité des données, ce travail présente un nouveau cadre de génération de libellés textuels synthétiques par Grands Modèles de Langage (LLM). Nous formalisons d'abord l'existence d'une signature stylistique propre aux LLM en entraînant un discriminateur (`LabelGuard`) qui identifie les textes synthétiques avec une exactitude de $99,4\%$, mettant en évidence un *covariate shift* conditionnel marqué. Pour forcer l'alignement stylistique vers le langage brut des déclarants, nous proposons une architecture agentique de type Acteur-Superviseur pour `Code2Text`. À l'aide d'un protocole d'évaluation par ensembles imbriqués ($\mathcal{M}_\alpha$) appliqué à un corpus de 50 000 données, nous démontrons qu'un taux d'injection optimal de $40\%$ à $50\%$ de données synthétiques améliore significativement l'exactitude du classifieur sur les classes rares tout en préservant les performances sur les classes fréquentes. Néanmoins, l'analyse qualitative révèle des limites structurelles, notamment un taux de fuite de données de $0,5\%$ par recopie textuelle et une capture encore imparfaite du bruit anthropique.
 
 # Préambule {#sec-preambule .unnumbered}
 
@@ -44,7 +44,7 @@ Mon stage s'est déroulé à l'Institut National de la Statistique et des Etudes
 
 # Remerciements {#sec-remerciements .unnumbered}
 
-*[TBD]*
+Je suis personnellement fier des travaux que j'ai pu réalisés durant cette période de stage, notamment grâce aux personnes autour de moi qui m'ont éclairé et guidé pour mener à bien mon projet. Je tiens donc particulièrement à remercier mon tuteur de stage, Meilame Tayebjee, pour tous ses conseils utiles et son accompagnement régulier. Je remercie également Théo Ferry et Nathan Randriamanana qui ont été d'une aide précieuse pour comprendre l'environnement de travail et le contexte métier. Merci à Romain Lesur et Mélina Hillion de m'avoir accueilli au sein du SSP Lab pour ce stage, et plus généralement à toute l'équipe pour sa bienveillance et pour les différents échanges qui m'ont permis de pousser le projet plus loin. Je tiens enfin à remercier la DIIT (et Cédric !) pour l'aide technique lorsque je n'arrivais plus à utiliser le SSP Cloud : cela m'a sauvé à plusieurs reprises !
 
 # Introduction
 
@@ -338,7 +338,7 @@ Quantitativement, plusieurs attributs montrent la réussite de la démarche (voi
 
 - Le premier retour du Superviseur améliore grandement les performances de l'Acteur.
 - Au fur et à mesure des boucles, les générations proposées par l'Acteur sont de moins en moins discriminées en moyenne.
-- Au fur et à mesure des boucles, la distribution du taux de discrimination dérive vers 0.
+- Au fur et à mesure des boucles, la distribution du taux de discrimination se décale vers 0.
 
 ![Evolution de la distribution du taux de discrimination à la fin de chaque boucle](sources/generation_details/retext_evolution/error_rate_evolution.png){#fig-error-rate-evolution fig-alt="Voir les commentaires qui détaillent ce qui se passe."}
 
@@ -474,7 +474,7 @@ Prenons une dernière approche, cette fois-ci qualitative, pour comparer les gé
 | **46.84H** | Commerce de gros de fournitures pour plomberie et chauffage | Commerce interentreprises de matériel de chauffage industriel. | Plomberie chauffage |
 | **70.20Y** | Activités de conseil pour les affaires et autre conseil de gestion | Prestation de services de conseil en organisation | CONSEIL GESTION |
 
-Nous pouvons différencier les deux méthodes : NaiveCode2Text garde un ton très professionnel et s'éloigne peu de la consigne initiale, tandis que **Code2ReText** propose des libellés très différents et **se retrouve parfois à copier le titre du code**, ce qui n'est pas souhaitable. Egalement, on retrouve davantage de libellés qui sont des copier-coller de libellés originaux (environ 0.5% des données, contre 0.005% pour NaiveCode2Text), ce qui veut dire que **l'Acteur (et potentiellement le Superviseur) ont tendance à tricher pour passer la discrimination de LabelGuard**.
+Nous pouvons différencier les deux méthodes : NaiveCode2Text garde un ton très professionnel et s'éloigne peu de la consigne initiale, tandis que **Code2ReText** propose des libellés très différents et **se retrouve parfois à copier le titre du code**, ce qui n'est pas souhaitable. Egalement, on retrouve davantage de libellés qui sont des copiés-collés de libellés originaux (environ 0.5% des données, contre 0.005% pour NaiveCode2Text), ce qui veut dire que **l'Acteur (et potentiellement le Superviseur) ont tendance à tricher pour passer la discrimination de LabelGuard**.
 
 
 # Conclusion et Travaux Futurs {.unnumbered}
