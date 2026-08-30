@@ -6,7 +6,7 @@ author:
     email: mateo_morin@ensae.fr
     affiliations:
       - name: ENSAE Paris
-date: "2026-07-03"
+date: "2026-08-30"
 date-format: "D MMMM YYYY"
 lang: fr-FR
 
@@ -44,7 +44,7 @@ Mon stage s'est déroulé à l'Institut National de la Statistique et des Etudes
 
 # Remerciements {#sec-remerciements .unnumbered}
 
-Je suis personnellement fier des travaux que j'ai pu réalisés durant cette période de stage, notamment grâce aux personnes autour de moi qui m'ont éclairé et guidé pour mener à bien mon projet. Je tiens donc particulièrement à remercier mon tuteur de stage, Meilame Tayebjee, pour tous ses conseils utiles et son accompagnement régulier. Je remercie également Théo Ferry et Nathan Randriamanana qui ont été d'une aide précieuse pour comprendre l'environnement de travail et le contexte métier. Merci à Romain Lesur et Mélina Hillion de m'avoir accueilli au sein du SSP Lab pour ce stage, et plus généralement à toute l'équipe pour sa bienveillance et pour les différents échanges qui m'ont permis de pousser le projet plus loin. Je tiens enfin à remercier la DIIT (et Cédric !) pour l'aide technique lorsque je n'arrivais plus à utiliser le SSP Cloud : cela m'a sauvé à plusieurs reprises !
+Je suis personnellement fier des travaux que j'ai pu réaliser durant cette période de stage, notamment grâce aux personnes autour de moi qui m'ont éclairé et guidé pour mener à bien mon projet. Je tiens donc particulièrement à remercier mon tuteur de stage, Meilame Tayebjee, pour tous ses conseils utiles et son accompagnement régulier. Je remercie également Théo Ferry et Nathan Randriamanana qui ont été d'une aide précieuse pour comprendre l'environnement de travail et le contexte métier. Merci à Romain Lesur et Mélina Hillion de m'avoir accueilli au sein du SSP Lab pour ce stage, et plus généralement à toute l'équipe pour sa bienveillance et pour les différents échanges qui m'ont permis de pousser le projet plus loin. Je tiens enfin à remercier la DIIT (et Cédric !) pour l'aide technique lorsque je n'arrivais plus à utiliser le SSP Cloud : cela m'a sauvé à plusieurs reprises !
 
 # Introduction
 
@@ -195,7 +195,7 @@ La distribution des codes est particulière. En ordonnant les codes par leur fr�
 Par ailleurs, **les libellés contiennent des anomalies non négligeables**. Les libellés ont été définis avec une **taille maximale de 140 caractères** pour que les partenaires de l'Insee puissent accéder aux données d'entreprises (contraintes du format `XML`). Cela pose deux problèmes.
 
 1. **Beaucoup de libellés identiques tronqués existent.** Le demandeur fait souvent **appel à un mandataire** qui remplit automatiquement pour lui les champs textuels, et a souvent tendance à **copier coller des objets juridiques pour désigner l'activité**. Le soucis est qu'un objet juridique est **très long et donc tronqué**, ce qui le rend imprécis en plus d'être peu pertinent.
-2. **Des exceptions de plus de 140 caractères existent.** Le [**Guichet unique**](https://www.inpi.fr/decouvrir-inpi/formalites-dentreprises/guichet-unique-formalites-dentreprises-et-registre-national-entreprises) de l'Institut National de la Propriété Industrielle (INPI) et qui a pour but d'aider aux démarches, **permet à ses agents de créer des libellés de plus que 140 caractères** sans que ceux-ci ne sont pas tronqués.
+2. **Des exceptions de plus de 140 caractères existent.** Le [**Guichet unique**](https://www.inpi.fr/decouvrir-inpi/formalites-dentreprises/guichet-unique-formalites-dentreprises-et-registre-national-entreprises) de l'Institut National de la Propriété Industrielle (INPI) et qui a pour but d'aider aux démarches, **permet à ses agents de créer des libellés de plus que 140 caractères** sans que ceux-ci ne soient tronqués.
 
 Alors, si on s'intéresse à la distribution de la longueur des libellés dans $\mathcal{X}_{real\_train}$, on remarque que **plus de 8% des libellés font exactement 141 ou 161 caractères, ce qui correspond à un troncage suivi d'un espace**, et potentiellement du suffixe "activité de services" (ajout d'une information supplémentaire dans le prétraitement de la donnée). Le code `68.20H` --- qui correspond à la location de biens immobiliers autre que des logements --- est prépondérant parmi les anomalies, et trois quarts des libellés associés à `68.20H` ne sont pas uniques. En s'intéressant aux libellés tronqués les plus récurents, ce sont toujours des objets sociaux tronqués. Des précautions sont donc à prendre pour la suite.
 
@@ -250,7 +250,7 @@ Une **première génération** comprenant au total **$62\,100$ libellés** a ét
 
 # LabelGuard : discriminateur et évaluateur
 
-**LabelGuard est un discriminateur entraîné pour distinguer les libellés générés par IA des libellés originaux humains**. L'architecture, résumée [@fig-labelguard], prend en entrée un vecteur représentant le libellé (*embedding*) et retourne une valeur entre 0 et 1, 0 signifant humain, et 1 IA.
+**LabelGuard est un discriminateur entraîné pour distinguer les libellés générés par IA des libellés originaux humains**. L'architecture, résumée [@fig-labelguard], prend en entrée un vecteur représentant le libellé (*embedding*) et retourne une valeur entre 0 et 1, 0 signifiant humain, et 1 IA.
 
 ::: {#fig-labelguard fig-cap="Architecture de labelguard"}
 
@@ -305,9 +305,9 @@ Un détail des résultats est retrouvable en annexe.
 
 ## Mesure de l'empreinte du LLM : Analyse de la séparabilité des distributions {#sec-labelguard-res}
 
-Un point est particulièrement alarmant pour **LabelGuard** : il **ne se trompe presque jamais**. Pour $40\,000$ libellés de validation, on obtient **$99.4\%$ d'*accuracy* et $0.7\%$ de FPR** --- soit seulement $139$ libellés faux positifs. Ces performances restent du même acabit si on réduit drastiquement le nombre de données d'entraînement, ce qui témoigne que ce n'est pas un simple overfitting du modèle déployé mais bien de la **présence d'une empreinte (*watermak*) propre au LLM** qu'il faut pouvoir identifier.
+Un point est particulièrement alarmant pour **LabelGuard** : il **ne se trompe presque jamais**. Pour $40\,000$ libellés de validation, on obtient **$99.4\%$ d'*accuracy* et $0.7\%$ de FPR** --- soit seulement $139$ libellés faux positifs. Ces performances restent du même acabit si on réduit drastiquement le nombre de données d'entraînement, ce qui témoigne que ce n'est pas un simple overfitting du modèle déployé mais bien de la **présence d'une empreinte (*watermark*) propre au LLM** qu'il faut pouvoir identifier.
 
-En s'intéressant au détail des décisions de LabelGuard, la [@fig-labelguard-valid] montre qu'il a une très grande confiance dans presque toutes ses prédictions. Au contraire, le discriminateur est moins décisif pour les cas où il se trompe.
+En s'intéressant au détail des décisions de LabelGuard, la [@fig-labelguard-valid] montre qu'il a une très grande confiance dans presque toutes ses prédictions. Au contraire, le discriminateur est moins décisif dans les cas où il se trompe.
 
 ::: {#fig-labelguard-valid layout-ncol=2}
 
@@ -457,7 +457,7 @@ De ce fait, alors que les **performances pour la tête sont très similaires au 
 
 - Pour la **queue**, la [@fig-lvl5-tail-acc-top1-ev] montre au contraire une amélioration très marquée des performances dès les premières injections de données synthétiques, et encopre plus lorsqu'elles sont issues de Code2ReText.
 
-![Evolution de l'accuracy sur le jeu de test en fonction de la proportion de données synthétiques en entraînement (queue de distribution des codes)](sources/figures/compare_datasets/source_synth_split_vs_lvl5_tail_acc_top1.png){#fig-lvl5-tail-acc-top1-ev fig-alt="Augmentation avec une tendance concave de l'*accuracy* en fonction de $\apha$, de 0.1 à 0.7 pour Code2ReText, et 0.45 pour NaiveCode2Text"}
+![Evolution de l'accuracy sur le jeu de test en fonction de la proportion de données synthétiques en entraînement (queue de distribution des codes)](sources/figures/compare_datasets/source_synth_split_vs_lvl5_tail_acc_top1.png){#fig-lvl5-tail-acc-top1-ev fig-alt="Augmentation avec une tendance concave de l'*accuracy* en fonction de $\alpha$, de 0.1 à 0.7 pour Code2ReText, et 0.45 pour NaiveCode2Text"}
 
 Il y a donc un **grand avantage** à utiliser des données synthétiques : **cela discrimine moins les classes les moins fréquentes**. Pour aller plus loin, nous pouvons déterminer (graphiquement) une proportion optimale de données synthétiques à injecter pour faire un compromis entre performances et égalité de traitement. En s'aidant de la [@fig-lvl5-head-acc-top1-body-acc-top1] et de la [@fig-lvl5-head-acc-top1-tail-acc-top1], on remarque qu'**avoir $\alpha$ entre 40% et 50% nuit peu à l'*accuracy* de la tête et du corps, mais augmente fortement celle de la queue**. On peut donc retenir cette valeur, et privilégier une **génération de type Code2ReText proche de la distribution originale**.
 
@@ -473,7 +473,7 @@ En ce qui concerne le point de vue du transport optimal, **pour presque tous les
 
 ![Comparaison de la distance de Wasserstein entre les deux types de génération pour chaque code (jeu de données d'entraînement).](sources/figures/compare_datasets/w2_scatter_plot_train.png){#fig-w2-scatter-plot-train fig-alt="Une ligne identité est tracée, presque tous les points se situent sous la courbe, ce qui signifie que la distance $W_2$ est plus faible pour presque tous les codes pour Code2ReText."}
 
-Cependant, la [@fig-dcscore-violin] et un t-test bayésien apparié ($BF10 \approx 1e+71$, $d \approx 1.20$) montrent que ce **rapprochement sémantique a une influence négative sur la diversité des libellés** : le DC-Score s'effondre uniquement pour les générations de Code2ReText, alors que NaievCode2Text obtient au contraire une diversité un peu plus élevée en moyenne que la distribution originale. Cela signifie donc que l'**on ne peut allier rapprochement stylistique et diversité sémantique avec l'approche proposée ici**.
+Cependant, la [@fig-dcscore-violin] et un t-test bayésien apparié ($BF10 \approx 1e+71$, $d \approx 1.20$) montrent que ce **rapprochement sémantique a une influence négative sur la diversité des libellés** : le DC-Score s'effondre uniquement pour les générations de Code2ReText, alors que NaiveCode2Text obtient au contraire une diversité un peu plus élevée en moyenne que la distribution originale. Cela signifie donc que l'**on ne peut allier rapprochement stylistique et diversité sémantique avec l'approche proposée ici**.
 
 ![Comparaison du DC-Score entre les deux types de génération et la donnée d'entraînement pour chaque code.](sources/figures/compare_datasets/violin_dcscore.png){#fig-dcscore-violin fig-alt="DC-Score similaire pour NaiveCode2Text et original, plus faible pour Code2ReText."}
 
@@ -808,7 +808,7 @@ RÈGLES D'ANALYSE CRITIQUE :
 - Un libellé marqué comme "IA" est thématiquement correct mais syntaxiquement artificiel (trop long, trop propre, trop scolaire, ...). Tu dois demander au Générateur de modifier son style pour se rapprocher de la structure des libellés de la base de données originale tout en respectant les autres règles.
 - Avant de demander au Générateur de modifier son style, assure-toi d'avoir analysé en détail les différences entre les libellés générés et originaux.
 - Compare les échecs aux exemples humains pour identifier le "manque" (ex: "Les humains écrivent en 2 mots maximum, alors que tu as fait des phrases").
-- Tu peux faire des demandes de modification de la génération en t'inspirant de ces instructions : supprimer les articles, utiliser des inversions, introduire du jargon ou des abréviations, modifier l'ortographe ou la syntaxe, introduire un ton différent.
+- Tu peux faire des demandes de modification de la génération en t'inspirant de ces instructions : supprimer les articles, utiliser des inversions, introduire du jargon ou des abréviations, modifier l'orthographe ou la syntaxe, introduire un ton différent.
 - ATTENTION : plusieurs tons/styles peuvent apparaître pour le code. Si c'est le cas, tu dois en retranscrire plusieurs et non seulement un.
 - Tu as le droit de donner des exemples pour préciser le style voulu.
 - Tu ne dois JAMAIS révéler un des libellés de la base de données originale auquel tu as accès, tu peux seulement reprendre les libellés issus de la génération.
@@ -943,7 +943,7 @@ RÈGLES D'ANALYSE CRITIQUE :
 - Un libellé marqué comme "IA" est thématiquement correct mais syntaxiquement artificiel (trop long, trop propre, trop scolaire, ...). Tu dois demander au Générateur de modifier son style pour se rapprocher de la structure des libellés de la base de données originale tout en respectant les autres règles.
 - Avant de demander au Générateur de modifier son style, assure-toi d'avoir analysé en détail les différences entre les libellés générés et originaux.
 - Compare les échecs aux exemples humains pour identifier le "manque" (ex: "Les humains écrivent en 2 mots maximum, alors que tu as fait des phrases").
-- Tu peux faire des demandes de modification de la génération en t'inspirant de ces instructions : supprimer les articles, utiliser des inversions, introduire du jargon ou des abréviations, modifier l'ortographe ou la syntaxe, introduire un ton différent.
+- Tu peux faire des demandes de modification de la génération en t'inspirant de ces instructions : supprimer les articles, utiliser des inversions, introduire du jargon ou des abréviations, modifier l'orthographe ou la syntaxe, introduire un ton différent.
 - ATTENTION : plusieurs tons/styles peuvent apparaître pour le code. Si c'est le cas, tu dois en retranscrire plusieurs et non seulement un.
 - Tu as le droit de donner des exemples pour préciser le style voulu.
 - Tu ne dois JAMAIS révéler un des libellés de la base de données originale auquel tu as accès, tu peux seulement reprendre les libellés issus de la génération.
