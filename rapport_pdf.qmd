@@ -1,0 +1,520 @@
+---
+author: "Matéo Morin"
+date: "2026-08-30"
+lang: fr
+
+format:
+  pdf:
+    documentclass: article
+    papersize: a4
+    geometry:
+      - top=20mm
+      - bottom=25mm
+      - left=20mm
+      - right=20mm
+    mainfont: "Times New Roman"
+    fontsize: 12pt
+    linestretch: 1.5
+    
+    title: ""
+    toc: false
+    toccolor: "black"
+    linkcolor: "black"
+    number-sections: true
+    
+    include-in-header:
+      - text: |
+          \usepackage{xcolor}
+          \usepackage{titlesec}
+          \usepackage{hyperref}
+          
+          % Couleurs personnalisées
+          \definecolor{navy}{HTML}{1B365D}
+          \definecolor{steel}{HTML}{2C4D75}
+          
+          % Définir la profondeur de numérotation : s'arrête au niveau 2 (subsection)
+          \setcounter{secnumdepth}{2}
+          
+          % Titres H1 (Section)
+          \titleformat{\section}
+            {\color{navy}\normalfont\Large\bfseries}
+            {\thesection}{1em}{}
+            [\vspace{2pt}\hrule height 1.5pt]
+            
+          % Titres H2 (Subsection)
+          \titleformat{\subsection}
+            {\color{steel}\normalfont\large\bfseries}
+            {\thesubsection}{1em}{}
+            
+          % Titres H3 (Subsubsection) : Non-italique, non-numéroté
+          \titleformat{\subsubsection}
+            {\color{steel}\normalfont\normalsize\bfseries}
+            {}{0pt}{}
+
+bibliography: references.bib
+---
+
+::: {.callout-note icon=false}
+### 🌐 Version web interactive
+Le code source, les annexes ainsi que les visualisations interactives complètes sont consultables sur le site du projet :  
+[**https://mateomorin.github.io/Code2Text-presentation/**](https://mateomorin.github.io/Code2Text-presentation/)
+:::
+
+# Préambule {#sec-preambule .unnumbered}
+
+Mon stage s'est déroulé à l'Institut National de la Statistique et des Etudes Economiques (Insee), et plus précisément au sein de son laboratoire d'innovation : le SSP Lab. Très centré autour du traitement automatique du langage, j'ai été amené à travailler sur la génération de données synthétiques textuelles. Ce rapport présente ma démarche, les difficultés rencontrées ainsi que les résultats que j'ai obtenus. Il se termine par un regard critique sur les contributions apportées et sur les perspectives envisagées.
+
+# Remerciements {#sec-remerciements .unnumbered}
+
+Je suis personnellement fier des travaux que j'ai pu réaliser durant cette période de stage, notamment grâce aux personnes autour de moi qui m'ont éclairé et guidé pour mener à bien mon projet. Je tiens donc particulièrement à remercier mon tuteur de stage, Meilame Tayebjee, pour tous ses conseils utiles et son accompagnement régulier. Je remercie également Théo Ferry et Nathan Randriamanana qui ont été d'une aide précieuse pour comprendre l'environnement de travail et le contexte métier. Merci à Romain Lesur et Mélina Hillion de m'avoir accueilli au sein du SSP Lab pour ce stage, et plus généralement à toute l'équipe pour sa bienveillance et pour les différents échanges qui m'ont permis de pousser le projet plus loin. Je tiens enfin à remercier la DIIT (et Cédric !) pour l'aide technique lorsque je n'arrivais plus à utiliser le SSP Cloud : cela m'a sauvé à plusieurs reprises !
+
+\newpage
+\renewcommand{\contentsname}{Sommaire}
+\tableofcontents
+\newpage
+
+# Introduction
+
+### Le défi de la codification automatique de la NAF
+
+**Classer** des textes dans des catégories fixes (appelées nomenclatures) **est essentiel** pour produire des statistiques publiques de qualité. D'un côté, **les chiffres publiés doivent être précis** pour éclairer le débat économique. Prenez l'Indice des Prix à la Consommation (IPC) qui mesure l'inflation, celui-ci utilise la nomenclature internationale COICOP [@inseecoicop] pour donner le bon poids à chaque type de dépense des ménages. D'un autre côté, respecter ces catégories est souvent une **obligation légale** : chaque pays de l'Union européenne doit classer l'activité économique de ses entreprises selon la Nomenclature statistique des Activités économiques dans la Communauté Européenne (NACE) [@statbelnace].
+
+En pratique, appliquer ce système à l'échelle d'un pays pose de gros **problèmes industriels**. Il faut d'abord créer un guide très précis (la notice de codification), puis être capable de gérer un flux massif de données. En France, la version nationale de la NACE s'appelle la Nomenclature d'Activité Française (NAF). Elle impose d'associer chaque année des millions d'établissements d'entreprise à l'un des 747 codes existants. À l'origine, ce travail était fait par des agents administratifs qui lisaient la description textuelle écrite par les créateurs d'entreprises. Mais face à ce volume énorme, **il est devenu indispensable d'automatiser** le processus avec des méthodes de traitement automatique du langage (*Natural Language Processing*, NLP) pour aider les agents et limiter les erreurs.
+
+### Déséquilibre extrême et limites du secret statistique
+
+Pour entraîner un classifieur de type *Text2Code* (du texte vers le code), on se heurte à un problème classique en IA : le **déséquilibre extrême des classes** (*long-tail classification*). Les données réelles ne couvrent pas toutes les catégories de la même manière. Les activités courantes saturent le début de la distribution, tandis que la majorité des codes de la nomenclature se situent dans la "queue de distribution", où il n'y a presque aucun exemple.
+
+Les chiffres de la NAF 2025 montrent bien ce déséquilibre : sur un fichier d'entraînement de **plus d'un million de libellés réels**, **un code sur deux comprend moins de 60 exemples**. À cause de cette rareté, les modèles supervisés classiques ne parviennent pas à apprendre ces catégories, ce qui crée des erreurs importantes lors de la mise en production.
+
+À cela s'ajoutent deux contraintes :
+
+1. Quand une nomenclature est **mise à jour** ou que les **tendances changent** dans les créations d'entreprise, cela crée un décalage immédiat (*distribution shift*) entre les données passées et les nouvelles données réelles. Un bon exemple est la popularité récente des logements meublés non professionnels (LMNP) qui a fait grimper le nombre de codes `68.20G`, anciennement `68.20A` (NAF 2008).
+2. La loi sur le **secret statistique** et le RGPD interdisent de diffuser ces vrais fichiers à des personnes extérieures (pour des cours, des hackathons ou des concours d'écoles). Ce manque de données ouvertes empêche la communauté scientifique de tester de nouveaux modèles sur ces sujets et donc de contribuer à des progrès technologiques. Cette contrainte n'est **techniquement pas présente ici**, mais intervenient pour d'autres cas d'usage.
+
+
+### Tension entre performance de classification et fidélité de diffusion
+
+Le système de codification automatique utilisé depuis novembre 2022 à l'Insee repose sur **FastText** [@bojanowski2017enriching]. S'il permet de traiter seul environ 70 % des cas les plus simples, ce modèle **n'est plus à jour face aux architectures modernes** de l'état de l'art, comme les transformeurs légers [@sanh2019distilbert] ou les encodeurs denses [@reimers2019sentence], qui offrent de bien meilleures capacités de compréhension contextuelle. De plus, les retours métiers des experts de la nomenclature mettent régulièrement en évidence des erreurs de prédiction de ce classifieur. Une voie majeure pour franchir un cap en performance réside dans l'**augmentation du jeu de données d'entraînement par l'injection de données synthétiques** issues de grands modèles de langage (LLM).
+
+Cependant, l'introduction de ces données synthétiques au sein d'un flux de production réel soulève des défis théoriques profonds. En s'appuyant sur le cadre de référence du décalage de données (*dataset shift*) théorisé par @quinonero2008dataset, notre cas d'étude est confronté à **trois mécanismes potentitels de décalage de la loi jointe** $P(X, Y)$ (où $X$ représente le libellé textuel et $Y$ le code de la nomenclature) :
+
+1. **Le *prior probability shift* :** Il intervient lorsque **la distribution des classes $P(Y)$ est modifiée**. La nomenclature réelle présente une distribution très déséquilibrée. Pour aider un classifieur à apprendre les catégories rares, la pratique classique en apprentissage automatique consiste à modifier artificiellement $P(Y)$ (par exemple en augmentant les probabilités des classes rares initiales), créant un *prior shift* volontaire par rapport au flux réel.
+2. **Le *covariate shift* :** Il apparaît lorsque **la distribution des variables explicatives $P(X)$ change**. C'est le **risque majeur de la génération synthétique naïve** : un LLM non guidé produit des textes académiques, parfaits et sans défauts. Sa distribution $P_{synth}(X|Y)$ présente un décalage de domaine critique par rapport au style empirique des déclarants humains $P_{real}(X|Y)$ (caractérisé par des fautes, des abréviations et des structures hachées).
+3. **Le *concept drift***, théorisé par [@tsymbal2004problem] : Il se traduit par une **modification de la règle de décision** $P(Y|X)$. C'est le point de départ de notre étude, matérialisé par le passage à la nouvelle nomenclature NAF 2025. Un même libellé textuel peut changer de catégorie légale par rapport aux années précédentes. Dans notre cas, ce shift est documenté et encadré par la notice officielle.
+
+La tension de notre travail réside dans le fait que la création d'un jeu de données optimisé pour l'apprentissage d'un classifieur ne coïncide pas naturellement avec celle d'un jeu de données destiné à la diffusion publique (*open-data*). L'objectif de diffusion pure exige de mimer fidèlement la distribution $P(X)$ réelle qui contient des libellés hors-sujets (valeurs aberrantes) et demande la même distribution $P(Y)$, alors que l'optimisation du classifieur demande une stratégie inverse sur $P(Y)$ et un contrôle strict de la pertinence du bruit textuel injecté.
+
+### Approche proposée et contributions
+
+Pour articuler ces objectifs sans qu'ils ne se nuisent, nous proposons de **découpler la structure de la nomenclature de l'expression humaine en utilisant le LLM pour réduire le *covariate shift* au niveau conditionnel, c'est-à-dire pour chaque code $Y$**.
+
+Notre approche consiste à guider le processus de génération pour que la distribution conditionnelle synthétique $P_{synth}(X | Y)$ converge vers la distribution humaine $P_{real}(X | Y)$. Plutôt que de laisser le LLM dériver vers son style académique naturel, nous lui apprenons à transférer le style et la texture sémantique des déclarants (abréviations, syntaxe métier brute) sur la base des concepts immuables de la notice. Une fois ce générateur conditionnel robuste obtenu, la dualité des cas d'usage se résout par simple manipulation de la loi d'échantillonnage des codes $P(Y)$ en entrée du pipeline : le *prior probability shift* est ainsi annulé pour le scénario de diffusion open-data, ou volontairement exploité (distribution uniforme) pour maximiser les performances du classifieur aval sur la queue de distribution.
+
+Les contributions principales de ce travail sont :
+
+* **La création de `LabelGuard` :** Un discriminateur capable de détecter le *covariate shift* entre les styles employés par le LLM et l'humain, mettant en évidence l'empreinte (*watermark*) laissée par les modèles de langage dans l'espace des plongements vectoriels.
+* **L'architecture `Code2ReText` :** Un framework agentique à deux LLM (Générateur-Superviseur) qui utilise le signal de `LabelGuard` pour forcer l'alignement stylistique et réduire le *covariate shift* conditionnel.
+* **Une évaluation par ensembles imbriqués (protocole $\mathcal{M}_\alpha$) :** Une analyse fine de l'influence de la proportion de données synthétiques sur le classifieur `Text2Code`, isolant les gains spécifiques sur les classes de faible fréquence et identifiant le point de saturation synthétique.
+* **Un pipeline reproductible :** Un code entièrement open source et agnostique, conçu pour être immédiatement transposable à d'autres nomenclatures hiérarchiques (comme la NACE européenne).
+
+Le reste de ce rapport est structuré ainsi. La Section 2 présente l'état de l'art de la génération de données en NLP. La Section 3 détaille la donnée utilisée, et la section 4 introduit un premier générateur : `NaiveCode2Text`. La section 5 aborde le fonctionnement de `LabelGuard`, base pour la section 6 sur `Code2ReText`. La Section 7 décrit les méthodes d'évaluation, dont les résultats sont présenté section 8. Le rapport se termine par une conclusion et présente des perspectives de travail.
+
+
+# État de l'Art
+
+## Augmentation de données textuelles par des modèles de langage
+
+**Avant l'avènement des grands modèles de langage** (LLMs), l'augmentation de données textuelles en NLP reposait principalement sur des règles de transformation de surface ou des substitutions locales. Les approches traditionnelles exploitent des **perturbations syntaxiques**, du **remplacement lexical basé sur des thésaurus** comme WordNet, ou des techniques de **traduction aller-retour** (*back-translation*) [@shorten2021]. Bien que ces méthodes permettent d'accroître artificiellement le volume du corpus d'entraînement, elles souffrent d'une forte rigidité sémantique : elles **se contentent de reformuler les structures existantes** sans introduire de nouveaux concepts ni enrichir le vocabulaire métier.
+
+**L'introduction LLMs** a transformé ce domaine en permettant une génération de données textuelles sensible au contexte. L'approche la plus courante repose sur l'**apprentissage en contexte** (*in-context learning*) via des techniques de *few-shot prompting* [@brown2020]. Dans ce cadre, le modèle reçoit une poignée d'exemples issus du jeu de données réel pour assimiler le style, la structure et le ton des libellés cibles. Des frameworks plus avancés incitent le LLM à générer des variations textuelles en introduisant des contraintes de diversité sémantique ou linguistique directement dans le prompt [@schick2021].
+
+Une étape fondatrice dans la génération de données textuelle est **Self-Instruct** proposé par @wang2023self. L'idée consiste à utiliser un LLM pour **générer automatiquement des paires instruction-réponse qui serviront ensuite à entraîner ou spécialiser un autre modèle**. Cette approche a démontré qu'un système pouvait améliorer ses performances à partir de données qu'il avait lui-même contribué à produire.
+
+Néanmoins, qu'elles soient basées sur des règles heuristiques ou sur du *few-shot prompting*, ces méthodologies partagent une limite fondamentale : **la donnée générée demeure intrinsèquement bornée par le périmètre informationnel du jeu de données d'origine**. En l'absence d'un référentiel externe, le modèle ne fait que cloner, interpoler ou reformuler des concepts déjà présents dans l'échantillon initial. Il est incapable d'explorer des thématiques absentes ou sous-représentées, ce qui expose le système au risque de propager, voire d'amplifier, les biais de sélection de la base de données source.
+
+## Génération synthétique pilotée par connaissances externes
+
+Pour s'affranchir de la dépendance aux données historiques, plusieurs travaux explorent l'**injection de connaissances structurées exogènes** au sein des architectures génératives, un domaine désigné sous le terme de génération guidée par taxonomie (*taxonomy-guided generation*). Dans notre cadre applicatif, la présence d'une notice officielle constitue une ressource documentaire exhaustive et immuable, qui fournit pour chaque catégorie son code, son titre, ainsi que ses critères d'inclusion et d'exclusion.
+
+**Historiquement**, l'intégration de telles connaissances nécessitait le développement d'**architectures dédiées**. Par exemple, @chen2020kgpt introduisent le framework KGPT, qui repose sur un pré-entraînement lourd et spécifique pour aligner des structures de données (graphes de connaissances) avec du texte. Cette stratégie s'avère plus **coûteuse** à mettre en œuvre que les LLMs actuels, et donc moins adaptée à notre cas d'usage.
+
+**L'apparition des grands modèles de langage a favorisé une approche plus flexible** fondée sur la récupération d'information (*retrieval*). Dans les systèmes de *Retrieval-Augmented Generation* (RAG), introduits par @lewis2020retrieval, le modèle ne s'appuie plus uniquement sur ses connaissances paramétriques : il consulte d'abord une source documentaire externe avant de produire sa réponse. Cette stratégie permet d'améliorer la factualité des contenus générés tout en facilitant l'adaptation à des domaines spécialisés.
+
+Dans le cadre de la génération de données synthétiques, des travaux récents montrent que **l'utilisation de documents récupérés dynamiquement améliore la pertinence et la diversité des exemples produits**. Les informations externes peuvent être injectées sous différentes formes : passages textuels, exemples similaires retrouvés dans un espace d'embedding, taxonomies hiérarchiques ou bases de connaissances structurées [@long2024llms].
+
+Notre cas d'étude présente une situation particulièrement favorable à ce type de méthode. Contrairement à de nombreux contextes applicatifs où les connaissances doivent être recherchées dans de larges corpus, **l'ensemble de l'information pertinente peut être injecté directement dans la fenêtre de contexte du modèle**. Notre approche peut ainsi être interprétée comme une forme spécialisée de génération augmentée par récupération, où la notice joue le rôle de source documentaire de référence. L'objectif n'est cependant pas la production d'une réponse à une question utilisateur, mais la génération de libellés synthétiques destinés à l'entraînement d'un classifieur Text2Code. **La qualité du système dépend alors de sa capacité à transformer cette connaissance normative en formulations proches du langage réellement employé par les déclarants**.
+
+## Transfert de style
+
+L'utilisation exclusive de la notice comme source d'inspiration introduit un **biais stylistique**. Par construction, **les LLMs subissent un alignement strict** conçu pour éliminer les erreurs de syntaxe et produire un langage formel, neutre et grammaticalement parfait. Cela peut être dû au *Reinforcement Learning from Human Feedback* (RLHF) [@ouyang2022training], au *Supervised-Fine-Tuning* (SFT) [@zhang2026instruction], où à d'autres facteurs. @reinhart2025do confirment la différence de style avec le langage humain, qui change selon les modèles mais reste toujours présente.
+
+**Ce phénomène crée un *covariate shift*** : comme le prouvent @belinkov2018synthetic, les modèles en NLP ont des difficultés à faire face à du bruit inconnu. Dans notre cas, un classifieur entraîné sur des textes parfaits issus des données synthétiques pourrait donc subir une baisse drastique de ses performances lorsqu'il est confronté au bruit des données originales. Pour corriger ce décalage, **il est nécessaire de recourir au transfert de style** (*style transfer*). @gao2023self montrent qu'un processus de réécriture grâce à une série de dialogues entre LLMs devance le *few-shot prompting* en terme de performances pour les tâches. Pour du transfert de style, cela permettrait de **mimer le comportement des déclarants réels** en introduisant un bruit anthropique ciblé (abréviations métiers, troncatures de mots, fautes d'orthographe de saisie).
+
+## Evaluation
+
+Pour rappel, nous souhaitons que $P_{synth}( \cdot | Y)$ converge vers $P_{real}( \cdot | Y)$ pour tout code $Y$ de sorte à atteindre le double objectif d'amélioration des performances du classifieur Text2Code et de diffusion des données. Plusieurs méthodes d'évaluation s'offrent à nous.
+
+Pour la partie performances, le protocole ***Train on Synthetic, Test on Real*** (TSTR), formalisé par @esteban2017real, est très adapté. L'idée est d'entraîner le classifieur uniquement sur la donnée synthétique, et d'évaluer uniquement sur la donnée originale.
+
+Pour quantifier la réduction du *covariate shift*, une solution est d'**utiliser des discriminateurs** entraînés à distinguer les productions humaines des productions synthétiques [@bowman2016generating]. Dans ce cadre d'évaluation antagoniste, l'exactitude du discriminateur sert de proxy pour mesurer la convergence stylistique : une baisse de sa capacité de détection indique que le générateur parvient à effacer sa signature pour s'aligner sur la sémantique humaine. 
+
+Plus généralement, des **métriques de similarités** entre des données textuelles existent. De simples comparaisons entre les mots employés comme avec le *Jaccard Similarity Index* [@travieso2024analytical], jusqu'à l'*Integrated Maximum Mean Discrepancy* (IMMD) [@ding2025testing], plein de métriques permettent de comparer deux corpus de textes --- ici, données synthétiques et données réelles pour un même code. La limite de ces approches réside dans l'**incapacité à mesurer la créativité des données synthétiques**, ce que l'on cherche pourtant si on veut améliorer la classification ou diffuser des données qui ne soient pas des copies propres des données originales. C'est pourquoi ces métriques seront moins mises en valeurs face aux deux premières.
+
+
+# La donnée disponible {#sec-data}
+
+Pour rappel, **l'étude se concentre sur le cas de la NAF 2025**, mais la **structure des données utilisées est très similaire à d'autres nomenclatures** et donc appliquable dans d'autres cas, tant qu'il y a bien une notice exhaustive.
+
+## La notice de la nomenclature
+
+La notice NAF 2025 a une **structure hiérarchique sur cinq niveaux emboîtés**. Elle est composée de 21 sections, 87 divisions, 287 groupes, 651 classes et 747 sous-classes, de sorte à partager des points communs avec les nomenclatures européennes et internationales d'activités d'entreprise [@insee2025naf]. On peut retrouver tous les détails sous forme de tableau dans un fichier `.xlsx` avec les **attributs suivants** pour chaque catégorie :
+
+- **Code** : chaîne de caractère courte **unique à chaque catégorie**, dont l'écriture conserve l'aspect hiérarchique.
+-	**Titre**	: nom décrivant la catégorie.
+- **Code du parent** : code de la catégorie de niveau supérieur (si elle existe).
+- **Niveau** : niveau de hiérarchie de la catégorie (de 1 à 5 ici).
+- **Includes** : tous les éléments inclus dans la catégorie.
+- **IncludesAlso** : d'autres éléments inclus dans la catégorie.
+- **Excludes** : tous les éléments exclus de la catégorie, mais qui ressemblent à ceux inclus.
+
+D'autres éléments peuvent être présents mais sont redondants par rapport aux informations indiquées ci-dessus. Un exemple de notice détaillée se trouve en annexe.
+
+**On notera $\mathcal{Y}$ l'ensemble des codes (uniques) des sous-classes de la NAF 2025**. On a $|\mathcal{Y}| = 747$. Par simplicité, en dehors de cette sous-partie, le mot code dans le rapport désigne un code dans $\mathcal{Y}$.
+ 
+## Défis de la donnée originale
+
+Le choix de la NAF 2025 n'est pas anodin dans notre cas. En plus de comporter une notice exhaustive sans aucun attribut vide, la base de données originale est **très large** et **déjà travaillée dans d'autres projets** en science des données à l'Insee.
+
+La donnée originale provient de formulaires remplis pour la création ou de modification d'établissements d'entreprise (création d'un nouveau SIRET) entre le 8 novembre 2022 et 27 octobre 2024. Chaque ligne est composée d'un **libellé**, d'un **code** associé, et de variables catégorielles supplémentaires (que l'on n'utilisera pas ici). Elle est divisée en trois grands groupes indépendants :
+
+- $\mathcal{X}_{train\_real}$ ($\approx 1\,500\,000$ lignes) : pour l'**entraînement de modèles** et pour la **génération de données**.
+- $\mathcal{X}_{val}$ ($\approx 400\,000$ lignes) : pour suivre les **performances durant l'entraînement** des codifieurs automatiques. 
+- $\mathcal{X}_{test}$ ($\approx 500\,000$ lignes) : pour calculer les **performances finales** des codifieurs après entraînement.
+
+La donnée de travail a certaines particularités qu'il est nécessaire de présenter pour avoir un regard plus critique sur les résultats de cette étude. En effet, parce que c'est la donnée d'entraînement pour *Text2Code* sur la NAF 2025, cette base a subi un traitement qui peut générer un **bruit** dans nos résultats. Trois facteurs principaux altèrent sa qualité :
+
+**Altération artificielle de la distribution à la mi-mai 2026** :
+
+* **Mécanisme** : Duplication de libellés existants pour surreprésenter certaines classes minoritaires et limiter les erreurs de classification du modèle en production.
+* **Impact méthodologique** : La première phase des travaux (*NaiveCode2Text* pour le *few-shot* et *LabelGuard* pour l'entraînement) s'est appuyée sur la base initiale $\mathcal{X}_{train\_real}$ ($\approx 800\,000$ lignes), représentative de la distribution réelle. Les travaux ultérieurs ont quant à eux exploité une distribution modifiée artificiellement.
+
+
+**Biais de transition de nomenclature (NAF 2008 $\rightarrow$ NAF 2025)** :
+
+* **Mécanisme** : Recodage a posteriori des données historiques (période du 8 novembre 2022 au 27 octobre 2024) via un LLM, guidé par la table de correspondance de l'Insee et des consignes d'annotation humaine.
+* **Impact méthodologique** : L'incomplétude initiale de la table de passage et la non-exhaustivité des consignes d'alignement au moment de la transition constituent une source potentielle d'erreurs de labellisation systématiques.
+
+
+**Bruit d'annotation issu du processus de labellisation** :
+
+* **Labellisation algorithmique ($\approx 2/3$ des données)** : Effectuée par un modèle *FastText* (sous condition de dépassement d'un seuil de confiance). Avec une exactitude (*accuracy*) mesurée à un peu moins de $90\%$, cette méthode introduit structurellement environ $10\%$ de bruit sur ce sous-ensemble.
+* **Labellisation humaine ($\approx 1/3$ des données)** : Suivie de biais de mesure liés aux contraintes opérationnelles (volume important limitant le temps d'attention par libellé) et conceptuelles (divergences d'interprétation des agents sur les cas limites), un phénomène qualitatif corroboré par la nécessité de fréquentes réunions d'harmonisation.
+
+Si les bruits liés à l'annotation et à la transition de nomenclature sont trop élevés, une solution sera de **s'intéresser au niveau hiérarchique supérieur** (4 au lieu de 5) qui comporte théoriquement moins d'erreurs. En effet, ce niveau 4 est celui de la NACE, plus contrôlé et moins détaillé.
+
+## Distribution des données {#sec-data-distrib}
+
+La distribution des codes est particulière. En ordonnant les codes par leur fréquence, la [@fig-code-log-freq] montre qu'**environ 70 codes constituent la majeure partie de $\mathcal{X}_{train\_real}$**, et que les autres codes suivent une distribution exponentielle selon leur rang. Cette distribution inégale impose des précautions lors de l'analyse de performances générales. 
+
+![Distribution des codes dans $\mathcal{X}_{train\_real}$](sources/images/code_log_freq.png){#fig-code-log-freq fig-alt="Distribution des codes dans $\mathcal{X}_{train\_real}$, composée d'une tête à très haute fréquence (jusqu'à 10%), d'un corps qui suit une loi exponentielle, et d'une queue sous forme de marches (très faibles proportions) mais avec tendance globale la même équation que le corps."}
+
+Par ailleurs, **les libellés contiennent des anomalies non négligeables**. Les libellés ont été définis avec une **taille maximale de 140 caractères** pour que les partenaires de l'Insee puissent accéder aux données d'entreprises (contraintes du format `XML`). Cela pose deux problèmes.
+
+1. **Beaucoup de libellés identiques tronqués existent.** Le demandeur fait souvent **appel à un mandataire** qui remplit automatiquement pour lui les champs textuels, et a souvent tendance à **copier coller des objets juridiques pour désigner l'activité**. Le soucis est qu'un objet juridique est **très long et donc tronqué**, ce qui le rend imprécis en plus d'être peu pertinent.
+2. **Des exceptions de plus de 140 caractères existent.** Le [**Guichet unique**](https://www.inpi.fr/decouvrir-inpi/formalites-dentreprises/guichet-unique-formalites-dentreprises-et-registre-national-entreprises) de l'Institut National de la Propriété Industrielle (INPI) et qui a pour but d'aider aux démarches, **permet à ses agents de créer des libellés de plus que 140 caractères** sans que ceux-ci ne soient tronqués.
+
+Alors, si on s'intéresse à la distribution de la longueur des libellés dans $\mathcal{X}_{real\_train}$, on remarque que **plus de 8% des libellés font exactement 141 ou 161 caractères, ce qui correspond à un troncage suivi d'un espace**, et potentiellement du suffixe "activité de services" (ajout d'une information supplémentaire dans le prétraitement de la donnée). Le code `68.20H` --- qui correspond à la location de biens immobiliers autre que des logements --- est prépondérant parmi les anomalies, et trois quarts des libellés associés à `68.20H` ne sont pas uniques. En s'intéressant aux libellés tronqués les plus récurents, ce sont toujours des objets sociaux tronqués. Des précautions sont donc à prendre pour la suite.
+
+# NaiveCode2Text : Approche initiale pour la génération de données synthétiques {#sec-naivecode2text}
+
+## Environnement informatique disponible
+
+L'environnement de travail de l'Insee permet de profiter de multiples environnements utiles pour le traitement de la donnée grâce à un **cluster Kubernetes**. Notamment, l'ensemble des tâches de stockage et de calcul est réalisé par les machines de l'Insee. Voici une liste non exhaustive des **services utilisés** :
+
+- **Neo4j** (base de données orientée graphe) pour le stockage hiérarchique de la notice ;
+- Un **lac de données** (*data lake*), S3-compatible hébergé à l'Insee grâce aux solutions de MinIO, qui répertorie les libellés dans des fichiers au format `.parquet` ;
+- **Qdrant** (base de données vectorielles) pour le stockage des embeddings correspondant aux libellés ;
+- **Argo Workflow** et **Argo CD** pour l'exécution de longs scripts dans des conteneurs dédiés et la mise en production d'interfaces de programmation d'application (API).
+- **vLLM** pour le test de différents LLM sur une NVIDIA H100.
+
+Egalement, nous disposions d'une **API gérée et hébergée par l'Insee qui permet d'intéragir avec des LLMs** branchés à des cartes graphiques NVIDIA H100 (3 au total).
+
+Un schéma récapitulatif interactif est présent [@fig-environnement].
+
+![Architecture de l'environnement informatique disponible](sources/frozen/environnement_informatique.png){#fig-environnement}
+
+## Principe général de NaiveCode2Text
+
+L'approche **NaiveCode2Text constitue la base du projet**. Son principe est simple : **pour chaque code** de la nomenclature, nous extrayons les **informations pertinentes de la notice** (code, titre, quelques éléments *Includes*/*IncludesAlso*, tous les éléments *Excludes*), puis nous les fournissons en contexte au LLM auquel nous demandons de générer un certain nombre de libellés. Nous rajoutons des **exemples de libellés issus du jeu de données original d'entraînement** $\mathcal{X}_{train\_real}$ pour faire du *few-shot learning*.
+
+Pour cette structure de génération, les **facteurs modifiables** sont :
+
+- le **nombre de libellés à générer à chaque appel**,
+- le nombre d'éléments ***Includes***,
+- le **nombre d'exemples** de libellés,
+- les **consignes de génération** dans le *system prompt* (retrouvable en annexe),
+- le **modèle de génération** utilisé et sa température, dont les détails sont également présents en annexe.
+
+Pour traiter une nomenclature entière en temps raisonnable, le schéma décrit plus haut a été adapté pour **lancer des requêtes API en parallèle**. Plutôt que d'interroger le modèle successivement pour chaque code, nous envoyons simultanément un lot de requêtes indépendantes de manière asynchrone grâce à un sémaphore avec une concurrence maximale de 50. L'architecture finale est présentée @fig-naive-parallel. 
+
+![Architecture parallélisée de NaiveCode2Text](sources/excalidraw_plots/NaiveCode2Text_parallel.png){#fig-naive-parallel fig-alt="Schéma du pipeline NaiveCode2Text avec requêtes parallèles"}
+
+Une **première génération** comprenant au total **$62\,100$ libellés** a été réalisée en **42 minutes** avec pour idée de recenser tous les cas possibles dans la notice. Alors, tous les 5 éléments *Includes* ou *IncludesAlso* d'un code, au moins 5 appels demandant à chaque fois 10 libellés étaient faits au LLM. 6 exemples *few-shot* de libellés provenant du même code étaient fournis par prompt, sauf pour les codes rares qui ne fournissaient que le maximum d'exemples possibles (voir @sec-data pour la distribution hétérogène).
+
+**Les libellés générés étaient très techniques et satisfaisants d'un point de vue métier** (plus de détails accordés dans @sec-resultats). Cependant, une lecture qualitative rapide faisait déjà apparaître des **tournures de phrases qui changeaient des textes originaux**. Celles-ci étaient trop professionnelles, sans fautes, et parfois proches du titre de la catégorie, par exemple pour le code `02.10Y` correspondant à *Sylviculture et autres activités forestières*, on pouvait trouver *Activités forestières : culture de peupliers et de saules.* Demander des textes moins formels dans le *system prompts* n'y faisant rien, nous avons décidé de créer un discriminateur à la fois comme métrique mais aussi comme outil pour une génération améliorée.
+
+
+# LabelGuard : discriminateur et évaluateur
+
+**LabelGuard est un discriminateur entraîné pour distinguer les libellés générés par IA des libellés originaux humains**. L'architecture, résumée [@fig-labelguard], prend en entrée un vecteur représentant le libellé (*embedding*) et retourne une valeur entre 0 et 1, 0 signifiant humain, et 1 IA.
+
+![Architecture de LabelGuard](sources/frozen/labelguard.png){#fig-labelguard}
+
+## Données utilisées
+
+Le jeu de **données d'entraînement** pour LabelGuard a une taille de $160\,000$ libellés, dont $80\,000$ synthétiques et $80\,000$ originaux. Un jeu de données de validation de $40\,000$ textes a également été créé avec une **proportion égale IA/humain**. Pour limiter au mieux l'influence de facteurs extérieurs au style des libellés, plusieurs stratégies ont été employées.
+
+D'abord, la base de données originale provenant de $\mathcal{X}_{real\_train}$ a été pré-traitée comme suit :
+
+1. **Suppression des anomalies** : les libellés comprenant exactement 141 et 161 caractères ont été retirés, car ils sont pour la grande majorité tronqués.
+2. **Suppression des marques personnelles** : même si cela n'a pas été décris dans la [@sec-data], certains libellés contiennent des données personnelles. Cela peut être des SIREN ou des codes postaux que l'on ne souhaite pas inclure comme facteur discriminant car marque trop simple pour discriminer. Tous les libellés ayant plus de deux chiffres (sans être un pourcentage) sont donc supprimés.
+3. **Suppression des libellés hors-sujet** : certains libellés ne décrivent pas l'activité d'entreprise mais plutôt quelque chose comme "Je souhaite avoir un SIRET au plus vite". Ces phrases tounées personnellement et peu nombreuses ont été supprimées.
+4. **Suppression de suffixes** : le suffixe "activité de services" est très utilisé dans les libellés originaux (information supplémentaire ajoutée qui n'apparait pas dans le code initial), il a donc été retiré pour tous les textes l'incluant à la fin.
+
+Après avoir modifié $\mathcal{X}_{real\_train}$, nous avons **échantilloné d'abord 5 libellés par code** avec remise (pour les codes rares notamment), **puis échantilloné le reste des libellés parmi les données restantes** pour atteindre une taille de $100\,000$. Ensuite, la **base de donnée synthétique** $\mathcal{X}_{synth}$ (issue de la génération quasi-uniforme de NaiveCode2Text) a été **échantillonnée avec remise en respectant la distribution des codes originaux** (pour un même code, le même nombre de libellés originaux et synthétiques existent).
+
+Finalement, le jeu de donnée obtenu (de taille $200\,000$) a été divisé dans des proportions $80\%/20\%$ en jeux d'entraînement et de validation. Tous les libellés ont ensuite été transformé en *embeddings* de dimension $4\,096$ avec `Qwen/Qwen3-Embedding-8B`.
+
+## Sélection du modèle optimal
+
+Pour avoir la version de LabelGuard la plus adaptée à notre cas, nous avons cherché à **minimiser le taux de faux-positifs** (*False Positive Rate*, FPR) **tout en préservant une bonne *accuracy*** sur la donnée de validation pour éviter le plus possible de mal classifier les libellés avec le style humain.
+
+Plusieurs modèles ont été essayés avec différents hyperparamètres pour la prédiction : régression logistique, machine à vecteurs de support (SVM) [@cortes1995support], XGBoost [@chen2016xgboost], ou perceptron multicouche (MLP) [@murtagh1991multilayer]. Les configuration sont détaillées en annexe.
+
+De manière générale, **les modèles les plus performants après entraînement étaient de la classe MLP** (en *accuracy* et en FPR). Celui retenu a la configuration suivante :
+
+```{=html}
+<div class="stat-row">
+  <div class="stat-card">
+    <span class="val">Couches</span>
+    <span class="lbl"><b>4096</b> → <b>1024</b> (dropout 0,3) → <b>256</b> → <b>1</b></span>
+  </div>
+  <div class="stat-card">
+    <span class="val">Apprentissage</span>
+    <span class="lbl"><b>Taux d'apprentissage</b> : 0,001</span>
+    <span class="lbl"><b>Optimiseur</b> : Adam</span>
+    <span class="lbl"><b>Fonction de coût</b> : BCE avec coût logit</span>
+  </div>
+</div>
+```
+Un détail des résultats est retrouvable en annexe.
+
+## Mesure de l'empreinte du LLM : Analyse de la séparabilité des distributions {#sec-labelguard-res}
+
+Un point est particulièrement alarmant pour **LabelGuard** : il **ne se trompe presque jamais**. Pour $40\,000$ libellés de validation, on obtient **$99.4\%$ d'*accuracy* et $0.7\%$ de FPR** --- soit seulement $139$ libellés faux positifs. Ces performances restent du même acabit si on réduit drastiquement le nombre de données d'entraînement, ce qui témoigne que ce n'est pas un simple overfitting du modèle déployé mais bien de la **présence d'une empreinte (*watermark*) propre au LLM** qu'il faut pouvoir identifier.
+
+En s'intéressant au détail des décisions de LabelGuard, la [@fig-labelguard-valid] montre qu'il a une très grande confiance dans presque toutes ses prédictions. Au contraire, le discriminateur est moins décisif dans les cas où il se trompe.
+
+::: {#fig-labelguard-valid layout-ncol=2}
+
+![Confiance dans la discrimination de LabelGuard pour les données de validation (distribution KDE)](sources/figures/labelguard/validation/proba.png){#fig-labelguard-confidence fig-alt="Deux grands pics de confiance sont présents autour de 0 et de 1 avec une prédiction correcte."}
+
+![Confiance dans la discrimination erronées de LabelGuard pour les données de validation (histogramme)](sources/figures/labelguard/validation/missclass.png){#fig-labelguard-missclass fig-alt="Deux petits pics de confiance sont présents autour de 0 et de 1, le reste est distribué uniformément."}
+
+Détails sur la confiance de LabelGuard dans ses prédictions.
+:::
+
+Pour ce qui concerne l'**analyse des faux positifs**, nous avons réalisé des **tests de corrélation** (*Pearson correlation coefficient*) pour **plusieurs règles syntaxiques simples** sur les libellés humains. Il s'avère que les attributs suivant ont des corrélations fortement significative avec la discrimination de LabelGuard :
+
+- Pour les **corrélations positives** (libellés humains davantage jugés comme IA): les taux de '.', de chiffres, de mots vides (*stop words*), et la présence de majuscule au début des libellés.
+- Pour les **corrélations négatives** (libellé humains davantage jugés comme humain): le nombre de mots, le taux de ',' et celui de majuscules.
+
+Les détails sur les tests effectués sont présents en annexe.
+
+
+# Code2ReText : changer le style par alignement Acteur-Superviseur
+
+LabelGuard parvient à différencier les libellés humains et ceux générés par IA : nous pouvons donc l'exploiter pour créer un nouveau générateur qui parvient à le tromper. **Code2ReText** a donc été créé avec pour **objectif de lui faire reformuler ses libellés lorsqu'ils sont détectés comme IA par LabelGuard**.
+
+## Framework Double-LLM : Acteur génératif et Superviseur évaluatif
+
+**L'idée initiale de Code2ReText était de fournir simplement au LLM les outils** (*tools*) pour évaluer sa génération, chercher des libellés similaires à ceux qu'il génère, et lui permettre ainsi de reformuler les libellés générés, comme présenté @fig-retext-agentic. Au départ, nous utilisions la bibliothèque `openai-python` [@openaipython2024] pour donner les *tools* et récupérions seulement les libellés finaux. Cependant, nous avons remarqué que **fournir au même agent l'accès presque illimité à un discriminateur lui permettait de tricher et d'outrepasser les consignes**. En effet, dès les premiers essais, il a commencé à concaténer des mots entre eux --- voire à écrire des mots inintelligibles --- et à recopier les libellés validés par le discrimateur pour l'ensemble de sa génération. 
+
+![Code2ReText en version agentique](sources/excalidraw_plots/retext_agent_2.png){#fig-retext-agentic fig-alt="Schéma Code2ReText en version agentique"}
+
+Face à cela, nous avons fait deux choix pour Code2ReText :
+
+1. **Prendre plus de contrôle sur le LLM.** Nous avons utilisé LangGraph, un orchestrateur open-source [@langgraph2024] qui offre des fonctionnalités plus avancées dans l'utilisation de *tools* mais surtout dans le suivi.
+2. **Passer d'un schéma à un LLM à une paire Acteur/Superviseur.** **L'Acteur est calqué sur le fonctionnement de NaiveCode2Text**, avec la possibilité additionnelle de reformuler ses libellés. **Le Superviseur** quant à lui reçoit à chaque boucle les libellés générés par l'Acteur avec les résultats de LabelGuard et des libellés originaux similaires provenant du même code. Il **émet alors des consignes** pour l'Acteur de sorte à ce qu'il reformule les libellés discriminés (score fourni par LabelGuard supérieur à 0.70) en des libellés dans le style de ceux qui sont passés et/ou des originaux. Pour éviter de recopier les libellés originaux, le Superviseur a pour instruction de ne pas transmettre ceux auxquels il a accès, et l'Acteur ne peut que changer le style des libellés qu'il a générés sans pouvoir modifier le fond. Un maximum de 5 boucles est autorisé. Un schéma récapitulatif est affiché @fig-retext.
+
+![Code2ReText --- Version finale](sources/excalidraw_plots/Code2Retext.png){#fig-retext fig-alt="Schéma Code2ReText"}
+
+## Validation de la démarche
+
+En restant sur 10 libellés générés par appel au LLM, nous avons remarqué que peu de textes passaient le test de LabelGuard, et donc le Superviseur pouvait difficilement guider vers des résultats qui marchent. Nous avons donc décidé de passer à 15 libellés générés par appel au LLM.
+
+Au niveau qualitatif, on constate des consignes récurrentes données par le Superviseur, qui mène à des styles plus divers même si empreints d'autres *watermarks* particuliers : la ponctuation est moins présente, les *stop words* presque inexistants, les majuscules plus présentes. Par exemple, pour revenir sur le code correspondant à la sylviculture présenté [@sec-naivecode2text], une des générations est *TRANSPLANTATION ARBRES*, ce qui est beaucoup moins proche du titre du code original recopié initialement. Il est néanmoins à noter que certains libellés restent très proches sémantiquement de la nomenclature.
+
+Quantitativement, plusieurs attributs montrent la réussite de la démarche (voir [@fig-error-rate-evolution]) :
+
+- Le premier retour du Superviseur améliore grandement les performances de l'Acteur.
+- Au fur et à mesure des boucles, les générations proposées par l'Acteur sont de moins en moins discriminées en moyenne.
+- Au fur et à mesure des boucles, la distribution du taux de discrimination se décale vers 0.
+
+![Evolution de la distribution du taux de discrimination à la fin de chaque boucle](sources/generation_details/retext_evolution/error_rate_evolution.png){#fig-error-rate-evolution fig-alt="Voir les commentaires qui détaillent ce qui se passe."}
+
+Additionnellement, bien que certains codes soient plus facilement discriminés que d'autres par LabelGuard, nous n'avons pas réussi à déterminer des *watermarks* propres aux générations de Code2ReText plus présentes dans certaines catégories.
+
+# Protocole d'évaluation globale de la génération
+
+L'évaluation se fait sur plusieurs aspects, du plus au moins important. Elle a pour but à la fois de rendre compte de l'utilité de générer de la donnée synthétique, et de la difficulté d'aligner un LLM sur un style propre à une nomenclature.
+
+## Évaluation des performances d'un classifieur {#sec-classifier-protocol}
+
+L'évaluation des données synthétiques par les performances d'un codificateur automatique se déroule en deux phases successives. Une première phase est dédiée à l'optimisation de l'architecture du classifieur sur les données réelles. Une deuxième phase applique cette configuration optimale pour mesurer l'impact de l'injection progressive de données synthétiques via des structures d'ensembles imbriqués.
+
+
+### Donnée utilisée
+
+Avant de détailler l'évaluation, voici les données à disposition :
+
+* $\mathcal{D}_{real\_train}$ : un dataset de $N_{train} = 50\,000$ lignes issues exclusivement du jeu d'entraînement original $\mathcal{X}_{real\_train}$. Il a été construit en échantillonant au hasard d'abord une ligne de données par code (soit $|\mathcal{Y}| = 747$ lignes), puis $N_{train} - |\mathcal{Y}|$ lignes dans la base restante.
+* $\mathcal{D}_{synth}$ : un dataset de $N_{train}$ lignes issues exclusivement d'un jeu de données synthétiques $\mathcal{X}_{synth}$ construit à partir du jeu d'entraînement original $\mathcal{X}_{real\_train}$. $\mathcal{D}_{synth}$ a été construit en échantillonant au hasard d'abord une ligne de données par code (soit $|\mathcal{Y}| = 747$ lignes), puis $N_{train} - |\mathcal{Y}|$ lignes dans la base restante.
+* $\mathcal{D}_{val}$ : un dataset de $N_{val} = 30\,000$ lignes, issu exclusivement du jeu de validation original $\mathcal{X}_{val}$. Il a été construit en échantillonant $N_{val}$ lignes, sans garantire la représentation de tous les codes. 
+* $\mathcal{D}_{test}$ : un dataset de $N_{test} = 30\,000$ lignes, issu exclusivement du jeu de test original $\mathcal{X}_{test}$. Il a été construit en échantillonant $N_{test}$ lignes, sans garantire la représentation de tous les codes.
+
+Pour rappel, les jeux de données $\mathcal{X}_{real\_train}$, $\mathcal{X}_{val}$ et $\mathcal{X}_{test}$ sont indépendants. $\mathcal{X}_{synth}$ a été construit à partir de $\mathcal{X}_{real\_train}$. Cela veut donc dire que $\mathcal{D}_{synth}$ comme $\mathcal{D}_{real\_train}$ sont indépendants de $\mathcal{D}_{val}$, et ces trois ensembles sont eux-mêmes indépendants de $\mathcal{D}_{test}$.
+
+### Phase 1 : Sélection de l'architecture et recherche sur grille
+
+Avant d'intégrer des données synthétiques, il convient de définir un **modèle de classification de référence** en identifiant la configuration d'hyperparamètres optimale sur les données réelles.
+
+L'architecture du modèle repose sur un **pipeline de traitement de texte séquentiel** (tokenizer, embedder de texte et classifieur par réseau de neurones profonds) prenant uniquement en entrée le libellé textuel brut ou standardisé. Ce classifieur estime une distribution de probabilité sur les 747 codes de la nomenclature via une fonction *softmax*.
+
+Une **recherche sur grille** (*grid search*) explorant 36 combinaisons d'hyperparamètres est menée en entraînant le modèle sur $\mathcal{D}_{real\_train}$ et en évaluant sa généralisation sur $\mathcal{D}_{val}$. Les dimensions optimisées ainsi que les détails complets de l'architecture et du protocole d'évaluation sont détaillés en [Annexe @sec-annexe-phase1].
+
+**La configuration optimale obtenue**, notée $\theta^* = (d_{emb}^*, \eta^*, t^*)$, **est celle qui maximise les performances globales selon un compromis multicritère** (exactitude, robustesse du Top-k et fiabilité des prédictions confiantes). Ces paramètres $\theta^*$ sont ensuite figés pour servir de point de comparaison absolu lors de la Phase 2.
+
+
+### Phase 2 : Évaluation quantitative par ensembles imbriqués
+
+Une fois les hyperparamètres optimaux $\theta^*$ fixés, **nous mesurons l'impact de la substitution des données réelles par les données synthétiques**. Pour ce faire, nous initialisons des modèles strictement identiques à l'architecture optimale sélectionnée en Phase 1, mais nous faisons varier la nature de leur environnement d'entraînement.
+
+Nous construisons une suite ordonnée de jeux de données d'entraînement mixtes $\mathcal{M}_{\alpha}$ de taille fixe $N = 50\,000$ lignes, avec $\alpha$ entre 0 (exclus) et 1 (inclus) qui représente le taux d'injection de données synthétiques ($\mathcal{D}_{synth}$) :
+
+$$\mathcal{M}_{\alpha} = \mathcal{C}_{real}(\alpha) \cup \mathcal{C}_{synth}(\alpha)$$
+
+Où $\mathcal{C}_{synth}(\alpha)$ est un sous-ensemble de $\mathcal{D}_{synth}$ de taille $\lfloor \alpha \cdot N \rfloor$, et $\mathcal{C}_{real}(\alpha)$ est un sous-ensemble de $\mathcal{D}_{real\_train}$ de taille $N - \lfloor \alpha \cdot N \rfloor$.
+
+Une contrainte critique de notre approche consiste à immuniser l'apprentissage contre le problème des classes rares ou absentes, tout en garantissant un déterminisme parfait entre les différents taux $\alpha$. Avant tout échantillonnage, $\mathcal{D}_{real\_train}$ et $\mathcal{D}_{synth}$ sont partitionnés en deux sous-structures : la **base immuable** ($\mathcal{B}$), un **bloc fixe de 747 lignes contenant précisément un exemple pour chaque classe de la nomenclature**, et le **réservoir complémentaire** ($\mathcal{R}$), représentant le reste des lignes disponibles, qui sont ensuite mélangées selon une graine aléatoire fixe.
+
+Pour tout taux $\alpha$ différent de 1, le bloc correspondant est assemblé en sélectionnant systématiquement l'intégralité de la base immuable $\mathcal{B}$, complétée par les premières lignes du réservoir complémentaire $\mathcal{R}$. Cette formulation garantit deux propriétés :
+
+* **Couverture à 100%** : Quel que soit le taux d'injection $\alpha$, le classifieur est exposé à au moins un exemple de chacune des 747 classes lors de l'apprentissage.
+* **Inclusion stricte** : Pour deux taux $\alpha_1 < \alpha_2$, l'ensemble des données synthétiques utilisées à la première étape est strictement inclus dans celui de la seconde. Réciproquement, pour les données réelles, l'ensemble à $\alpha_2$ est strictement inclus dans celui à $\alpha_1$. Cette monotonie élimine les biais de variance liés à l'échantillonnage aléatoire pur entre les configurations expérimentales.
+
+Pour un taux $\alpha$ égal à 1, on n'entraîne que sur la donnée synthétique. On garde la notion d'imbrication des ensembles synthétiques injectés $\left(\forall \alpha \in (0,1), \mathcal{C}_{synth}(\alpha) \subset \mathcal{C}_{synth}(1)\right)$, mais on perd la base immuable $\mathcal{B}_{real}$ de la donnée originale.
+
+On ne réalise pas d'expérience où $\alpha$ est trop proche de 0 ou de 1, et où donc on ne peut avoir une base immuable dans la donnée originale et dans la donnée synthétique. Sachant que $N_{train} = 50\,000$, cela correspond aux valeurs admises $\alpha \in [0,015, 0,985] \cup \{1\}$.
+
+**L'évaluation des performances de la donnée synthétique consistera alors à étudier les mêmes métriques qu'à la phase 1, mais avec différentes proportions $\alpha$ de données synthétiques**. On s'intéressera par ailleurs à quelques métriques sur les données d'entraînement $\mathcal{M}_{\alpha}$ qui apportent un regard différent sur les données injectées.
+
+
+## Evaluation sémantique
+
+### Divergence de style
+
+Pour évaluer la divergence stylistique pour chaque code, le choix du **transport optimal** via la distance de Wasserstein à l'ordre 2 ($W_2$) s'avère plus pertinente que les approches basées sur l'information comme la divergence de Kullback-Leibler (KL). Fondée sur la géométrie de l'espace latent sous-jacent, la métrique $W_2$ quantifie l'effort minimal nécessaire pour transformer une distribution de points en une autre [@mroueh2019wasserstein]. Cette propriété permet de travailler directement sur des **nuages de points empiriques discrets**, s'affranchissant des contraintes de la KL qui exige l'estimation de fonctions de densité continues [@kusner2015word]. De plus, l'estimation des **matrices de covariance à grande dimension requise par la KL s'avère hautement instable** sur des échantillons réduits [@bai2011estimating], comme nous avons ici avec des dimensions de 4096 face à des groupes de taille 100 en moyenne. Enfin, là où la KL échoue et diverge vers l'infini face à des styles disjoints ou orthogonaux, la distance $W_2$ conserve des gradients stables et informatifs [@arjovsky2017wasserstein], ce qui **permet de capturer fidèlement les variations de structure fine et de dispersion des styles**, même avec peu de données.
+
+En parallèle, pour s'assurer que la convergence n'est pas trop forte au détriment de la **diversité** dans le style, nous utiliserons le **DC-Score** [@zhu2025measuring]. C'est une métrique conçue justement pour évaluer la diversité dans les corpus synthétiques en se reposant sur la similarité entre ses différents éléments. Nous pouvons donc l'appliquer pour les libellés au sein d'un même code.
+
+Toutes ces comparaisons doivent pouvoir se faire avec un minimum de libellés de chaque côté. Nous avons donc fait le choix de ne **regarder ces métriques que pour les codes où le jeu d'entraînement (plus large) a plus de 50 occurences** (373 sur 747).
+
+
+# Résultats {#sec-resultats}
+
+Finalement, nous avons 3 jeux de données synthétiques à disposition que nous souhaitons comparer :
+
+1. La génération de **NaiveCode2Text**, **exhaustive**, où la ditribution des codes est presque uniforme (la majorité des codes ont entre 50 et 100 occurences) ;
+2. La génération de **Code2ReText**, **exhaustive**, où la ditribution des codes est presque uniforme (la majorité des codes ont entre 50 et 100 occurences) ;
+3. La génération de **Code2ReText**, exhaustive, mais où la **distribution des codes est proche de la distribution originale**, avec un minimum de 5 libellés par code.
+
+Les évaluations de performance du classifieur se baseront sur les 3 jeux de données, tandis que celui sur la diversité lexicale se contera de traiter des deux premiers, qui proposent plus d'exemples par code.
+
+## Performances du classifieur et analyse du point de saturation synthétique
+
+Prenons d'abord un point de vue général sur les performances du classifieur (voir [@sec-classifier-protocol] pour le protocole). **Que l'on se place au niveau hiérarchique 4 ou 5, les évolutions de performances gardent la même allure** : on restera donc au niveau 5 pour l'ensemble des métriques.
+
+La [@fig-lvl5-acc-top1-ev] montre que le codificateur automatique conserve de bonnes performances même lorsque 50% du jeu de données d'entraînement est synthétique. Néamoins, un effondrement des performances arrive pour $\alpha \geq 0.9$. Nous remarquons alors que **mimer la distribution originale favorise les meilleures performances** lorsque la donnée originale se fait rare, et que lorsqu'aucune donnée orginale n'est présente en entraînement, NaiveCode2Text offre une génération moins pertinente que Code2ReText. Ces performances sont similaires si on s'intéresse à la prédiction top 5 (au lieu de top 1).
+
+![Evolution de l'accuracy sur le jeu de test en fonction de la proportion de données synthétiques en entraînement](sources/figures/compare_datasets/source_synth_split_vs_lvl5_acc_top1.png){#fig-lvl5-acc-top1-ev fig-alt="Très légère décroissance avant $\alpha = 0.6$ (*accuracy* au-dessus de 80%), plus marquée jusqu'à $\alpha = 0.9$, puis effondrement après. La génération naïve est la moins bonne et atteint presque 45% d'*accuracy* pour $\alpha = 1$"}
+
+Additionnellement, le modèle subit le **même effondrement pour la confiance dans ses prédiction** : de moins en moins de libellés sont classés avec confiance, et l'*accuracy* parmi les libellés classés avec confiance chute également. Néanmoins, **le jeu de données généré par NaiveCode2Text domine celui de Code2ReText à ditribution de codes égale**. Nous pouvons supposer que du bruit se glisse davantage dans le second cas, ce qui détériore la qualité du signal pour le classifieur.
+
+## Évaluation granulaire : Gains de performance par fréquence du code
+
+Faisons une étude similaire, mais cette fois-ci en **différenciant les performances selon la fréquence des codes**. En les divisant dans les trois groupes de distribution tête/corps/queue présentés [@sec-data-distrib], nous découvrons des propriétés qui mettent en avant une nouvelle fonction des données synthétiques.
+
+De ce fait, alors que les **performances pour la tête sont très similaires au performances générales**, celles pour **le corps et la queue dévient fortement** :
+
+- Pour ce qui est du **corps**, la [@fig-lvl5-body-acc-top1-ev] montre une décroissance de l'*accuracy* avec une tendance linéaire plus marquée que précédemment, sauf au départ où on constate une légère augmentation. Le corps est **très négativement touché par les hautes proportions de données synthétiques**.
+
+![Evolution de l'accuracy sur le jeu de test en fonction de la proportion de données synthétiques en entraînement (corps de distribution des codes)](sources/figures/compare_datasets/source_synth_split_vs_lvl5_body_acc_top1.png){#fig-lvl5-body-acc-top1-ev fig-alt="Légère augmentation initiale (pour $\alpha$ entre 0 et 0.1), puis décroissance de l'*accuracy* quasi linéaire (de 0.58 à 0.50 environ), tout dataset confondu."}
+
+- Pour la **queue**, la [@fig-lvl5-tail-acc-top1-ev] montre au contraire une amélioration très marquée des performances dès les premières injections de données synthétiques, et encopre plus lorsqu'elles sont issues de Code2ReText.
+
+![Evolution de l'accuracy sur le jeu de test en fonction de la proportion de données synthétiques en entraînement (queue de distribution des codes)](sources/figures/compare_datasets/source_synth_split_vs_lvl5_tail_acc_top1.png){#fig-lvl5-tail-acc-top1-ev fig-alt="Augmentation avec une tendance concave de l'*accuracy* en fonction de $\alpha$, de 0.1 à 0.7 pour Code2ReText, et 0.45 pour NaiveCode2Text"}
+
+Il y a donc un **grand avantage** à utiliser des données synthétiques : **cela discrimine moins les classes les moins fréquentes**. Pour aller plus loin, nous pouvons déterminer (graphiquement) une proportion optimale de données synthétiques à injecter pour faire un compromis entre performances et égalité de traitement. En s'aidant de la [@fig-lvl5-head-acc-top1-body-acc-top1] et de la [@fig-lvl5-head-acc-top1-tail-acc-top1], on remarque qu'**avoir $\alpha$ entre 40% et 50% nuit peu à l'*accuracy* de la tête et du corps, mais augmente fortement celle de la queue**. On peut donc retenir cette valeur, et privilégier une **génération de type Code2ReText proche de la distribution originale**.
+
+![Evolution de l'accuracy sur le jeu de test (tête) en fonction de l'accuracy sur le jeu de test (corps)](sources/figures/heatmaps/lvl5_head_acc_top1_vs_lvl5_body_acc_top1_by_source_synth_split.png){#fig-lvl5-head-acc-top1-body-acc-top1 fig-alt="Tendance croissante convexe générale, maximum atteint des deux côtés pour $\alpha = 0$"}
+
+![Evolution de l'accuracy sur le jeu de test (tête) en fonction de l'accuracy sur le jeu de test (queue)](sources/figures/heatmaps/lvl5_head_acc_top1_vs_lvl5_tail_acc_top1_by_source_synth_split.png){#fig-lvl5-head-acc-top1-tail-acc-top1 fig-alt="Tendance décroissante concave générale, compromis autour de $\alpha = 0.4$ (87%/60%)"}
+
+## Évaluation intrinsèque des datasets : Diversité lexicale et convergence stylistique
+
+Le dernier volet d'évaluation se concentre sur le style de génération. A l'aide d'embeddings, nous reprenons les travaux faits sur la distance de Wasserstein et sur le DC Score pour évaluer la proximité stylistique avec la donnée originale et la diversité intrinsèque pour chaque code.
+
+En ce qui concerne le point de vue du transport optimal, **pour presque tous les codes, Code2ReText est plus proche du style original que NaiveCode2Text**. La [@fig-w2-scatter-plot-train] et un t-test bayésien apparié ($BF10 \approx 1e+58$, $d \approx 0.88$) montrent que la génération de Code2ReText a une distance $W_2$ à $\mathcal{X}_{train\_real}$ plus petite que NaiveCode2Text, que ce soit pour chaque code ou de manière générale.
+
+![Comparaison de la distance de Wasserstein entre les deux types de génération pour chaque code (jeu de données d'entraînement).](sources/figures/compare_datasets/w2_scatter_plot_train.png){#fig-w2-scatter-plot-train fig-alt="Une ligne identité est tracée, presque tous les points se situent sous la courbe, ce qui signifie que la distance $W_2$ est plus faible pour presque tous les codes pour Code2ReText."}
+
+Cependant, la [@fig-dcscore-violin] et un t-test bayésien apparié ($BF10 \approx 1e+71$, $d \approx 1.20$) montrent que ce **rapprochement sémantique a une influence négative sur la diversité des libellés** : le DC-Score s'effondre uniquement pour les générations de Code2ReText, alors que NaiveCode2Text obtient au contraire une diversité un peu plus élevée en moyenne que la distribution originale. Cela signifie donc que l'**on ne peut allier rapprochement stylistique et diversité sémantique avec l'approche proposée ici**.
+
+![Comparaison du DC-Score entre les deux types de génération et la donnée d'entraînement pour chaque code.](sources/figures/compare_datasets/violin_dcscore.png){#fig-dcscore-violin fig-alt="DC-Score similaire pour NaiveCode2Text et original, plus faible pour Code2ReText."}
+
+Prenons une dernière approche, cette fois-ci qualitative, pour comparer les générations. Voici sept exemples de génération tirés au hasard : 
+
+| Code | Title | NaiveCode2Text | Code2ReText |
+| :- | :--- | :--- | :--- |
+| **10.71H** | Fabrication de pain et d'autres produits de boulangerie-pâtisserie associée à leur vente au détail | Boulangerie artisanale, offre de produits frais. | Boulangerie pâtisserie viennoiserie |
+| **13.95Y** | Fabrication de textiles non-tissés et articles non-tissés | Enduction de textiles non-tissés. | Fabrication de textiles non-tissés et articles non-tissés |
+| **26.11Y** | Fabrication de composants électroniques | Production de cellules photovoltaïques pour applications variées. | Fabrication de condensateurs et de composants passifs pour l'industrie |
+| **28.95Y** | Fabrication de machines pour les industries du papier et du carton | Machines complètes pour industries du papier. | Fabrication de machines pour les industries du papier et du carton |
+| **43.50Y** | Travaux de construction spécialisés en génie civil | Construction d’ouvrages d'art complexe. | MONTAGE STRUCTURES METALLIQUES POUR GENIE CIVIL |
+| **46.84H** | Commerce de gros de fournitures pour plomberie et chauffage | Commerce interentreprises de matériel de chauffage industriel. | Plomberie chauffage |
+| **70.20Y** | Activités de conseil pour les affaires et autre conseil de gestion | Prestation de services de conseil en organisation | CONSEIL GESTION |
+
+Nous pouvons différencier les deux méthodes : NaiveCode2Text garde un ton très professionnel et s'éloigne peu de la consigne initiale, tandis que **Code2ReText** propose des libellés très différents et **se retrouve parfois à copier le titre du code**, ce qui n'est pas souhaitable. Egalement, on retrouve davantage de libellés qui sont des copiés-collés de libellés originaux (environ 0.5% des données, contre 0.005% pour NaiveCode2Text), ce qui veut dire que **l'Acteur (et potentiellement le Superviseur) ont tendance à tricher pour passer la discrimination de LabelGuard**.
+
+
+# Conclusion et Travaux Futurs {.unnumbered}
+
+### Objectif initial et synthèse des contributions
+
+L’objectif initial de ce travail était de répondre au défi du **déséquilibre extrême des classes** de la nomenclature NAF 2025 pour l'entraînement de classifieurs automatiques, tout en surmontant les **limites strictes du secret statistique** qui empêchent la diffusion publique des données réelles. Pour articuler la tension entre la performance de classification et la fidélité de diffusion, l'approche proposée a consisté à utiliser des grands modèles de langage (LLM) pour **découpler la structure de la nomenclature de l'expression humaine**, réduisant ainsi le *covariate shift* conditionnel pour chaque code.
+
+Les contributions majeures résident d’abord dans la **mise en évidence d'une empreinte stylistique propre au LLM grâce au discriminateur** `LabelGuard` ($99,4\%$ d'exactitude). Pour forcer l'alignement stylistique du générateur vers le langage brut des déclarants, l’**architecture agentique** `Code2ReText` (Acteur-Superviseur) a été mise en œuvre. Enfin, l'évaluation par ensembles imbriqués (protocole $\mathcal{M}_\alpha$) a permis de valider l'impact de ces données, révélant qu'un **taux d'injection optimal de données synthétiques préserve les performances sur le corps de la distribution tout en augmentant l'exactitude du classifieur sur les classes rares**.
+
+### Limites de l’approche actuelle
+
+Plusieurs limites structurelles invitent toutefois à un regard critique sur ces résultats. Premièrement, **la base de données originale comporte un bruit d’annotation important** issu des labellisations algorithmiques et des biais de transition de nomenclature, ce qui altère la qualité des exemples fournis au modèle. Deuxièmement, l’étude empirique de performance s’est limitée à un volume de 50 000 données, ce qui soulève une **incertitude quant à la généralisation de ces résultats lors d'un passage à l'échelle** industrielle sur plus d’un million de lignes.
+
+De plus, l'analyse qualitative montre que `Code2ReText` recopie textuellement certains libellés originaux dans $0,5\%$ des cas (contre une fraction infime pour `NaiveCode2Text`). Négliger ce phénomène pourrait poser de graves **problèmes de fuite de données** et compromettre l'objectif de diffusion publique anonymisée. Enfin, bien que le pipeline agentique soit parvenu à altérer l'empreinte initiale du LLM, le style obtenu n’est toujours pas parfaitement identique à celui des déclarants réels, laissant une **marge d'amélioration pour capturer fidèlement le "bruit anthropique" humain**.
+
+### Perspectives : du Prompting Agentique au SFT Multilingue
+
+Pour dépasser ces limites, la première solution est d'encadrer davantage l'interaction Acteur/Superviseur en modifiant les prompts et en modifiant l'accès à l'information. Puis, pour s'affranchir des boucles de rétroaction agentiques qui standardisent les corrections, la perspective majeure consiste à passer du prompting à un **Fine-Tuning Supervisé (SFT) stylistique**. Entraîner un modèle open-weight léger à intégrer directement les abréviations, troncatures et fautes de frappe permettrait d'allier fidélité stylistique et créativité sémantique. Cela s'avèrerait plus coûteux que la solution proposée dans ce rapport, mais est à essayer si le besoin augmente.
+
+À terme, cette transition vers le SFT offre une opportunité unique de généralisation. Développé de manière agnostique, le pipeline pourrait intégrer des capacités **multilingues** afin de s'adapter directement à la **Nomenclature européenne des Activités (NACE)**. Le modèle spécialisé serait alors capable de générer des libellés synthétiques typés "déclarants" dans les différentes langues des pays membres du Système Statistique Européen, ouvrant la voie à une harmonisation transfrontalière de la codification automatique tout en respectant le secret statistique.
