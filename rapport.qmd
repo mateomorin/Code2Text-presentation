@@ -197,14 +197,7 @@ Par ailleurs, **les libellés contiennent des anomalies non négligeables**. Les
 1. **Beaucoup de libellés identiques tronqués existent.** Le demandeur fait souvent **appel à un mandataire** qui remplit automatiquement pour lui les champs textuels, et a souvent tendance à **copier coller des objets juridiques pour désigner l'activité**. Le soucis est qu'un objet juridique est **très long et donc tronqué**, ce qui le rend imprécis en plus d'être peu pertinent.
 2. **Des exceptions de plus de 140 caractères existent.** Le [**Guichet unique**](https://www.inpi.fr/decouvrir-inpi/formalites-dentreprises/guichet-unique-formalites-dentreprises-et-registre-national-entreprises) de l'Institut National de la Propriété Industrielle (INPI) et qui a pour but d'aider aux démarches, **permet à ses agents de créer des libellés de plus que 140 caractères** sans que ceux-ci ne sont pas tronqués.
 
-Alors, si on s'intéresse à la distribution de la longueur des libellés dans $\mathcal{X}_{real\_train}$ (**voir la [fig-hist-label-len] intéractive -> trop couteuse en RAM**), on remarque des **pics énormes aux valeurs 141 et 161 qui correspondent au troncage suivi d'un espace**, et potentiellement du suffixe "activité de services" (ajout d'une information supplémentaire dans le prétraitement de la donnée). Le code `68.20H` --- qui correspond à la location de biens immobiliers autre que des logements --- est prépondérant parmi les anomalies, et trois quarts des libellés associés ne sont pas uniques. En s'intéressant aux libellés tronqués les plus récurents, ce sont toujours des objets sociaux tronqués. Des précautions sont donc à prendre pour la suite.
-
-<!-- ::: {#fig-hist-label-len}
-
-<iframe src="sources/images/hist_label_len.html" width="100%" height="550px" frameborder="0" scrolling="no"></iframe>
-
-Distribution des longueurs de libellés dans $\mathcal{X}_{train\_real}$
-::: -->
+Alors, si on s'intéresse à la distribution de la longueur des libellés dans $\mathcal{X}_{real\_train}$, on remarque que **plus de 8% des libellés font exactement 141 ou 161 caractères, ce qui correspond à un troncage suivi d'un espace**, et potentiellement du suffixe "activité de services" (ajout d'une information supplémentaire dans le prétraitement de la donnée). Le code `68.20H` --- qui correspond à la location de biens immobiliers autre que des logements --- est prépondérant parmi les anomalies, et trois quarts des libellés associés à `68.20H` ne sont pas uniques. En s'intéressant aux libellés tronqués les plus récurents, ce sont toujours des objets sociaux tronqués. Des précautions sont donc à prendre pour la suite.
 
 # NaiveCode2Text : Approche initiale pour la génération de données synthétiques {#sec-naivecode2text}
 
@@ -220,7 +213,19 @@ L'environnement de travail de l'Insee permet de profiter de multiples environnem
 
 Egalement, nous disposions d'une **API gérée et hébergée par l'Insee qui permet d'intéragir avec des LLMs** branchés à des cartes graphiques NVIDIA H100 (3 au total).
 
-Un schéma récapitulatif est présent [@] **TBD**.
+Un schéma récapitulatif interactif est présent [@fig-environnement].
+
+::: {#fig-environnement fig-cap="Architecture de l'environnement informatique disponible"}
+
+<iframe
+  src="sources/interactive/environnement_informatique.html"
+  class="interactive-figure"
+  title="Environnement informatique disponible"
+  width="100%"
+  height="550px">
+</iframe>
+
+:::
 
 ## Principe général de NaiveCode2Text
 
@@ -245,9 +250,19 @@ Une **première génération** comprenant au total **$62\,100$ libellés** a ét
 
 # LabelGuard : discriminateur et évaluateur
 
-**LabelGuard est un discriminateur entraîné pour distinguer les libellés générés par IA des libellés originaux humains**. L'architecture prend en entrée un vecteur représentant le libellé (*embedding*) et retourne une valeur entre 0 et 1, 0 signifant humain, et 1 IA.
+**LabelGuard est un discriminateur entraîné pour distinguer les libellés générés par IA des libellés originaux humains**. L'architecture, résumée [@fig-labelguard], prend en entrée un vecteur représentant le libellé (*embedding*) et retourne une valeur entre 0 et 1, 0 signifant humain, et 1 IA.
 
-**INTRODUIRE UN DIAGRAME SVG POUR OVERVIEW**
+::: {#fig-labelguard fig-cap="Architecture de labelguard"}
+
+<iframe
+  src="sources/interactive/labelguard.html"
+  class="interactive-figure"
+  title="Environnement informatique disponible"
+  width="100%"
+  height="250px">
+</iframe>
+
+:::
 
 ## Données utilisées
 
