@@ -35,11 +35,19 @@ Version complète du rapport en format interactif. Comprend le contexte, la mét
 ::::
 
 :::: {.landing-card}
-### Présentation slides
+### Slides de présentation (ancien)
 
 Version diaporama du rapport, plus sythétique. Support pour la soutenance orale.
 
 [Voir les slides →](slides/presentation.html){.landing-link}
+::::
+
+:::: {.landing-card}
+### Annexes du rapport
+
+Détails techniques, exemples de notices, benchmarks des modèles LabelGuard et protocole de recherche sur grille.
+
+[Consulter les annexes →](annexe.html){.landing-link}
 ::::
 
 :::

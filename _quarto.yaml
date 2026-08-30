@@ -5,6 +5,7 @@ project:
     - index.qmd
     - rapport.qmd
     - slides/
+    - annexe.qmd
 
 website:
   title: "Code2Text"
@@ -21,6 +22,8 @@ website:
         file: rapport.qmd
       - text: "📊 Version Présentation (Slides)"
         file: slides/presentation.qmd
+      - text: "📎 Annexes du rapport"
+        file: annexe.qmd
 
 language:
   fr:
