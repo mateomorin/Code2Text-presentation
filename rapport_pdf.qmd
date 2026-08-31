@@ -392,7 +392,7 @@ Avant d'intégrer des données synthétiques, il convient de définir un **modè
 
 L'architecture du modèle repose sur un **pipeline de traitement de texte séquentiel** (tokenizer, embedder de texte et classifieur par réseau de neurones profonds) prenant uniquement en entrée le libellé textuel brut ou standardisé. Ce classifieur estime une distribution de probabilité sur les 747 codes de la nomenclature via une fonction *softmax*.
 
-Une **recherche sur grille** (*grid search*) explorant 36 combinaisons d'hyperparamètres est menée en entraînant le modèle sur $\mathcal{D}_{real\_train}$ et en évaluant sa généralisation sur $\mathcal{D}_{val}$. Les dimensions optimisées ainsi que les détails complets de l'architecture et du protocole d'évaluation sont détaillés en [Annexe @sec-annexe-phase1].
+Une **recherche sur grille** (*grid search*) explorant 36 combinaisons d'hyperparamètres est menée en entraînant le modèle sur $\mathcal{D}_{real\_train}$ et en évaluant sa généralisation sur $\mathcal{D}_{val}$. Les dimensions optimisées ainsi que les détails complets de l'architecture et du protocole d'évaluation sont détaillés en annexe.
 
 **La configuration optimale obtenue**, notée $\theta^* = (d_{emb}^*, \eta^*, t^*)$, **est celle qui maximise les performances globales selon un compromis multicritère** (exactitude, robustesse du Top-k et fiabilité des prédictions confiantes). Ces paramètres $\theta^*$ sont ensuite figés pour servir de point de comparaison absolu lors de la Phase 2.
 
