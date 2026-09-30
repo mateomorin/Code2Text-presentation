@@ -14,7 +14,7 @@ format:
       - right=20mm
     mainfont: "Times New Roman"
     fontsize: 12pt
-    linestretch: 1.5
+    linestretch: 1.25
     
     title: ""
     toc: false
@@ -54,9 +54,11 @@ format:
 bibliography: references.bib
 ---
 
-::: {.callout-note icon=false}
-### 🌐 Version web interactive
-Le code source, les annexes ainsi que les visualisations interactives complètes sont consultables sur le site du projet :  
+::: {.callout-important}
+### Version web interactive
+Ce rapport détient aussi une version web, qui se veut interactive et avec une meilleure expérience de lecture : [**https://mateomorin.github.io/Code2Text-presentation/rapport.html**](https://mateomorin.github.io/Code2Text-presentation/rapport.html).
+
+Le code source et les annexes sont également consultables sur le site du projet :  
 [**https://mateomorin.github.io/Code2Text-presentation/**](https://mateomorin.github.io/Code2Text-presentation/)
 :::
 
@@ -90,7 +92,7 @@ Les chiffres de la NAF 2025 montrent bien ce déséquilibre : sur un fichier d'e
 À cela s'ajoutent deux contraintes :
 
 1. Quand une nomenclature est **mise à jour** ou que les **tendances changent** dans les créations d'entreprise, cela crée un décalage immédiat (*distribution shift*) entre les données passées et les nouvelles données réelles. Un bon exemple est la popularité récente des logements meublés non professionnels (LMNP) qui a fait grimper le nombre de codes `68.20G`, anciennement `68.20A` (NAF 2008).
-2. La loi sur le **secret statistique** et le RGPD interdisent de diffuser ces vrais fichiers à des personnes extérieures (pour des cours, des hackathons ou des concours d'écoles). Ce manque de données ouvertes empêche la communauté scientifique de tester de nouveaux modèles sur ces sujets et donc de contribuer à des progrès technologiques. Cette contrainte n'est **techniquement pas présente ici**, mais intervenient pour d'autres cas d'usage.
+2. La loi sur le **secret statistique** et le RGPD interdisent de diffuser ces vrais fichiers à des personnes extérieures (pour des cours, des hackathons ou des concours d'écoles). Ce manque de données ouvertes empêche la communauté scientifique de tester de nouveaux modèles sur ces sujets et donc de contribuer à des progrès technologiques. Cette contrainte n'est **techniquement pas présente ici**, mais intervient pour d'autres cas d'usage.
 
 
 ### Tension entre performance de classification et fidélité de diffusion
@@ -178,7 +180,7 @@ La notice NAF 2025 a une **structure hiérarchique sur cinq niveaux emboîtés**
 - **IncludesAlso** : d'autres éléments inclus dans la catégorie.
 - **Excludes** : tous les éléments exclus de la catégorie, mais qui ressemblent à ceux inclus.
 
-D'autres éléments peuvent être présents mais sont redondants par rapport aux informations indiquées ci-dessus. Un exemple de notice détaillée se trouve en annexe.
+D'autres éléments peuvent être présents mais sont redondants par rapport aux informations indiquées ci-dessus. Un exemple de notice détaillée se trouve en [annexe](https://mateomorin.github.io/Code2Text-presentation/annexe.html).
 
 **On notera $\mathcal{Y}$ l'ensemble des codes (uniques) des sous-classes de la NAF 2025**. On a $|\mathcal{Y}| = 747$. Par simplicité, en dehors de cette sous-partie, le mot code dans le rapport désigne un code dans $\mathcal{Y}$.
  
@@ -226,6 +228,14 @@ Par ailleurs, **les libellés contiennent des anomalies non négligeables**. Les
 
 Alors, si on s'intéresse à la distribution de la longueur des libellés dans $\mathcal{X}_{real\_train}$, on remarque que **plus de 8% des libellés font exactement 141 ou 161 caractères, ce qui correspond à un troncage suivi d'un espace**, et potentiellement du suffixe "activité de services" (ajout d'une information supplémentaire dans le prétraitement de la donnée). Le code `68.20H` --- qui correspond à la location de biens immobiliers autre que des logements --- est prépondérant parmi les anomalies, et trois quarts des libellés associés à `68.20H` ne sont pas uniques. En s'intéressant aux libellés tronqués les plus récurents, ce sont toujours des objets sociaux tronqués. Des précautions sont donc à prendre pour la suite.
 
+
+::: {.callout-note #Récapitulatif icon=false}
+La présence de la notice et d'une grande base de données d'entrainement nous permet d'avoir une base solide pour la génération de données synthétiques. Il faut cependant tenir compte de l'ensemble de la distribution des codes, car beaucoup de classes sont peu représentées.
+
+La sections suivante introduit **NaiveCode2Text**, un premier modèle de génération de données synthétiques qui se repose sur la notice et quelques exemples réels.
+:::
+
+
 # NaiveCode2Text : Approche initiale pour la génération de données synthétiques {#sec-naivecode2text}
 
 ## Environnement informatique disponible
@@ -253,8 +263,8 @@ Pour cette structure de génération, les **facteurs modifiables** sont :
 - le **nombre de libellés à générer à chaque appel**,
 - le nombre d'éléments ***Includes***,
 - le **nombre d'exemples** de libellés,
-- les **consignes de génération** dans le *system prompt* (retrouvable en annexe),
-- le **modèle de génération** utilisé et sa température, dont les détails sont également présents en annexe.
+- les **consignes de génération** dans le *system prompt* (retrouvable en [annexe](https://mateomorin.github.io/Code2Text-presentation/annexe.html)),
+- le **modèle de génération** utilisé et sa température, dont les détails sont également présents en [annexe](https://mateomorin.github.io/Code2Text-presentation/annexe.html).
 
 Pour traiter une nomenclature entière en temps raisonnable, le schéma décrit plus haut a été adapté pour **lancer des requêtes API en parallèle**. Plutôt que d'interroger le modèle successivement pour chaque code, nous envoyons simultanément un lot de requêtes indépendantes de manière asynchrone grâce à un sémaphore avec une concurrence maximale de 50. L'architecture finale est présentée @fig-naive-parallel. 
 
@@ -263,6 +273,13 @@ Pour traiter une nomenclature entière en temps raisonnable, le schéma décrit 
 Une **première génération** comprenant au total **$62\,100$ libellés** a été réalisée en **42 minutes** avec pour idée de recenser tous les cas possibles dans la notice. Alors, tous les 5 éléments *Includes* ou *IncludesAlso* d'un code, au moins 5 appels demandant à chaque fois 10 libellés étaient faits au LLM. 6 exemples *few-shot* de libellés provenant du même code étaient fournis par prompt, sauf pour les codes rares qui ne fournissaient que le maximum d'exemples possibles (voir @sec-data pour la distribution hétérogène).
 
 **Les libellés générés étaient très techniques et satisfaisants d'un point de vue métier** (plus de détails accordés dans @sec-resultats). Cependant, une lecture qualitative rapide faisait déjà apparaître des **tournures de phrases qui changeaient des textes originaux**. Celles-ci étaient trop professionnelles, sans fautes, et parfois proches du titre de la catégorie, par exemple pour le code `02.10Y` correspondant à *Sylviculture et autres activités forestières*, on pouvait trouver *Activités forestières : culture de peupliers et de saules.* Demander des textes moins formels dans le *system prompts* n'y faisant rien, nous avons décidé de créer un discriminateur à la fois comme métrique mais aussi comme outil pour une génération améliorée.
+
+
+::: {.callout-note #Récapitulatif icon=false}
+Les premiers résultats de **NaiveCode2Text** ont montré des textes de bonne qualité métier mais marqués par une empreinte stylistique trop formelle et identifiable. Pour dépasser ce biais sans altérer la fidélité aux notices, il devenait nécessaire de mesurer rigoureusement cette empreinte. 
+
+La section suivante présente **LabelGuard**, un modèle discriminateur conçu pour détecter les libellés générés par LLM et servir d'outil d'évaluation pour la suite du projet.
+:::
 
 
 # LabelGuard : discriminateur et évaluateur
@@ -290,7 +307,7 @@ Finalement, le jeu de donnée obtenu (de taille $200\,000$) a été divisé dans
 
 Pour avoir la version de LabelGuard la plus adaptée à notre cas, nous avons cherché à **minimiser le taux de faux-positifs** (*False Positive Rate*, FPR) **tout en préservant une bonne *accuracy*** sur la donnée de validation pour éviter le plus possible de mal classifier les libellés avec le style humain.
 
-Plusieurs modèles ont été essayés avec différents hyperparamètres pour la prédiction : régression logistique, machine à vecteurs de support (SVM) [@cortes1995support], XGBoost [@chen2016xgboost], ou perceptron multicouche (MLP) [@murtagh1991multilayer]. Les configuration sont détaillées en annexe.
+Plusieurs modèles ont été essayés avec différents hyperparamètres pour la prédiction : régression logistique, machine à vecteurs de support (SVM) [@cortes1995support], XGBoost [@chen2016xgboost], ou perceptron multicouche (MLP) [@murtagh1991multilayer]. Les configuration sont détaillées en [annexe](https://mateomorin.github.io/Code2Text-presentation/annexe.html).
 
 De manière générale, **les modèles les plus performants après entraînement étaient de la classe MLP** (en *accuracy* et en FPR). Celui retenu a la configuration suivante :
 
@@ -308,7 +325,7 @@ De manière générale, **les modèles les plus performants après entraînement
   </div>
 </div>
 ```
-Un détail des résultats est retrouvable en annexe.
+Un détail des résultats est retrouvable en [annexe](https://mateomorin.github.io/Code2Text-presentation/annexe.html).
 
 ## Mesure de l'empreinte du LLM : Analyse de la séparabilité des distributions {#sec-labelguard-res}
 
@@ -330,7 +347,14 @@ Pour ce qui concerne l'**analyse des faux positifs**, nous avons réalisé des *
 - Pour les **corrélations positives** (libellés humains davantage jugés comme IA): les taux de '.', de chiffres, de mots vides (*stop words*), et la présence de majuscule au début des libellés.
 - Pour les **corrélations négatives** (libellé humains davantage jugés comme humain): le nombre de mots, le taux de ',' et celui de majuscules.
 
-Les détails sur les tests effectués sont présents en annexe.
+Les détails sur les tests effectués sont présents en [annexe](https://mateomorin.github.io/Code2Text-presentation/annexe.html).
+
+
+::: {.callout-note #Récapitulatif icon=false}
+La haute précision de **LabelGuard** a mis en évidence l'existence de signatures syntaxiques et stylistiques propres aux générations de **NaiveCode2Text**. L'enjeu n'est plus seulement de mesurer ces écarts, mais d'adapter la stratégie de génération pour les résorber.
+
+La section suivante détaille **Code2ReText**, une approche basée sur une boucle de rétroaction **Acteur-Superviseur** tirant parti des retours de LabelGuard pour reformuler les libellés et les rapprocher du style humain.
+:::
 
 
 # Code2ReText : changer le style par alignement Acteur-Superviseur
@@ -366,6 +390,14 @@ Quantitativement, plusieurs attributs montrent la réussite de la démarche (voi
 
 Additionnellement, bien que certains codes soient plus facilement discriminés que d'autres par LabelGuard, nous n'avons pas réussi à déterminer des *watermarks* propres aux générations de Code2ReText plus présentes dans certaines catégories.
 
+
+::: {.callout-note #Récapitulatif icon=false}
+**Code2ReText**, par son approche **Acteur-Superviseur**, permet d'améliorer les performances face au discriminateur LabelGuard.
+
+Les sections suivantes présentent alors les évaluations et leurs résultats pour comparer **Code2ReText** et **NaiveCode2Text**, si bien en termes de performance qu'en terme ressemblance aux données initiales.
+:::
+
+
 # Protocole d'évaluation globale de la génération
 
 L'évaluation se fait sur plusieurs aspects, du plus au moins important. Elle a pour but à la fois de rendre compte de l'utilité de générer de la donnée synthétique, et de la difficulté d'aligner un LLM sur un style propre à une nomenclature.
@@ -392,7 +424,7 @@ Avant d'intégrer des données synthétiques, il convient de définir un **modè
 
 L'architecture du modèle repose sur un **pipeline de traitement de texte séquentiel** (tokenizer, embedder de texte et classifieur par réseau de neurones profonds) prenant uniquement en entrée le libellé textuel brut ou standardisé. Ce classifieur estime une distribution de probabilité sur les 747 codes de la nomenclature via une fonction *softmax*.
 
-Une **recherche sur grille** (*grid search*) explorant 36 combinaisons d'hyperparamètres est menée en entraînant le modèle sur $\mathcal{D}_{real\_train}$ et en évaluant sa généralisation sur $\mathcal{D}_{val}$. Les dimensions optimisées ainsi que les détails complets de l'architecture et du protocole d'évaluation sont détaillés en annexe.
+Une **recherche sur grille** (*grid search*) explorant 36 combinaisons d'hyperparamètres est menée en entraînant le modèle sur $\mathcal{D}_{real\_train}$ et en évaluant sa généralisation sur $\mathcal{D}_{val}$. Les dimensions optimisées ainsi que les détails complets de l'architecture et du protocole d'évaluation sont détaillés en [annexe](https://mateomorin.github.io/Code2Text-presentation/annexe.html).
 
 **La configuration optimale obtenue**, notée $\theta^* = (d_{emb}^*, \eta^*, t^*)$, **est celle qui maximise les performances globales selon un compromis multicritère** (exactitude, robustesse du Top-k et fiabilité des prédictions confiantes). Ces paramètres $\theta^*$ sont ensuite figés pour servir de point de comparaison absolu lors de la Phase 2.
 
@@ -462,7 +494,7 @@ De ce fait, alors que les **performances pour la tête sont très similaires au 
 
 ![Evolution de l'accuracy sur le jeu de test en fonction de la proportion de données synthétiques en entraînement (corps de distribution des codes)](sources/figures/compare_datasets/source_synth_split_vs_lvl5_body_acc_top1.png){#fig-lvl5-body-acc-top1-ev fig-alt="Légère augmentation initiale (pour $\alpha$ entre 0 et 0.1), puis décroissance de l'*accuracy* quasi linéaire (de 0.58 à 0.50 environ), tout dataset confondu."}
 
-- Pour la **queue**, la [@fig-lvl5-tail-acc-top1-ev] montre au contraire une amélioration très marquée des performances dès les premières injections de données synthétiques, et encopre plus lorsqu'elles sont issues de Code2ReText.
+- Pour la **queue**, la [@fig-lvl5-tail-acc-top1-ev] montre au contraire une amélioration très marquée des performances dès les premières injections de données synthétiques, et encore plus lorsqu'elles sont issues de Code2ReText.
 
 ![Evolution de l'accuracy sur le jeu de test en fonction de la proportion de données synthétiques en entraînement (queue de distribution des codes)](sources/figures/compare_datasets/source_synth_split_vs_lvl5_tail_acc_top1.png){#fig-lvl5-tail-acc-top1-ev fig-alt="Augmentation avec une tendance concave de l'*accuracy* en fonction de $\alpha$, de 0.1 à 0.7 pour Code2ReText, et 0.45 pour NaiveCode2Text"}
 

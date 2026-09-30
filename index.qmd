@@ -34,13 +34,13 @@ Version complète du rapport en format interactif. Comprend le contexte, la mét
 [Lire le rapport →](rapport.html){.landing-link}
 ::::
 
-:::: {.landing-card}
+<!-- :::: {.landing-card}
 ### Slides de présentation (ancien)
 
 Version diaporama du rapport, plus sythétique. Support pour la soutenance orale.
 
 [Voir les slides →](slides/presentation.html){.landing-link}
-::::
+:::: -->
 
 :::: {.landing-card}
 ### Annexes du rapport
