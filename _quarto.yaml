@@ -20,8 +20,8 @@ website:
         file: index.qmd
       - text: "📖 Rapport de stage"
         file: rapport.qmd
-      # - text: "📊 Version Présentation (Slides)"
-        # file: slides/presentation.qmd
+      - text: "📊 Version Présentation (Slides)"
+        file: slides/presentation.qmd
       - text: "📎 Annexes du rapport"
         file: annexe.qmd
 
