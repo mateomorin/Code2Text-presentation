@@ -3,11 +3,14 @@ title: "Code2Text"
 subtitle: "Générer des libellés par IA pour entraîner la codification automatique"
 author: "Matéo Morin — ENSAE Paris"
 institute: "Insee · SSP Lab — Tuteur : Meilame Tayebjee"
-date: today
-date-format: "MMMM YYYY"
+date: "2026-10-21"
+date-format: "D MMMM YYYY"
+slide-number: true
 lang: fr-FR
 format:
-  revealjs:
+  onyxia-revealjs:
+    output-file: index.html
+    css: custom.css
     theme: simple
     width: 1280
     height: 720
@@ -26,7 +29,7 @@ format:
       - text: |
           <style>
             :root { --navy:#1b2a49; --accent:#e4572e; --teal:#17a2a2; --soft:#f3f5f9; --muted:#5b6478; }
-            .reveal { font-size: 30px; color: var(--navy); }
+            .reveal { font-size: 45px; color: var(--navy); }
             .reveal h1, .reveal h2, .reveal h3 { color: var(--navy); font-weight: 700; }
             .reveal h2 { font-size: 1.35em; border-bottom: 4px solid var(--accent); padding-bottom: .15em; margin-bottom: .6em; }
             .reveal ul { margin-top: .3em; }
@@ -35,17 +38,16 @@ format:
             .reveal .footer { color: var(--muted); font-size: .5em; }
             .reveal table { font-size: .72em; margin: 0 auto; }
             .reveal table th { background: var(--navy); color: #fff; }
-            .reveal .title-slide h1 { font-size: 2.6em; color: var(--accent); }
-            .reveal .title-slide .subtitle { font-size: 1.1em; color: var(--navy); }
             .stat-row { display: flex; gap: 22px; justify-content: center; margin: .6em 0; }
             .stat { flex: 1; background: var(--soft); border-top: 6px solid var(--accent); border-radius: 10px;
                     padding: .6em .4em; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.07); }
             .stat.teal { border-top-color: var(--teal); }
-            .stat .val { display: block; font-size: 1.9em; font-weight: 800; color: var(--accent); line-height: 1.1; }
+            .stat .val { display: block; font-size: 1.35em; font-weight: 800; color: var(--accent); line-height: 1.1; }
             .stat.teal .val { color: var(--teal); }
             .stat .lbl { display: block; font-size: .62em; color: var(--muted); margin-top: .3em; }
             .box { background: var(--soft); border-left: 6px solid var(--teal); border-radius: 8px; padding: .5em .8em; }
             .box.bad { border-left-color: var(--accent); }
+            .columns { font-size: 0.65em; }
             .tag { display:inline-block; background: var(--navy); color:#fff; border-radius: 20px; padding: .05em .7em; font-size:.6em; margin-right:.4em; }
             .small { font-size: .7em; color: var(--muted); }
             .center-text { text-align: center; }
@@ -56,24 +58,20 @@ format:
           </style>
 ---
 
-## 🗺️ Plan
+## Plan
 
-::: {.columns}
-::: {.column width="50%"}
-1. 🎯 **Problématique** : NAF 2025 et décalages
-2. 🧪 **Contributions** : de Naive à Code2ReText
-3. 📊 **Résultats** : combien de synthétique ?
-:::
-::: {.column width="50%"}
-4. 🛠️ **Compétences** : LLM, agentique, MLOps
-5. ⚠️ **Limites & perspectives**
-:::
-:::
+1. **Problématique** : NAF 2025 et décalages
+2. **Contributions** : de Naive à Code2ReText
+3. **Résultats** : combien de synthétique ?
+4. **Compétences acquises** : LLM, agentique, MLOps
+5. **Limites & perspectives**
 
 ---
 
-## 🎯 Le contexte : coder l'activité des entreprises
+## Contexte : coder l'activité des entreprises
 
+::: {.columns}
+::: {.column width="40%"}
 ::: {.stat-row}
 ::: {.stat}
 [747]{.val}
@@ -84,42 +82,49 @@ format:
 [libellés réels d'entraînement]{.lbl}
 :::
 ::: {.stat}
-[1 code / 2]{.val}
+[1 code sur 2]{.val}
 [a moins de 60 exemples]{.lbl}
 :::
 :::
 
 - **Text2Code** : libellé libre → code NAF
 - **Aujourd'hui** : FastText, ~70 % des cas codés seuls
-- **Piste** : enrichir l'entraînement par des données synthétiques
+
+::: {.box}
+**Objectif principal** : enrichir l'entraînement par des données synthétiques
+:::
+:::
+::: {.column width="60%" .center-text}
+![Distribution des codes dans $\mathcal{X}_{train\_real}$](../sources/images/code_log_freq.png){#fig-code-log-freq fig-alt="Distribution des codes dans $\mathcal{X}_{train\_real}$, composée d'une tête à très haute fréquence (jusqu'à 10%), d'un corps qui suit une loi exponentielle, et d'une queue sous forme de marches (très faibles proportions) mais avec tendance globale la même équation que le corps."}
+:::
+:::
 
 ---
 
-## ⚔️ Un double défi
+## Angle d'approche de l'objectif
 
-::: {.columns}
-::: {.column width="48%"}
-::: {.box .bad}
-[Problème]{.box-title}
-- 📉 **Long-tail** : classes rares sans exemples
-- 🔒 **Secret statistique** : données non diffusables
-- 🔄 **Nomenclature changée** : NAF 2008 → 2025
+::: {style="font-size: 0.6em; display: flex; flex-direction: column; gap: 20px;"}
+::: {.box .bad .font-size:0.6em}
+[Problèmes]{.box-title}
+
+- **Long-tail** : classes rares avec peu d'exemples *(distribution déséquilibrée de $Y$)*
+- **Secret statistique** : données potentiellement non diffusables
+- **Nomenclature qui évolue** : NAF 2008 → 2025 → ?
 :::
-:::
-::: {.column width="48%"}
+
 ::: {.box}
 [Solution proposée]{.box-title}
-- 🤖 **LLM** guidé par la notice officielle
-- 🎨 **Style aligné** sur les déclarants
-- 🎚️ **Loi des codes** $P(Y)$ pilotable
-:::
+
+- **LLM** guidé par la notice officielle
+- **Style aligné** sur les déclarants
+- **Manipulation de la distribution** pour renforcer les classes rares
 :::
 :::
 
 ---
 
-## 🌊 Trois décalages de distribution
-
+## Trois décalages de distribution à prendre en compte
+:::{style="display: flex; flex-direction: column; gap: 20px;"}
 Cadre du *dataset shift* sur la loi jointe $P(X, Y)$ — $X$ : libellé, $Y$ : code
 
 | Décalage | Ce qui change | Cause dans notre cas |
@@ -128,25 +133,49 @@ Cadre du *dataset shift* sur la loi jointe $P(X, Y)$ — $X$ : libellé, $Y$ : c
 | **Covariate shift** | $P(X \mid Y)$ | Style trop académique du LLM |
 | **Concept drift** | $P(Y \mid X)$ | Passage à la NAF 2025 |
 
+
 ::: {.box}
-🔑 **Cible du stage** : réduire le *covariate shift* conditionnel
+**Cible du stage** : réduire le *covariate shift* conditionnel
+:::
 :::
 
 ---
 
-## 💡 Idée clé : découpler structure et expression
+## Idée clé : découpler structure et expression
 
 ```{mermaid}
-%%| fig-width: 10
+%%| fig-width: 15
+%%| fig-align: center
+%%| fig-height: 8
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "fontSize": "26px"
+  }
+}}%%
 flowchart LR
-    N["📘 Notice NAF<br/>(structure)"] --> G["🤖 Générateur<br/>conditionnel P(X|Y)"]
-    S["🗣️ Style des déclarants<br/>(expression)"] --> G
-    P["🎚️ Loi des codes P(Y)"] --> G
-    G --> A["🌍 Open-data<br/>P(Y) réelle"]
-    G --> B["🎯 Classifieur<br/>P(Y) uniforme"]
-    style G fill:#e4572e,color:#fff,stroke:none
-    style A fill:#17a2a2,color:#fff,stroke:none
-    style B fill:#17a2a2,color:#fff,stroke:none
+    %% Styles modernes et épurés
+    classDef source fill:#F8FAFC,stroke:#E2E8F0,stroke-width:1.5px,color:#334155;
+    classDef process fill:#FFF1F2,stroke:#FECDD3,stroke-width:2px,color:#9F1239;
+    classDef output fill:#F0FDF4,stroke:#BBF7D0,stroke-width:1.5px,color:#166534;
+
+    %% Nœuds avec des formes douces (arrondis)
+    N("📘 **Notice NAF**<br><p style='color:#64748B;'>Structure</p>"):::source
+    S("🗣️ **Style déclarants**<br><p style='color:#64748B;'>Expression</p>"):::source
+    P("🎚️ **Loi des codes**<br><p style='color:#64748B;'>P(Y)</p>"):::source
+    
+    G["**⚙️ Générateur conditionnel**<br><p style='color:#E11D48;'>P(X|Y)</p>"]:::process
+    
+    A("🌍 **Open-data**<br><p style='color:#15803D;'>P(Y) réelle</p>"):::output
+    B("🎯 **Classifieur**<br><p style='color:#15803D;'>P(Y) modifiée</p>"):::output
+
+    %% Connexions propres
+    N ===> G
+    S ===> G
+    P ===> G
+    
+    G -.-> A
+    G -.-> B
 ```
 
 **Un seul générateur**, deux usages selon la loi d'échantillonnage
@@ -179,7 +208,7 @@ Ce bruit est à garder en tête pour lire les résultats : il plafonne les perfo
 
 ---
 
-## 🧪 Contributions {.section-slide background-color="#1b2a49"}
+# 🧪 Contributions {.section-slide background-color="#1b2a49"}
 
 **NaiveCode2Text** → **LabelGuard** → **Code2ReText** → **Protocole $\mathcal{M}_\alpha$**
 
@@ -403,7 +432,7 @@ $$\mathcal{M}_\alpha = \mathcal{C}_{real}(\alpha) \cup \mathcal{C}_{synth}(\alph
 
 ---
 
-## 🛠️ Ce que j'ai appris {.section-slide background-color="#1b2a49"}
+# 🛠️ Ce que j'ai appris {.section-slide background-color="#1b2a49"}
 
 **LLM & API** · **Agentique** · **MLOps** · **Mise en production**
 
