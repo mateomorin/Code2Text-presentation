@@ -1,245 +1,371 @@
 ---
 title: "Code2Text"
-subtitle: "Générer des libellés pour de la codification automatique"
-author:
-  - name: Matéo Morin
-    email: mateo.morin@insee.fr
-    affiliations:
-      - name: Insee, SSP Lab
-date: "2026-05-19"
+subtitle: "Générer des libellés par IA pour entraîner la codification automatique"
+author: "Matéo Morin — ENSAE Paris"
+institute: "Insee · SSP Lab — Tuteur : Meilame Tayebjee"
+date: "2026-10-21"
 date-format: "D MMMM YYYY"
 slide-number: true
-# uncomment for French presentations:
 lang: fr-FR
-# for blind readers:
-slide-tone: false
-# uncomment to use the multiplex mode:
-# multiplex: true
 format:
   onyxia-revealjs:
     output-file: index.html
     css: custom.css
-controls: true
-ascii: true
+    theme: simple
+    width: 1280
+    height: 720
+    margin: 0.06
+    slide-number: c/t
+    footer: "Code2Text · Insee SSP Lab · Matéo Morin"
+    transition: fade
+    transition-speed: fast
+    hash: true
+    controls: true
+    progress: true
+    center: false
+    html-math-method: katex
+    embed-resources: true
+    include-in-header:
+      - text: |
+          <style>
+            :root { --navy:#1b2a49; --accent:#e4572e; --teal:#17a2a2; --soft:#f3f5f9; --muted:#5b6478; }
+            .reveal { font-size: 35px; color: var(--navy); }
+            .reveal h1, .reveal h2, .reveal h3 { color: var(--navy); font-weight: 700; }
+            .reveal h2 { font-size: 1.35em; border-bottom: 4px solid var(--accent); padding-bottom: .15em; margin-bottom: .6em; }
+            .reveal ul { margin-top: .3em; }
+            .reveal li { margin-bottom: .35em; }
+            .reveal strong { color: var(--accent); }
+            .reveal .footer { color: var(--muted); font-size: .5em; }
+            .reveal table { font-size: .72em; margin: 0 auto; }
+            .reveal table th { background: var(--navy); color: #fff; }
+            .stat-row { display: flex; gap: 22px; justify-content: center; margin: .6em 0; }
+            .stat { flex: 1; background: var(--soft); border-top: 6px solid var(--accent); border-radius: 10px;
+                    padding: .6em .4em; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.07); }
+            .stat.teal { border-top-color: var(--teal); }
+            .stat .val { display: block; font-size: 1.35em; font-weight: 800; color: var(--accent); line-height: 1.1; }
+            .stat.teal .val { color: var(--teal); }
+            .stat .lbl { display: block; font-size: .62em; color: var(--muted); margin-top: .3em; }
+            .box { background: var(--soft); border-left: 6px solid var(--teal); border-radius: 8px; padding: .5em .8em; }
+            .box.bad { border-left-color: var(--accent); }
+            .columns { font-size: 0.8em; }
+            .tag { display:inline-block; background: var(--navy); color:#fff; border-radius: 20px; padding: .05em .7em; font-size:.6em; margin-right:.4em; }
+            .small { font-size: .7em; color: var(--muted); }
+            .center-text { text-align: center; }
+            .center-verticaly { justify-content: center; }
+            .box-title { display:block; font-weight:800; font-size:1.05em; color: var(--navy); margin-bottom:.3em; }
+            .reveal section.section-slide h2 { color: #fff; border: none; font-size: 1.8em; }
+            .reveal section.section-slide p { color: #fff; font-size: 1.1em; }
+            .reveal section.section-slide strong { color: #ffb199; }
+          </style>
 ---
 
-# 1️⃣ Contexte
-La codification automatique de libellés
+## Plan
 
-## Text2Code
+1. **Contexte et enjeux**
+2. **Méthodologie**
+3. **Résultats**
+4. **Compétences acquises**
+5. **Limites & perspectives**
 
-[**Objectif initial**]{.orange} **: codifier des libellés dans une nomenclature**.
 
-. . .
+# 1. Contexte et enjeux {.section-slide .center-text background-color="#1b2a49"}
 
-* NAF/NACE, COICOP, ...
-* La nomenclature peut être très vaste (plusieurs centaines de codes différents).
+---
 
-. . .
+## A l'origine : coder l'activité des entreprises
 
-On détient une **notice associée** à la nomenclature :
+NAF : Nomenclature d'Activité Française (= code APE)
 
-* La notice est exhaustive ;
-* Elle contient souvent les champs `code`, `titre`, `includes`, `excludes`.
-
-. . .
-
-On détient parfois déjà des paires libellés/code issues de données réelles.
-
-## La codification automatique n'est pas évidente
-
-Plusieurs [**difficultés majeures**]{.orange} à l'apprentissage :
-
-:::{.incremental}
-* **Défaut de couverture** des données d'entraînement ;
-* **Actualisation** possible de la nomenclature ;
-* **Bruit sémantique** : fautes d'orthographe, infos personnelles, typos, ... 
-* **Bruit d'annotation** : mauvais code pour le libellé ;
-* **Possible manque de données** : passage à l'anglais, nouvelle nomenclature, ...
+::: {.columns}
+::: {.column width="40%"}
+::: {.stat-row}
+::: {.stat}
+[747]{.val}
+[classes dans la NAF 2025]{.lbl}
+:::
+::: {.stat .teal}
+[> 1 M]{.val}
+[libellés réels d'entraînement]{.lbl}
+:::
+::: {.stat}
+[1 code sur 2]{.val}
+[a moins de 60 exemples]{.lbl}
+:::
 :::
 
-. . .
+- **Text2Code** : libellé libre → code NAF
+- **Aujourd'hui** : FastText, ~70 % des cas codés seuls
 
-→ **Sans génération de données synthétiques,** [**la codification automatique peut être imprécise, voire impossible**]{.orange}.  
-
-# 2️⃣ La génération de données synthétiques
-
-## Le cas particulier de notre contexte
-
-La **génération de données habituelle** repose sur la donnée entrante uniquement :
-
-:::{.incremental}
-* **Sans LLM** : reproduire une distribution avec des garde-fous ; 
-* **Avec LLM** : donner le plus de contexte et des exemples few-shot ;
-* La donnée générée n'apporte [**pas d'innovation**]{.orange} à la donnée d'entraînement.
+::: {.box}
+**Objectif principal** : enrichir l'entraînement par des données synthétiques issues de grands modèles de langage (LLMs)
+:::
+:::
+::: {.column width="60%" .center-text}
+![Distribution des codes dans $\mathcal{X}_{train\_real}$](../sources/images/code_log_freq.png){#fig-code-log-freq fig-alt="Distribution des codes dans $\mathcal{X}_{train\_real}$, composée d'une tête à très haute fréquence (jusqu'à 10%), d'un corps qui suit une loi exponentielle, et d'une queue sous forme de marches (très faibles proportions) mais avec tendance globale la même équation que le corps."}
+:::
 :::
 
-. . .
+---
 
-Dans notre cas, on détient une **notice** pour la nomenclature :
+## Informations sur la donnée originale
 
-:::{.incremental}
-* [**Information supplémentaire exhaustive**]{.orange} ;
-* **Adaptée pour les LLM** : on fournit des éléments de la notice en contexte.
+:::{style="display: flex; flex-direction: column; gap: 20px; font-size: 0.8em"}
+::: {.box}
+[La base de données est large]{.box-title}
+
+- **Train** ≈ 1,5 M d'observations
+- **Validation** ≈ 400 k
+- **Test** ≈ 500 k
+:::
+::: {.box .bad}
+[La base de données est bruitée]{.box-title}
+
+- **FastText** : ~10 % d'erreur sur les deux tiers de données traités
+- **Gestionnaires** : potentiels bruits non mesurés sur le tier restant
+- **Recodage** NAF 2008 → 2025 par LLM
+- **Altération artificielle** de la distribution (~mai 2026)
+- **Troncature des libellés** : 8 % à 141 ou 161 caractères
+:::
 :::
 
-## Objectifs recherchés
+# 2. Méthodologie {.section-slide  .center-text background-color="#1b2a49"}
 
-[**Objectifs généraux**]{.orange} pour la génération de donnée :
+---
 
-. . .
+## L'idée : découpler structure et expression
 
-* **Augmenter/diversifier/générer la donnée d'entraînement** des classifieurs ;
-* Pouvoir **partager la donnée** sans fuite du dataset original, tout en rendant compte de son format, de sa distribution, et de la sémantique des libellés ;
-* Créer des scripts de génération **agnostiques de la nomenclature**.
+**Un seul générateur**, deux usages selon la loi d'échantillonnage :
 
-
-. . .
-
-[**Les objectifs ne convergent pas forcément**]{.orange} **autour d'un unique outil :**
-
-. . .
-
-* Améliorer les performances d'un classifieur par la donnée, c'est rarement reproduire la distribution originale ;
-* Risque de **se rapprocher de données bruitées** indésirables.
-
-
-## Evaluation de la génération
-
-[**Axes majeurs**]{.orange} **à explorer :**
-
-:::{.incremental}
-* **Performances du classifieur** selon la construction du jeu d'entraînement (données synthétiques plus ou moins présentes) ; 
-* **Diversité de la génération** : utilisation de scores d'embeddings (DCScore, IMMD, ...), ou des rapprochements sémantiques (Jaccard Similarity, Self-BLEU, ...) ;
-* **Viser la distribution sémantique originale** : soit avec les mêmes méthodes que pour la diversité, soit avec l'utilisation d'un discriminateur IA/humain. 
+::: {.center-text}
+![](../sources/excalidraw_plots/usages_generateur.svg){width=80%}
 :::
 
-. . .
+---
 
-On recherche de **bonnes performances dans ces trois domaines indépendamment du code** derrière les libellés générés.
+## 1️⃣ NaiveCode2Text : la génération initiale
 
-
-# 3️⃣ Naive Code2Text
-Génération augmentée par la notice
-
-## Principe général de Naive Code2Text
-
-![](../sources/images/NaiveCode2Text_single.svg){fig-alt="Naive Code2Text" fig-align="center"}
-
-## Passage à l'échelle : parallélisation
-
-On prend le schéma précédent, et on l'adapte pour lancer des requêtes API en parallèle :
-
-\
-
-![](../sources/images/NaiveCode2Text_parallel.svg){fig-alt="Naive Code2Text with parallel configuration" fig-align="center"}
-
-
-## Premiers résultats
-
-**Points positifs** :
-
-:::{.incremental}
-* La génération est **très fidèle** à la notice ;
-* **Grande diversité** dans les thématiques (grâce à la diversité dans la notice) ;
-* Génération **plutôt rapide** (environ 100 000 libellés/heure).
+:::{.center-text}
+![Architecture parallélisée de NaiveCode2Text](../sources/images/NaiveCode2Text_parallel.svg){#fig-naive-parallel fig-alt="Schéma du pipeline NaiveCode2Text avec requêtes parallèles" width=80%}
+:::
+::: {.box .bad style="font-size:0.6em;"}
+- Ton **trop professionnel**
+- Phrases **sans faute**
+- Proche du **titre** du code
 :::
 
-. . .
+---
 
-**Point négatif majeur** : [**la donnée est "trop parfaite"**]{.orange}
+## 2️⃣ LabelGuard : mesurer l'empreinte du LLM
 
-:::{.incremental}
-* Ton professionnel ;
-* Syntaxe et grammaire irréprochables ;
-* Vocabulaire proche de la notice.
+::: {.columns}
+::: {.column width="50%"}
+::: {.stat .teal}
+[4096 → 1]{.val}
+[MLP sur embeddings Qwen3-8B]{.lbl}
+:::
+::: {.stat-row}
+::: {.stat}
+[99,4 %]{.val}
+[exactitude (sur 40 000 libellés)]{.lbl}
+:::
+::: {.stat}
+[0,7 %]{.val}
+[faux positifs (soit 139 libellés)]{.lbl}
+:::
+:::
+- **Discriminateur** humain (0) ou IA (1)
+- Un **watermark** (signature stylistique du LLM) est présent
+- **Robuste** : le modèle prédit correctement même avec peu de données d'entraînement.
+
+::: {.box .bad}
+**En l'état, le style du LLM est trop éloigné du style orginal**
 :::
 
-. . .
-
-**→** [**Données peu exploitables**]{.orange}
-
-# 4️⃣ Code2ReText
-Ajouter un niveau de profondeur
-
-## LabelGuard : Discrimination des libellés
-
-[**Entraînement**]{.orange} d'un discriminateur IA/humain sur les embeddings des libellés (dim = 4096) :
-
-:::{.incremental}
-* **Benchmarking** de plusieurs modèles via MLFlow ;
-* **Grid Search** rapide sur les hyperparamètres ;
-* Choix du modèle avec le **meilleur FPR** (val).
 :::
 
-. . .
-
-**Résultat** : [**MLP (4096 → 1024 → 256 → 1) avec dropout initial**]{.orange} (0.3)
-
-:::{.incremental}
-* FPR : 0.69 %
-* Accuracy : 99.4 %
+::: {.column width="50%" .center-text}
+![Confiance dans la discrimination de LabelGuard pour les données de validation (distribution KDE)](../sources/figures/labelguard/validation/proba.png){#fig-labelguard-confidence fig-alt="Deux grands pics de confiance sont présents autour de 0 et de 1 avec une prédiction correcte."}
+:::
 :::
 
-. . .
+---
 
-**→ Déploiement sur une API :** [https://labelguard.lab.sspcloud.fr/](https://labelguard.lab.sspcloud.fr/)
+## 3️⃣ Code2ReText : boucle Acteur-Superviseur
 
-## Rappel : Naive Code2Text
-
-![](../sources/images/naive_agent.svg){fig-alt="Naive Code2Text - agent version" fig-align="center"}
-
-
-## Code2Retext : discriminateur in the loop
-
-![](../sources/images/retext_agent_1.svg){fig-alt="Code2ReText - loop" fig-align="center"}
-
-
-## Autre structure possible (version agentic)
-
-![](../sources/images/retext_agent_2.svg){fig-alt="Code2ReText - agentic" fig-align="center"}
-
-
-# 5️⃣ Perspectives
-
-## Travail futur
-
-**Améliorer Code2ReText**
-
-:::{.incremental}
-* Prendre en compte systématiquement LabelGuard ;
-* Eviter les **hallucinations** ou autres dérives (recopier le même libellé, tromper le discriminateur, ...).
+::: {.center-text}
+![Code2ReText --- Version finale](../sources/images/Code2Retext.svg){#fig-retext fig-alt="Schéma Code2ReText"}
 :::
 
-. . . 
+---
 
-**Passer au Supervised Fine Tuning** (SFT)
+## 3️⃣ Code2ReText : évolution de la discrimination au fil des boucles
 
-:::{.incremental}
-* Idée : mimer la distribution sémantique originale ;
-* Grand enjeu de stabilité au cours des itérations ;
-* Passer à un paradigme tourné **RLHF si inefficace**.
+::: {.center-text}
+![Evolution de la distribution du taux de discrimination à la fin de chaque boucle](../sources/generation_details/retext_evolution/error_rate_evolution.png){#fig-error-rate-evolution width="65%"}
 :::
 
-## Parvenir à un outil exploitable et performant
+---
 
-**[Evaluer]{.orange} précisément les générateurs** (benchmark final)
+## Naive vs Code2ReText : exemples
 
-:::{.incremental}
-* **Performances du classifieur** avec la donnée synthétique ;
-* Comparer **diversité** intrinsèque // **similarité** avec la donnée originale.
+| Titre du code | NaiveCode2Text | Code2ReText |
+|:--|:--|:--|
+| Commerce de gros, plomberie et chauffage | Commerce interentreprises de matériel de chauffage industriel. | Plomberie chauffage |
+| Travaux de génie civil spécialisés | Construction d'ouvrages d'art complexe. | MONTAGE STRUCTURES METALLIQUES POUR GENIE CIVIL |
+| Conseil pour les affaires | Prestation de services de conseil en organisation | CONSEIL GESTION |
+
+✅ **Style** : plus brut, plus proche de la donnée originale
+
+⚠️ **Parfois** : copie des exemples few shot (surtout si un seul exemple dans le code)
+
+---
+
+## 4️⃣ Évaluation finale : protocole $\mathcal{M}_\alpha$
+
+:::{style="font-size: 0.8em"}
+**Evaluation d'un classifieur Text2Code** selon des datasets d'entraînement $\mathcal{M}_\alpha$ différents :
+
+$$\mathcal{M}_\alpha = \mathcal{C}_{real}(\alpha) \cup \mathcal{C}_{synth}(\alpha), \quad |\mathcal{M}_\alpha| = 50\,000$$
+
+- **α** : part de données synthétiques injectée
+- **Ensembles imbriqués** :
+
+:::{.center-text}
+$$ {\alpha}_1 < {\alpha}_2 \Longrightarrow \mathcal{C}_{real}({\alpha}_2) \subset \mathcal{C}_{real}({\alpha}_1), \quad \mathcal{C}_{synth}({\alpha}_1) \subset \mathcal{C}_{synth}({\alpha}_2)$$
 :::
 
-. . .
+- **Base immuable** : 1 exemple par code (747)
+- **Même architecture** : hyperparamètres figés (grid search 36 configs)
 
-**[Mettre en production]{.orange} le générateur performant**
-
-:::{.incremental}
-* **API pour la NAF** ;
-* *Déployer pour la NACE en traduisant ?*
-* Code pour les autres nomenclatures.
+::: {.box}
+On applique la méthode pour différents $\mathcal{C}_{real}(\alpha)$ issus de NaiveCode2Text et Code2ReText
+:::
 :::
 
-## Planning
+# 3. Résultats {.section-slide  .center-text background-color="#1b2a49"}
 
-![](../sources/images/Planning.svg){fig-alt="Planning du stage" fig-align="center"}
+---
+
+## Résultats à retenir
+
+::: {.columns}
+
+::: {.column width="40%"}
+::: {.stat-row}
+::: {.stat .teal}
+[40–50 %]{.val}
+[taux d'injection optimal]{.lbl}
+:::
+::: {.stat}
+[87 % / 60 %]{.val}
+[accuracy tête / queue à α = 0,4]{.lbl}
+:::
+::: {.stat .teal}
+[α ≥ 0,9]{.val}
+[effondrement des performances]{.lbl}
+:::
+:::
+
+- **Queue de dsitribution** : gain très net dès les premières injections
+- **Tête et corps** : peu dégradés à 40–50 %
+- **Meilleur choix** : Code2ReText, distribution proche de l'originale
+- **Moins de diversité** avec Code2ReText
+:::
+
+::: {.column .center-text width="60%"}
+![Evolution de l'accuracy sur le jeu de test (tête) en fonction de l'accuracy sur le jeu de test (queue)](../sources/figures/heatmaps/lvl5_head_acc_top1_vs_lvl5_tail_acc_top1_by_source_synth_split.png){#fig-lvl5-head-acc-top1-tail-acc-top1 fig-alt="Tendance décroissante concave générale, compromis autour de $\alpha = 0.4$ (87%/60%)"}
+:::
+
+:::
+
+::: {.box}
+L'injection de données synthétiques **réduit la discrimination** des classes rares
+:::
+
+
+# 4. Compétences acquises {.section-slide  .center-text background-color="#1b2a49"}
+
+---
+
+## Compétences acquises
+
+:::: {.columns style="display: flex !important; align-items: center;"}
+
+::: {.column width="50%"}
+::: {#fig-environnement fig-cap="Architecture de l'environnement informatique disponible"}
+<iframe
+  src="../sources/interactive/environnement_informatique.html"
+  class="interactive-figure"
+  title="Environnement informatique disponible"
+  width="100%"
+  height="550px">
+</iframe>
+:::
+:::
+
+::: {.column width="50%" style="display: flex; justify-content: center; flex-direction: column;"}
+| Compétence | Outils mobilisés |
+|:--|:--|
+| **LLM & API** | vLLM, NVIDIA H100, `asyncio` |
+| **Agentique** | LangChain, **LangGraph** |
+| **Observabilité** | **Langfuse** (tracing) |
+| **Orchestration** | **Argo Workflows**, Argo CD |
+| **Données & infra** | Kubernetes, MinIO/S3, Qdrant, Neo4j |
+| **Reproductibilité** | Git, conteneurs |
+:::
+::::
+
+# 5. Limites et perspectives {.section-slide .center-text background-color="#1b2a49"}
+
+---
+
+## Limites
+
+::: {.stat-row}
+::: {.stat}
+[0,5 %]{.val}
+[libellés recopiés par ReText (Naive : 0,005 %)]{.lbl}
+:::
+::: {.stat}
+[50 k]{.val}
+[données d'entraînement pour le benchmark]{.lbl}
+:::
+:::
+
+- **Fuite de données** : risque pour l'open-data
+- **Bruit** des annotations et du changement de nomenclature
+  - Mais robustesse des résultats pour le niveau 4 et pour le top 5 des prédictions 
+- **Style encore imparfait** : bruit humain pas entièrement assimilé
+  - Souvent un seul trait qui est exacerbé
+- **Comparaison** avec des méthodes simples
+  - Ajout de fautes d'orthographes, recopier les libellés pour les codes rares, ...
+
+
+---
+
+## Perspectives
+
+
+:::: {.columns style="display: flex !important; align-items: center;"}
+::: {.column .center-text width="50%" style="display: flex; justify-content: center; flex-direction: column;"}
+![Etat des lieux sur les thématiques du stage](../sources/excalidraw_plots/Perspectives.svg){#fig-etat-des-lieux}
+:::
+::: {.column  style="font-size: 0.9em"}
+[Autres méthodes à explorer]{.box-title}
+
+- **SFT** : Supervised Fine Tuning
+  - objectif : imiter les bons styles de générations à partir des données originales
+  - limites : sur-apprentissage des grandes classes et instabilité
+- **RLHF** (Reinforcement Learning from Human Feedback)
+  - objectif : guider le style par un retour humain (ou LLM as a judge)
+  - possibilité d'inclure LabelGuard dans l'évaluation
+  - limite princiaple : instabilité
+
+[Open source et reproductibilité]{.box-title}
+
+- **NACE** : généraliser le générateur pour les services statistiques européens
+  - requiert une base européenne d'exemples
+- **Multilingue** : réussir à adapter selon la langue
+  - Simple si méthode actuelle, difficile autrement
+:::
+:::
