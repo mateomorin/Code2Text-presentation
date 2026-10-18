@@ -16,7 +16,7 @@ format:
     height: 720
     margin: 0.06
     slide-number: c/t
-    footer: "Code2Text · Insee SSP Lab · NAF 2025"
+    footer: "Code2Text · Insee SSP Lab · Matéo Morin"
     transition: fade
     transition-speed: fast
     hash: true
@@ -29,7 +29,7 @@ format:
       - text: |
           <style>
             :root { --navy:#1b2a49; --accent:#e4572e; --teal:#17a2a2; --soft:#f3f5f9; --muted:#5b6478; }
-            .reveal { font-size: 45px; color: var(--navy); }
+            .reveal { font-size: 35px; color: var(--navy); }
             .reveal h1, .reveal h2, .reveal h3 { color: var(--navy); font-weight: 700; }
             .reveal h2 { font-size: 1.35em; border-bottom: 4px solid var(--accent); padding-bottom: .15em; margin-bottom: .6em; }
             .reveal ul { margin-top: .3em; }
@@ -47,10 +47,11 @@ format:
             .stat .lbl { display: block; font-size: .62em; color: var(--muted); margin-top: .3em; }
             .box { background: var(--soft); border-left: 6px solid var(--teal); border-radius: 8px; padding: .5em .8em; }
             .box.bad { border-left-color: var(--accent); }
-            .columns { font-size: 0.65em; }
+            .columns { font-size: 0.8em; }
             .tag { display:inline-block; background: var(--navy); color:#fff; border-radius: 20px; padding: .05em .7em; font-size:.6em; margin-right:.4em; }
             .small { font-size: .7em; color: var(--muted); }
             .center-text { text-align: center; }
+            .center-horizontaly { align-items: center; }
             .box-title { display:block; font-weight:800; font-size:1.05em; color: var(--navy); margin-bottom:.3em; }
             .reveal section.section-slide h2 { color: #fff; border: none; font-size: 1.8em; }
             .reveal section.section-slide p { color: #fff; font-size: 1.1em; }
@@ -60,15 +61,20 @@ format:
 
 ## Plan
 
-1. **Problématique** : NAF 2025 et décalages
-2. **Contributions** : de Naive à Code2ReText
-3. **Résultats** : combien de synthétique ?
-4. **Compétences acquises** : LLM, agentique, MLOps
+1. **Contexte et enjeux**
+2. **Méthodologie**
+3. **Résultats**
+4. **Compétences acquises**
 5. **Limites & perspectives**
+
+
+# 1. Contexte et enjeux {.section-slide .center-text background-color="#1b2a49"}
 
 ---
 
-## Contexte : coder l'activité des entreprises
+## A l'origine : coder l'activité des entreprises
+
+NAF : Nomenclature d'Activité Française (= code APE)
 
 ::: {.columns}
 ::: {.column width="40%"}
@@ -91,7 +97,7 @@ format:
 - **Aujourd'hui** : FastText, ~70 % des cas codés seuls
 
 ::: {.box}
-**Objectif principal** : enrichir l'entraînement par des données synthétiques
+**Objectif principal** : enrichir l'entraînement par des données synthétiques issues de grands modèles de langage (LLMs)
 :::
 :::
 ::: {.column width="60%" .center-text}
@@ -101,37 +107,17 @@ format:
 
 ---
 
-## Angle d'approche de l'objectif
+## Problème du *dataset shift* pour la génération synthétique
 
-::: {style="font-size: 0.6em; display: flex; flex-direction: column; gap: 20px;"}
-::: {.box .bad .font-size:0.6em}
-[Problèmes]{.box-title}
+- On souhaite **générer à partir de la notice de la NAF**
 
-- **Long-tail** : classes rares avec peu d'exemples *(distribution déséquilibrée de $Y$)*
-- **Secret statistique** : données potentiellement non diffusables
-- **Nomenclature qui évolue** : NAF 2008 → 2025 → ?
-:::
-
-::: {.box}
-[Solution proposée]{.box-title}
-
-- **LLM** guidé par la notice officielle
-- **Style aligné** sur les déclarants
-- **Manipulation de la distribution** pour renforcer les classes rares
-:::
-:::
-
----
-
-## Trois décalages de distribution à prendre en compte
 :::{style="display: flex; flex-direction: column; gap: 20px;"}
-Cadre du *dataset shift* sur la loi jointe $P(X, Y)$ — $X$ : libellé, $Y$ : code
+- Cadre du *dataset shift* sur la loi jointe $P(X, Y)$ — $X$ : libellé, $Y$ : code
 
 | Décalage | Ce qui change | Cause dans notre cas |
 |:--|:--|:--|
 | **Prior shift** | $P(Y)$ | Rééquilibrage volontaire des classes |
 | **Covariate shift** | $P(X \mid Y)$ | Style trop académique du LLM |
-| **Concept drift** | $P(Y \mid X)$ | Passage à la NAF 2025 |
 
 
 ::: {.box}
@@ -139,216 +125,109 @@ Cadre du *dataset shift* sur la loi jointe $P(X, Y)$ — $X$ : libellé, $Y$ : c
 :::
 :::
 
----
-
-## Idée clé : découpler structure et expression
-
-```{mermaid}
-%%| fig-width: 15
-%%| fig-align: center
-%%| fig-height: 8
-%%{init: {
-  "theme": "base",
-  "themeVariables": {
-    "fontSize": "26px"
-  }
-}}%%
-flowchart LR
-    %% Styles modernes et épurés
-    classDef source fill:#F8FAFC,stroke:#E2E8F0,stroke-width:1.5px,color:#334155;
-    classDef process fill:#FFF1F2,stroke:#FECDD3,stroke-width:2px,color:#9F1239;
-    classDef output fill:#F0FDF4,stroke:#BBF7D0,stroke-width:1.5px,color:#166534;
-
-    %% Nœuds avec des formes douces (arrondis)
-    N("📘 **Notice NAF**<br><p style='color:#64748B;'>Structure</p>"):::source
-    S("🗣️ **Style déclarants**<br><p style='color:#64748B;'>Expression</p>"):::source
-    P("🎚️ **Loi des codes**<br><p style='color:#64748B;'>P(Y)</p>"):::source
-    
-    G["**⚙️ Générateur conditionnel**<br><p style='color:#E11D48;'>P(X|Y)</p>"]:::process
-    
-    A("🌍 **Open-data**<br><p style='color:#15803D;'>P(Y) réelle</p>"):::output
-    B("🎯 **Classifieur**<br><p style='color:#15803D;'>P(Y) modifiée</p>"):::output
-
-    %% Connexions propres
-    N ===> G
-    S ===> G
-    P ===> G
-    
-    G -.-> A
-    G -.-> B
-```
-
-**Un seul générateur**, deux usages selon la loi d'échantillonnage
 
 ---
 
-## 🧱 La donnée : large mais bruitée
+## Informations sur la donnée originale
 
-::: {.columns}
-::: {.column width="50%"}
-- 📁 **Train** : ≈ 1,5 M de lignes
-- 🧪 **Validation** : ≈ 400 k
-- 🏁 **Test** : ≈ 500 k
-- ✂️ **Troncature** : 8 % à 141 ou 161 caractères
+:::{style="display: flex; flex-direction: column; gap: 20px; font-size: 0.8em"}
+::: {.box}
+[La base de données est large]{.box-title}
+
+- **Train** ≈ 1,5 M d'observations
+- **Validation** ≈ 400 k
+- **Test** ≈ 500 k
 :::
-::: {.column width="50%"}
 ::: {.box .bad}
-**Sources de bruit**
+[La base de données est bruitée]{.box-title}
 
-- 🤖 **FastText** : ~10 % d'erreur sur 2/3
-- 👤 **Agents** : cas limites ambigus
-- 🔁 **Recodage** NAF 2008 → 2025 par LLM
-:::
+- **FastText** : ~10 % d'erreur sur les deux tiers de données traités
+- **Gestionnaires** : potentiels bruits non mesurés sur le tier restant
+- **Recodage** NAF 2008 → 2025 par LLM
+- **Altération artificielle** de la distribution (~mai 2026)
+- **Troncature des libellés** : 8 % à 141 ou 161 caractères
 :::
 :::
 
-::: {.notes}
-Ce bruit est à garder en tête pour lire les résultats : il plafonne les performances et brouille le signal.
+# 2. Méthodologie {.section-slide  .center-text background-color="#1b2a49"}
+
+---
+
+## L'idée : découpler structure et expression
+
+**Un seul générateur**, deux usages selon la loi d'échantillonnage :
+
+::: {.center-text}
+![](../sources/excalidraw_plots/usages_generateur.svg){width=80%}
 :::
 
 ---
 
-# 🧪 Contributions {.section-slide background-color="#1b2a49"}
+## 1️⃣ NaiveCode2Text : la génération initiale
 
-**NaiveCode2Text** → **LabelGuard** → **Code2ReText** → **Protocole $\mathcal{M}_\alpha$**
-
----
-
-## 🧭 Vue d'ensemble de la démarche
-
-```{mermaid}
-%%| fig-width: 11
-flowchart LR
-    A["1️⃣ NaiveCode2Text<br/>notice + few-shot"] -->|"style trop formel"| B["2️⃣ LabelGuard<br/>détecte l'empreinte LLM"]
-    B -->|"signal de rétroaction"| C["3️⃣ Code2ReText<br/>Acteur-Superviseur"]
-    C --> D["4️⃣ Évaluation Mα<br/>ensembles imbriqués"]
-    style A fill:#f3f5f9,stroke:#1b2a49
-    style B fill:#f3f5f9,stroke:#1b2a49
-    style C fill:#e4572e,color:#fff,stroke:none
-    style D fill:#17a2a2,color:#fff,stroke:none
-```
-
----
-
-## 1️⃣ NaiveCode2Text : la génération de base
-
-::: {.columns}
-::: {.column width="50%"}
-[Principe]{.box-title}
-- 📘 **Notice** : titre, *Includes*, *Excludes*
-- 🎯 **Few-shot** : 6 vrais libellés du code
-- ⚡ **Requêtes asynchrones** en parallèle
-- 📦 **62 100 libellés** en 42 minutes
+:::{.center-text}
+![Architecture parallélisée de NaiveCode2Text](../sources/images/NaiveCode2Text_parallel.svg){#fig-naive-parallel fig-alt="Schéma du pipeline NaiveCode2Text avec requêtes parallèles" width=80%}
 :::
-::: {.column width="50%"}
-::: {.box .bad}
-[Limite]{.box-title}
-- 🎩 Ton **trop professionnel**
-- ✅ Phrases **sans faute**
-- 🔁 Proche du **titre** du code
-
-*« Activités forestières : culture de peupliers et de saules. »*
-:::
-:::
+::: {.box .bad style="font-size:0.6em;"}
+- Ton **trop professionnel**
+- Phrases **sans faute**
+- Proche du **titre** du code
 :::
 
 ---
 
 ## 2️⃣ LabelGuard : mesurer l'empreinte du LLM
 
-::: {.stat-row}
-::: {.stat}
-[99,4 %]{.val}
-[exactitude (40 000 libellés)]{.lbl}
-:::
+::: {.columns}
+::: {.column width="50%"}
 ::: {.stat .teal}
-[0,7 %]{.val}
-[faux positifs (139 libellés)]{.lbl}
-:::
-::: {.stat}
 [4096 → 1]{.val}
 [MLP sur embeddings Qwen3-8B]{.lbl}
 :::
+::: {.stat-row}
+::: {.stat}
+[99,4 %]{.val}
+[exactitude (sur 40 000 libellés)]{.lbl}
 :::
+::: {.stat}
+[0,7 %]{.val}
+[faux positifs (soit 139 libellés)]{.lbl}
+:::
+:::
+- **Discriminateur** humain (0) ou IA (1)
+- Un **watermark** (signature stylistique du LLM) est présent
+- **Robuste** : le modèle prédit correctement même avec peu de données d'entraînement.
 
-- 🔍 **Discriminateur** : humain (0) ou IA (1)
-- 🧬 **Watermark** : signature stylistique du LLM
-- 🧪 **Robuste** : tient même avec peu de données
-
----
-
-## 🔬 Ce qui trahit un texte IA
-
-::: {.columns}
-::: {.column width="50%"}
 ::: {.box .bad}
-[Indices « IA »]{.box-title}
-- **Points** et ponctuation
-- **Mots vides** (*stop words*)
-- **Majuscule** en début de phrase
-:::
-:::
-::: {.column width="50%"}
-::: {.box}
-[Indices « humain »]{.box-title}
-- **Libellés longs** en nombre de mots
-- **Virgules** fréquentes
-- **MAJUSCULES** partout
-:::
-:::
+**En l'état, le style du LLM est trop éloigné du style orginal**
 :::
 
-➡️ Le discriminateur devient un **outil de génération**, pas seulement une métrique
+:::
+
+::: {.column width="50%" .center-text}
+![Confiance dans la discrimination de LabelGuard pour les données de validation (distribution KDE)](../sources/figures/labelguard/validation/proba.png){#fig-labelguard-confidence fig-alt="Deux grands pics de confiance sont présents autour de 0 et de 1 avec une prédiction correcte."}
+:::
+:::
 
 ---
 
 ## 3️⃣ Code2ReText : boucle Acteur-Superviseur
 
-```{mermaid}
-%%| fig-width: 11
-flowchart LR
-    NO["📘 Notice + few-shot"] --> AC["🎭 Acteur<br/>génère / reformule"]
-    AC --> LG["🛡️ LabelGuard<br/>score IA"]
-    LG --> SU["🧑‍⚖️ Superviseur<br/>consignes de style"]
-    OR["📄 Libellés originaux<br/>similaires"] --> SU
-    SU -->|"score > 0,70 : reformuler<br/>max 5 boucles"| AC
-    AC -->|"libellés validés"| OUT["✅ Données synthétiques"]
-    style AC fill:#e4572e,color:#fff,stroke:none
-    style SU fill:#1b2a49,color:#fff,stroke:none
-    style LG fill:#17a2a2,color:#fff,stroke:none
-    style OUT fill:#f3f5f9,stroke:#17a2a2
-```
-
-::: {.notes}
-Le Superviseur ne transmet jamais les originaux à l'Acteur : il ne donne que des consignes de style. L'Acteur ne peut changer que la forme, pas le fond.
+::: {.center-text}
+![Code2ReText --- Version finale](../sources/images/Code2Retext.svg){#fig-retext fig-alt="Schéma Code2ReText"}
 :::
 
 ---
 
-## 🤔 Pourquoi deux agents plutôt qu'un ?
+## 3️⃣ Code2ReText : évolution de la discrimination au fil des boucles
 
-::: {.columns}
-::: {.column width="48%"}
-::: {.box .bad}
-[Un seul LLM + outils]{.box-title}
-- 🃏 Accès libre au discriminateur
-- 🔤 **Triche** : mots concaténés, charabia
-- 📋 Recopie des libellés validés
-:::
-:::
-::: {.column width="48%"}
-::: {.box}
-[Acteur + Superviseur]{.box-title}
-- 🧱 **Séparation** des rôles
-- 🔒 Originaux **cachés** à l'Acteur
-- 🔍 **Suivi** fin avec LangGraph
-:::
-:::
+::: {.center-text}
+![Evolution de la distribution du taux de discrimination à la fin de chaque boucle](../sources/generation_details/retext_evolution/error_rate_evolution.png){#fig-error-rate-evolution width="65%"}
 :::
 
 ---
 
-## 👀 Naive vs Code2ReText : exemples
+## Naive vs Code2ReText : exemples
 
 | Titre du code | NaiveCode2Text | Code2ReText |
 |:--|:--|:--|
@@ -356,24 +235,43 @@ Le Superviseur ne transmet jamais les originaux à l'Acteur : il ne donne que de
 | Travaux de génie civil spécialisés | Construction d'ouvrages d'art complexe. | MONTAGE STRUCTURES METALLIQUES POUR GENIE CIVIL |
 | Conseil pour les affaires | Prestation de services de conseil en organisation | CONSEIL GESTION |
 
-- ✅ **Style** : plus brut, plus proche du terrain
-- ⚠️ **Parfois** : recopie du titre du code
+✅ **Style** : plus brut, plus proche de la donnée originale
+
+⚠️ **Parfois** : copie des exemples few shot (surtout si un seul exemple dans le code)
 
 ---
 
-## 4️⃣ Évaluer : le protocole $\mathcal{M}_\alpha$
+## 4️⃣ Évaluation finale : protocole $\mathcal{M}_\alpha$
+
+:::{style="font-size: 0.8em"}
+**Evaluation d'un classifieur Text2Code** selon des datasets d'entraînement $\mathcal{M}_\alpha$ différents :
 
 $$\mathcal{M}_\alpha = \mathcal{C}_{real}(\alpha) \cup \mathcal{C}_{synth}(\alpha), \quad |\mathcal{M}_\alpha| = 50\,000$$
 
-- 🎚️ **α** : part de données synthétiques injectée
-- 🪆 **Ensembles imbriqués** : α₁ < α₂ ⇒ inclusion stricte
-- 🧱 **Base immuable** : 1 exemple par code (747)
-- 🧮 **Même architecture** : hyperparamètres figés (grid search 36 configs)
+- **α** : part de données synthétiques injectée
+- **Ensembles imbriqués** :
+
+:::{.center-text}
+$$ {\alpha}_1 < {\alpha}_2 \Longrightarrow \mathcal{C}_{real}({\alpha}_2) \subset \mathcal{C}_{real}({\alpha}_1), \quad \mathcal{C}_{synth}({\alpha}_1) \subset \mathcal{C}_{synth}({\alpha}_2)$$
+:::
+
+- **Base immuable** : 1 exemple par code (747)
+- **Même architecture** : hyperparamètres figés (grid search 36 configs)
+
+::: {.box}
+On applique la méthode pour différents $\mathcal{C}_{real}(\alpha)$ issus de NaiveCode2Text et Code2ReText
+:::
+:::
+
+# Résultats {.section-slide  .center-text background-color="#1b2a49"}
 
 ---
 
-## 📊 Résultat clé : 40 % à 50 % de synthétique
+## Résultats à retenir
 
+::: {.columns}
+
+::: {.column width="40%"}
 ::: {.stat-row}
 ::: {.stat .teal}
 [40–50 %]{.val}
@@ -389,50 +287,25 @@ $$\mathcal{M}_\alpha = \mathcal{C}_{real}(\alpha) \cup \mathcal{C}_{synth}(\alph
 :::
 :::
 
-- 🚀 **Queue** : gain très net dès les premières injections
-- 🧍 **Tête et corps** : peu dégradés à 40–50 %
-- 🏆 **Meilleur choix** : Code2ReText, loi des codes proche du réel
+- **Queue de dsitribution** : gain très net dès les premières injections
+- **Tête et corps** : peu dégradés à 40–50 %
+- **Meilleur choix** : Code2ReText, distribution proche de l'originale
+- **Moins de diversité** avec Code2ReText
+:::
 
----
+::: {.column .center-text width="60%"}
+![Evolution de l'accuracy sur le jeu de test (tête) en fonction de l'accuracy sur le jeu de test (queue)](../sources/figures/heatmaps/lvl5_head_acc_top1_vs_lvl5_tail_acc_top1_by_source_synth_split.png){#fig-lvl5-head-acc-top1-tail-acc-top1 fig-alt="Tendance décroissante concave générale, compromis autour de $\alpha = 0.4$ (87%/60%)"}
+:::
 
-## ⚖️ Gains selon la fréquence des codes
-
-| Zone | Effet du synthétique | Lecture |
-|:--|:--|:--|
-| **Tête** | ≈ comportement global | Stable jusqu'à ~50 % |
-| **Corps** | Légère hausse puis baisse linéaire | Sensible aux hauts taux |
-| **Queue** | **Forte amélioration** | Code2ReText > NaiveCode2Text |
+:::
 
 ::: {.box}
-✨ Le synthétique **réduit la discrimination** des classes rares
+L'injection de données synthétiques **réduit la discrimination** des classes rares
 :::
 
 ---
 
-## 🎨 Style vs diversité : un compromis
-
-::: {.columns}
-::: {.column width="50%"}
-::: {.box}
-[Code2ReText gagne]{.box-title}
-- 📐 **Distance de Wasserstein** $W_2$ plus faible
-- 🎯 Presque **tous les codes**
-- 📈 Bayes factor élevé, $d \approx 0{,}88$
-:::
-:::
-::: {.column width="50%"}
-::: {.box .bad}
-[Mais il perd]{.box-title}
-- 🌈 **DC-Score** effondré (diversité)
-- 🔁 **Copies** de titres de code
-- 🔊 Plus de **bruit** pour le classifieur
-:::
-:::
-:::
-
----
-
-# 🛠️ Ce que j'ai appris {.section-slide background-color="#1b2a49"}
+# 🛠️ Ce que j'ai appris {.section-slide  .center-text background-color="#1b2a49"}
 
 **LLM & API** · **Agentique** · **MLOps** · **Mise en production**
 
@@ -565,13 +438,20 @@ flowchart LR
 
 ---
 
-## ✅ À retenir
+## Conclusion
+
+:::{.columns}
+:::{.column width="60%" .center-text}
+![](../sources/excalidraw_plots/framework_global.svg)
+:::
+:::{.column width="40%"}
+:::{style="font-size:1.25em"}
+[Résultats principaux]{.box-title}
 
 - 🧬 **LabelGuard** : l'empreinte du LLM est mesurable (99,4 %)
 - 🎭 **Code2ReText** : le style se rapproche, la diversité en pâtit
 - 🎚️ **40–50 % de synthétique** : gain net sur les classes rares
 - 🛠️ **Au-delà du modèle** : agentique, observabilité, MLOps
-
-::: {.center-text}
-[Merci ! Des questions ? 🙋]{.box-title}
+:::
+:::
 :::
