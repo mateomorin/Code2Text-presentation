@@ -51,7 +51,7 @@ format:
             .tag { display:inline-block; background: var(--navy); color:#fff; border-radius: 20px; padding: .05em .7em; font-size:.6em; margin-right:.4em; }
             .small { font-size: .7em; color: var(--muted); }
             .center-text { text-align: center; }
-            .center-horizontaly { align-items: center; }
+            .center-verticaly { justify-content: center; }
             .box-title { display:block; font-weight:800; font-size:1.05em; color: var(--navy); margin-bottom:.3em; }
             .reveal section.section-slide h2 { color: #fff; border: none; font-size: 1.8em; }
             .reveal section.section-slide p { color: #fff; font-size: 1.1em; }
@@ -104,27 +104,6 @@ NAF : Nomenclature d'Activité Française (= code APE)
 ![Distribution des codes dans $\mathcal{X}_{train\_real}$](../sources/images/code_log_freq.png){#fig-code-log-freq fig-alt="Distribution des codes dans $\mathcal{X}_{train\_real}$, composée d'une tête à très haute fréquence (jusqu'à 10%), d'un corps qui suit une loi exponentielle, et d'une queue sous forme de marches (très faibles proportions) mais avec tendance globale la même équation que le corps."}
 :::
 :::
-
----
-
-## Problème du *dataset shift* pour la génération synthétique
-
-- On souhaite **générer à partir de la notice de la NAF**
-
-:::{style="display: flex; flex-direction: column; gap: 20px;"}
-- Cadre du *dataset shift* sur la loi jointe $P(X, Y)$ — $X$ : libellé, $Y$ : code
-
-| Décalage | Ce qui change | Cause dans notre cas |
-|:--|:--|:--|
-| **Prior shift** | $P(Y)$ | Rééquilibrage volontaire des classes |
-| **Covariate shift** | $P(X \mid Y)$ | Style trop académique du LLM |
-
-
-::: {.box}
-**Cible du stage** : réduire le *covariate shift* conditionnel
-:::
-:::
-
 
 ---
 
@@ -263,7 +242,7 @@ On applique la méthode pour différents $\mathcal{C}_{real}(\alpha)$ issus de N
 :::
 :::
 
-# Résultats {.section-slide  .center-text background-color="#1b2a49"}
+# 3. Résultats {.section-slide  .center-text background-color="#1b2a49"}
 
 ---
 
@@ -303,155 +282,90 @@ On applique la méthode pour différents $\mathcal{C}_{real}(\alpha)$ issus de N
 L'injection de données synthétiques **réduit la discrimination** des classes rares
 :::
 
----
 
-# 🛠️ Ce que j'ai appris {.section-slide  .center-text background-color="#1b2a49"}
-
-**LLM & API** · **Agentique** · **MLOps** · **Mise en production**
+# 4. Compétences acquises {.section-slide  .center-text background-color="#1b2a49"}
 
 ---
 
-## 🧰 Compétences ↔ outils
+## Compétences acquises
 
+:::: {.columns style="display: flex !important; align-items: center;"}
+
+::: {.column width="50%"}
+::: {#fig-environnement fig-cap="Architecture de l'environnement informatique disponible"}
+<iframe
+  src="../sources/interactive/environnement_informatique.html"
+  class="interactive-figure"
+  title="Environnement informatique disponible"
+  width="100%"
+  height="550px">
+</iframe>
+:::
+:::
+
+::: {.column width="50%" style="display: flex; justify-content: center; flex-direction: column;"}
 | Compétence | Outils mobilisés |
 |:--|:--|
-| 🤖 **LLM & API** | vLLM, NVIDIA H100, `asyncio` |
-| 🕸️ **Agentique** | LangChain, **LangGraph** |
-| 🔭 **Observabilité** | **Langfuse** (tracing) |
-| ⚙️ **Orchestration** | **Argo Workflows**, Argo CD |
-| 🗄️ **Données & infra** | Kubernetes, MinIO/S3, Qdrant, Neo4j |
+| **LLM & API** | vLLM, NVIDIA H100, `asyncio` |
+| **Agentique** | LangChain, **LangGraph** |
+| **Observabilité** | **Langfuse** (tracing) |
+| **Orchestration** | **Argo Workflows**, Argo CD |
+| **Données & infra** | Kubernetes, MinIO/S3, Qdrant, Neo4j |
+| **Reproductibilité** | Git, conteneurs |
+:::
+::::
+
+# 5. Limites et perspectives {.section-slide .center-text background-color="#1b2a49"}
 
 ---
 
-## 🏗️ Le pipeline MLOps / infra
-
-```{mermaid}
-%%| fig-width: 11
-flowchart LR
-    NE[("🕸️ Neo4j<br/>notice")] --> AW
-    S3[("🪣 MinIO / S3<br/>libellés Parquet")] --> AW
-    AW["⚙️ Argo Workflows<br/>jobs conteneurisés"] --> VL["🚀 vLLM<br/>NVIDIA H100"]
-    VL --> AG["🕸️ LangGraph<br/>Acteur + Superviseur"]
-    AG --> QD[("🧭 Qdrant<br/>embeddings")]
-    AG --> OUT[("🪣 S3<br/>libellés générés")]
-    AG -.->|"traces"| LF["🔭 Langfuse"]
-    CD["🔁 Argo CD"] -.->|"déploie les API"| VL
-    style AW fill:#e4572e,color:#fff,stroke:none
-    style VL fill:#1b2a49,color:#fff,stroke:none
-    style LF fill:#17a2a2,color:#fff,stroke:none
-```
-
-Le tout tourne sur le **cluster Kubernetes du SSP Cloud**
-
----
-
-## 🚀 LLM & API à grande échelle
-
-::: {.stat-row}
-::: {.stat}
-[50]{.val}
-[requêtes concurrentes (sémaphore)]{.lbl}
-:::
-::: {.stat .teal}
-[62 100]{.val}
-[libellés générés]{.lbl}
-:::
-::: {.stat}
-[42 min]{.val}
-[pour toute la nomenclature]{.lbl}
-:::
-:::
-
-- ⚡ **Asynchrone** : lots de requêtes indépendantes
-- 🚦 **Sémaphore** : concurrence maîtrisée côté API
-- 🎛️ **Leviers** : prompts, température, nb de libellés
-
----
-
-## 🔭 Agentique et observabilité
-
-::: {.columns}
-::: {.column width="48%"}
-::: {.box .bad}
-[Avant]{.box-title}
-- `openai-python` + *tools*
-- Peu de contrôle du flux
-- Comportements de triche difficiles à voir
-:::
-:::
-::: {.column width="48%"}
-::: {.box}
-[Après]{.box-title}
-- **LangGraph** : graphe d'états explicite
-- **Langfuse** : traces de chaque boucle
-- Déboguer **prompt par prompt**
-:::
-:::
-:::
-
-💡 **Leçon** : un agent sans traçage est une boîte noire
-
----
-
-## 📦 Bonnes pratiques de mise en production
-
-- 🔁 **Reproductibilité** : graines fixes, ensembles déterministes
-- 🧱 **Jobs conteneurisés** : Argo Workflows, longs scripts isolés
-- 🧩 **Agnostique** : pipeline open source, transposable à d'autres nomenclatures
-- 🧪 **Évaluer tôt** : discriminateur et protocole avant l'échelle
-
----
-
-## ⚠️ Limites
+## Limites
 
 ::: {.stat-row}
 ::: {.stat}
 [0,5 %]{.val}
-[libellés recopiés (Naive : 0,005 %)]{.lbl}
+[libellés recopiés par ReText (Naive : 0,005 %)]{.lbl}
 :::
-::: {.stat .teal}
+::: {.stat}
 [50 k]{.val}
-[lignes évaluées, passage à l'échelle ?]{.lbl}
+[données d'entraînement pour le benchmark]{.lbl}
 :::
 :::
 
-- 🔓 **Fuite de données** : risque pour l'open-data
-- 🔊 **Bruit** des annotations et du recodage
-- 🎭 **Style encore imparfait** : bruit humain mal capté
+- **Fuite de données** : risque pour l'open-data
+- **Bruit** des annotations et du changement de nomenclature
+  - Mais robustesse des résultats pour le niveau 4 et pour le top 5 des prédictions 
+- **Style encore imparfait** : bruit humain pas entièrement assimilé
+  - Souvent un seul trait qui est exacerbé
+- **Comparaison** avec des méthodes simples
+  - Ajout de fautes d'orthographes, recopier les libellés pour les codes rares, ...
+
 
 ---
 
-## 🔭 Perspectives
+## Perspectives
 
-```{mermaid}
-%%| fig-width: 10
-flowchart LR
-    A["Prompting agentique<br/>(actuel)"] --> B["Prompts et accès<br/>mieux encadrés"]
-    B --> C["SFT stylistique<br/>modèle open-weight léger"]
-    C --> D["Multilingue<br/>NACE européenne"]
-    style A fill:#f3f5f9,stroke:#1b2a49
-    style D fill:#17a2a2,color:#fff,stroke:none
-```
 
-- 🎓 **SFT** : apprendre abréviations, fautes, troncatures
-- 🌍 **NACE** : un générateur pour tout le SSE
-
----
-
-## Conclusion
-
-:::{.columns}
-:::{.column width="60%" .center-text}
-![](../sources/excalidraw_plots/framework_global.svg)
+:::: {.columns style="display: flex !important; align-items: center;"}
+::: {.column .center-text width="50%" style="display: flex; justify-content: center; flex-direction: column;"}
+![Etat des lieux sur les thématiques du stage](../sources/excalidraw_plots/Perspectives.svg){#fig-etat-des-lieux}
 :::
-:::{.column width="40%"}
-:::{style="font-size:1.25em"}
-[Résultats principaux]{.box-title}
+::: {.column  style="font-size: 0.9em"}
+[Autres méthodes à explorer]{.box-title}
 
-- 🧬 **LabelGuard** : l'empreinte du LLM est mesurable (99,4 %)
-- 🎭 **Code2ReText** : le style se rapproche, la diversité en pâtit
-- 🎚️ **40–50 % de synthétique** : gain net sur les classes rares
-- 🛠️ **Au-delà du modèle** : agentique, observabilité, MLOps
-:::
+- **SFT** : Supervised Fine Tuning
+  - objectif : imiter les bons styles de générations à partir des données originales
+  - limites : sur-apprentissage des grandes classes et instabilité
+- **RLHF** (Reinforcement Learning from Human Feedback)
+  - objectif : guider le style par un retour humain (ou LLM as a judge)
+  - possibilité d'inclure LabelGuard dans l'évaluation
+  - limite princiaple : instabilité
+
+[Open source et reproductibilité]{.box-title}
+
+- **NACE** : généraliser le générateur pour les services statistiques européens
+  - requiert une base européenne d'exemples
+- **Multilingue** : réussir à adapter selon la langue
+  - Simple si méthode actuelle, difficile autrement
 :::
 :::
