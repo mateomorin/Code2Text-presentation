@@ -300,26 +300,6 @@
     ]
   },
   {
-    "objectID": "slides/index.html#informations-sur-la-donnée-originale",
-    "href": "slides/index.html#informations-sur-la-donnée-originale",
-    "title": "Code2Text",
-    "section": "Informations sur la donnée originale",
-    "text": "Informations sur la donnée originale\n\n\nLa base de données est large\n\nTrain ≈ 1,5 M d’observations\nValidation ≈ 400 k\nTest ≈ 500 k\n\n\n\nLa base de données est bruitée\n\nFastText : ~10 % d’erreur sur les deux tiers de données traités\nGestionnaires : potentiels bruits non mesurés sur le tier restant\nRecodage NAF 2008 → 2025 par LLM\nAltération artificielle de la distribution (~mai 2026)\nTroncature des libellés : 8 % à 141 ou 161 caractères",
-    "crumbs": [
-      "📊 Version Présentation (Slides)"
-    ]
-  },
-  {
-    "objectID": "slides/index.html#lidée-découpler-structure-et-expression",
-    "href": "slides/index.html#lidée-découpler-structure-et-expression",
-    "title": "Code2Text",
-    "section": "L’idée : découpler structure et expression",
-    "text": "L’idée : découpler structure et expression\nUn seul générateur, deux usages selon la loi d’échantillonnage :",
-    "crumbs": [
-      "📊 Version Présentation (Slides)"
-    ]
-  },
-  {
     "objectID": "slides/index.html#naivecode2text-la-génération-initiale",
     "href": "slides/index.html#naivecode2text-la-génération-initiale",
     "title": "Code2Text",
@@ -374,7 +354,7 @@
     "href": "slides/index.html#évaluation-finale-protocole-mathcalm_alpha",
     "title": "Code2Text",
     "section": "4️⃣ Évaluation finale : protocole \\mathcal{M}_\\alpha",
-    "text": "4️⃣ Évaluation finale : protocole \\mathcal{M}_\\alpha\n\nEvaluation d’un classifieur Text2Code selon des datasets d’entraînement \\mathcal{M}_\\alpha différents :\n\\mathcal{M}_\\alpha = \\mathcal{C}_{real}(\\alpha) \\cup \\mathcal{C}_{synth}(\\alpha), \\quad |\\mathcal{M}_\\alpha| = 50\\,000\n\nα : part de données synthétiques injectée\nEnsembles imbriqués :\n\n\n {\\alpha}_1 &lt; {\\alpha}_2 \\Longrightarrow \\mathcal{C}_{real}({\\alpha}_2) \\subset \\mathcal{C}_{real}({\\alpha}_1), \\quad \\mathcal{C}_{synth}({\\alpha}_1) \\subset \\mathcal{C}_{synth}({\\alpha}_2)\n\n\nBase immuable : 1 exemple par code (747)\nMême architecture : hyperparamètres figés (grid search 36 configs)\n\n\nOn applique la méthode pour différents \\mathcal{C}_{real}(\\alpha) issus de NaiveCode2Text et Code2ReText",
+    "text": "4️⃣ Évaluation finale : protocole \\mathcal{M}_\\alpha\n\nEvaluation d’un classifieur Text2Code selon des datasets d’entraînement \\mathcal{M}_\\alpha différents :\n\\mathcal{M}_\\alpha = \\mathcal{C}_{real}(\\alpha) \\cup \\mathcal{C}_{synth}(\\alpha), \\quad |\\mathcal{M}_\\alpha| = 50\\,000\n\nα : part de données synthétiques injectée\nEnsembles imbriqués :\n\n\n {\\alpha}_1 &lt; {\\alpha}_2 \\Longrightarrow \\mathcal{C}_{real}({\\alpha}_2) \\subset \\mathcal{C}_{real}({\\alpha}_1), \\quad \\mathcal{C}_{synth}({\\alpha}_1) \\subset \\mathcal{C}_{synth}({\\alpha}_2)\n\n\nBase immuable : 1 exemple par code (747)\nMême architecture : hyperparamètres figés (grid search 36 configs)\n\n\nOn applique la méthode pour différents \\mathcal{C}_{synth}(\\alpha) issus de NaiveCode2Text et Code2ReText",
     "crumbs": [
       "📊 Version Présentation (Slides)"
     ]
@@ -384,7 +364,7 @@
     "href": "slides/index.html#résultats-à-retenir",
     "title": "Code2Text",
     "section": "Résultats à retenir",
-    "text": "Résultats à retenir\n\n\n\n\n40–50 % taux d’injection optimal\n\n\n87 % / 60 % accuracy tête / queue à α = 0,4\n\n\nα ≥ 0,9 effondrement des performances\n\n\n\nQueue de dsitribution : gain très net dès les premières injections\nTête et corps : peu dégradés à 40–50 %\nMeilleur choix : Code2ReText, distribution proche de l’originale\nMoins de diversité avec Code2ReText\n\n\n\n\n\n\n\n\nFigure 6: Evolution de l’accuracy sur le jeu de test (tête) en fonction de l’accuracy sur le jeu de test (queue)\n\n\n\n\n\nL’injection de données synthétiques réduit la discrimination des classes rares",
+    "text": "Résultats à retenir\n\n\n\n\n40–50 % taux d’injection optimal\n\n\n87 % / 60 % accuracy tête / queue à α = 0,4\n\n\nα ≥ 0,9 effondrement des performances\n\n\n\nQueue de distribution : gain très net dès les premières injections\nTête et corps : peu dégradés à 40–50 %\nMeilleur choix : Code2ReText, distribution proche de l’originale\nMoins de diversité avec Code2ReText\n\n\n\n\n\n\n\n\nFigure 6: Evolution de l’accuracy sur le jeu de test (tête) en fonction de l’accuracy sur le jeu de test (queue)\n\n\n\n\n\nL’injection de données synthétiques réduit la discrimination des classes rares",
     "crumbs": [
       "📊 Version Présentation (Slides)"
     ]
@@ -414,7 +394,27 @@
     "href": "slides/index.html#perspectives",
     "title": "Code2Text",
     "section": "Perspectives",
-    "text": "Perspectives\n\n\n\n\n\n\n\n\nFigure 8: Etat des lieux sur les thématiques du stage\n\n\n\n\nAutres méthodes à explorer\n\nSFT : Supervised Fine Tuning\n\nobjectif : imiter les bons styles de générations à partir des données originales\nlimites : sur-apprentissage des grandes classes et instabilité\n\nRLHF (Reinforcement Learning from Human Feedback)\n\nobjectif : guider le style par un retour humain (ou LLM as a judge)\npossibilité d’inclure LabelGuard dans l’évaluation\nlimite princiaple : instabilité\n\n\nOpen source et reproductibilité\n\nNACE : généraliser le générateur pour les services statistiques européens\n\nrequiert une base européenne d’exemples\n\nMultilingue : réussir à adapter selon la langue\n\nSimple si méthode actuelle, difficile autrement",
+    "text": "Perspectives\n\n\n\n\n\n\n\n\nFigure 8: Etat des lieux sur les thématiques du stage\n\n\n\n\nAutres méthodes à explorer\n\nSFT : Supervised Fine Tuning\n\nobjectif : imiter les bons styles de générations à partir des données originales\nlimites : sur-apprentissage des grandes classes et instabilité\n\nRLHF : Reinforcement Learning from Human Feedback\n\nobjectif : guider le style par un retour humain (ou LLM as a judge)\npossibilité d’inclure LabelGuard dans l’évaluation\nlimite princiaple : instabilité\n\n\nOpen source et reproductibilité\n\nNACE : généraliser le générateur pour les services statistiques européens\n\nrequiert une base européenne d’exemples\n\nMultilingue : réussir à adapter selon la langue\n\nSimple si méthode actuelle, difficile autrement",
+    "crumbs": [
+      "📊 Version Présentation (Slides)"
+    ]
+  },
+  {
+    "objectID": "slides/index.html#informations-sur-la-donnée-originale",
+    "href": "slides/index.html#informations-sur-la-donnée-originale",
+    "title": "Code2Text",
+    "section": "Informations sur la donnée originale",
+    "text": "Informations sur la donnée originale\n\n\nLa base de données est large\n\nTrain ≈ 1,5 M d’observations\nValidation ≈ 400 k\nTest ≈ 500 k\n\n\n\nLa base de données est bruitée\n\nFastText : ~10 % d’erreur sur les deux tiers de données traités\nGestionnaires : potentiels bruits non mesurés sur le tier restant\nRecodage NAF 2008 → 2025 par LLM\nAltération artificielle de la distribution (~mai 2026)\nTroncature des libellés : 8 % à 141 ou 161 caractères",
+    "crumbs": [
+      "📊 Version Présentation (Slides)"
+    ]
+  },
+  {
+    "objectID": "slides/index.html#lidée-découpler-structure-et-expression",
+    "href": "slides/index.html#lidée-découpler-structure-et-expression",
+    "title": "Code2Text",
+    "section": "L’idée : découpler structure et expression",
+    "text": "L’idée : découpler structure et expression\nUn seul générateur, deux usages selon la loi d’échantillonnage :",
     "crumbs": [
       "📊 Version Présentation (Slides)"
     ]
