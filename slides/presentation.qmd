@@ -105,40 +105,8 @@ NAF : Nomenclature d'Activité Française (= code APE)
 :::
 :::
 
----
-
-## Informations sur la donnée originale
-
-:::{style="display: flex; flex-direction: column; gap: 20px; font-size: 0.8em"}
-::: {.box}
-[La base de données est large]{.box-title}
-
-- **Train** ≈ 1,5 M d'observations
-- **Validation** ≈ 400 k
-- **Test** ≈ 500 k
-:::
-::: {.box .bad}
-[La base de données est bruitée]{.box-title}
-
-- **FastText** : ~10 % d'erreur sur les deux tiers de données traités
-- **Gestionnaires** : potentiels bruits non mesurés sur le tier restant
-- **Recodage** NAF 2008 → 2025 par LLM
-- **Altération artificielle** de la distribution (~mai 2026)
-- **Troncature des libellés** : 8 % à 141 ou 161 caractères
-:::
-:::
 
 # 2. Méthodologie {.section-slide  .center-text background-color="#1b2a49"}
-
----
-
-## L'idée : découpler structure et expression
-
-**Un seul générateur**, deux usages selon la loi d'échantillonnage :
-
-::: {.center-text}
-![](../sources/excalidraw_plots/usages_generateur.svg){width=80%}
-:::
 
 ---
 
@@ -238,7 +206,7 @@ $$ {\alpha}_1 < {\alpha}_2 \Longrightarrow \mathcal{C}_{real}({\alpha}_2) \subse
 - **Même architecture** : hyperparamètres figés (grid search 36 configs)
 
 ::: {.box}
-On applique la méthode pour différents $\mathcal{C}_{real}(\alpha)$ issus de NaiveCode2Text et Code2ReText
+On applique la méthode pour différents $\mathcal{C}_{synth}(\alpha)$ issus de NaiveCode2Text et Code2ReText
 :::
 :::
 
@@ -266,7 +234,7 @@ On applique la méthode pour différents $\mathcal{C}_{real}(\alpha)$ issus de N
 :::
 :::
 
-- **Queue de dsitribution** : gain très net dès les premières injections
+- **Queue de distribution** : gain très net dès les premières injections
 - **Tête et corps** : peu dégradés à 40–50 %
 - **Meilleur choix** : Code2ReText, distribution proche de l'originale
 - **Moins de diversité** avec Code2ReText
@@ -356,7 +324,7 @@ L'injection de données synthétiques **réduit la discrimination** des classes 
 - **SFT** : Supervised Fine Tuning
   - objectif : imiter les bons styles de générations à partir des données originales
   - limites : sur-apprentissage des grandes classes et instabilité
-- **RLHF** (Reinforcement Learning from Human Feedback)
+- **RLHF** : Reinforcement Learning from Human Feedback
   - objectif : guider le style par un retour humain (ou LLM as a judge)
   - possibilité d'inclure LabelGuard dans l'évaluation
   - limite princiaple : instabilité
@@ -368,4 +336,40 @@ L'injection de données synthétiques **réduit la discrimination** des classes 
 - **Multilingue** : réussir à adapter selon la langue
   - Simple si méthode actuelle, difficile autrement
 :::
+:::
+
+
+# Annexe {.section-slide  .center-text background-color="#1b2a49"}
+
+---
+
+## Informations sur la donnée originale
+
+:::{style="display: flex; flex-direction: column; gap: 20px; font-size: 0.8em"}
+::: {.box}
+[La base de données est large]{.box-title}
+
+- **Train** ≈ 1,5 M d'observations
+- **Validation** ≈ 400 k
+- **Test** ≈ 500 k
+:::
+::: {.box .bad}
+[La base de données est bruitée]{.box-title}
+
+- **FastText** : ~10 % d'erreur sur les deux tiers de données traités
+- **Gestionnaires** : potentiels bruits non mesurés sur le tier restant
+- **Recodage** NAF 2008 → 2025 par LLM
+- **Altération artificielle** de la distribution (~mai 2026)
+- **Troncature des libellés** : 8 % à 141 ou 161 caractères
+:::
+:::
+
+---
+
+## L'idée : découpler structure et expression
+
+**Un seul générateur**, deux usages selon la loi d'échantillonnage :
+
+::: {.center-text}
+![](../sources/excalidraw_plots/usages_generateur.svg){width=80%}
 :::
