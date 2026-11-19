@@ -35,7 +35,7 @@ Version complète du rapport en format interactif. Comprend le contexte, la mét
 ::::
 
 :::: {.landing-card}
-### Slides de présentation (ancien)
+### Slides de présentation
 
 Version diaporama du rapport, plus sythétique. Support pour la soutenance orale.
 
